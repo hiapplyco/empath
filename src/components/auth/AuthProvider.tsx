@@ -15,16 +15,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
     });
 
+    // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setLoading(false);
+
+      if (session) {
+        // Check onboarding status when user signs in
+        const { data: profile } = await supabase
+          .from('caregiver_profiles')
+          .select('onboarding_step')
+          .eq('user_id', session.user.id)
+          .single();
+
+        // Redirect based on onboarding status
+        const path = profile?.onboarding_step > 1 ? '/dashboard' : '/onboarding';
+        window.location.href = path;
+      }
     });
 
     return () => subscription.unsubscribe();

@@ -27,12 +27,11 @@ export const SignInForm = () => {
         throw error;
       }
 
+      // The redirect will be handled by the AuthProvider's onAuthStateChange listener
       toast({
         title: "Success",
         description: "You have been signed in.",
       });
-      
-      navigate("/onboarding");
     } catch (error) {
       toast({
         variant: "destructive",
