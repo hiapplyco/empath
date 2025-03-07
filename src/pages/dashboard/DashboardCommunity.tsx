@@ -16,7 +16,7 @@ const DashboardCommunity = () => {
               <MessageSquare className="w-12 h-12 mb-2" />
               <p>Community features coming soon</p>
             </div>
-          </CardContent>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -24,3 +24,4 @@ const DashboardCommunity = () => {
 };
 
 export default DashboardCommunity;
+
