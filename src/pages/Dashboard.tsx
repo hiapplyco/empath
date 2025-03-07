@@ -1,4 +1,3 @@
-
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { Routes, Route } from "react-router-dom";
@@ -11,6 +10,7 @@ import DashboardGrowth from "@/pages/dashboard/DashboardGrowth";
 import DashboardCommunity from "@/pages/dashboard/DashboardCommunity";
 import DashboardReviews from "@/pages/dashboard/DashboardReviews";
 import DashboardSettings from "@/pages/dashboard/DashboardSettings";
+import DashboardProfile from "@/pages/dashboard/DashboardProfile";
 
 const Dashboard = () => {
   useAuthRedirect();
@@ -19,6 +19,7 @@ const Dashboard = () => {
     <DashboardShell>
       <Routes>
         <Route index element={<DashboardOverview />} />
+        <Route path="profile" element={<DashboardProfile />} />
         <Route path="schedule" element={<DashboardSchedule />} />
         <Route path="clients" element={<DashboardClients />} />
         <Route path="earnings" element={<DashboardEarnings />} />

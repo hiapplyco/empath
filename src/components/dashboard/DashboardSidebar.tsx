@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Calendar, Clock, DollarSign, Award, BookOpen, 
@@ -9,8 +8,8 @@ import { Link, useLocation } from 'react-router-dom';
 
 const navItems = [
   { icon: Briefcase, label: 'Dashboard', href: '/dashboard' },
+  { icon: User, label: 'My Profile', href: '/dashboard/profile' },
   { icon: Calendar, label: 'Schedule', href: '/dashboard/schedule' },
-  { icon: User, label: 'My Clients', href: '/dashboard/clients' },
   { icon: DollarSign, label: 'Earnings', href: '/dashboard/earnings' },
   { icon: BookOpen, label: 'Knowledge Base', href: '/dashboard/knowledge' },
   { icon: Award, label: 'Growth & Learning', href: '/dashboard/growth' },
