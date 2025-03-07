@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,16 +11,15 @@ import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 const OnboardingPage = () => {
   useAuthRedirect();
-  const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     phone: "",
     experience: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,39 +38,22 @@ const OnboardingPage = () => {
       
       if (!user) throw new Error("No user found");
 
-      // First, check if the table exists by attempting to get the table info
-      const { error: tableCheckError } = await supabase
-        .from('caregiver_profiles')
-        .select('id')
-        .limit(1);
-
-      if (tableCheckError) {
-        toast({
-          variant: "destructive",
-          title: "Database Setup Required",
-          description: "The caregiver_profiles table needs to be created in your Supabase database. Please check the documentation for setup instructions.",
-        });
-        return;
-      }
-
       const { error } = await supabase
         .from('caregiver_profiles')
-        .insert([
-          {
-            user_id: user.id,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            phone: formData.phone,
-            years_experience: parseInt(formData.experience),
-            onboarding_step: 1,
-          }
-        ]);
+        .update({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          phone: formData.phone,
+          years_experience: parseInt(formData.experience),
+          onboarding_step: 2
+        })
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
       toast({
-        title: "Profile Created",
-        description: "Your profile has been created successfully.",
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
       });
 
       navigate("/dashboard");
@@ -78,7 +61,7 @@ const OnboardingPage = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error?.message || "Failed to create profile. The database might not be set up correctly.",
+        description: error?.message || "Failed to update profile",
       });
     } finally {
       setIsLoading(false);
