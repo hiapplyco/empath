@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,14 @@ const Index = () => {
       <section className="pt-20 pb-20 px-4 bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center space-y-8">
+            <div className="flex justify-end gap-4 mb-8">
+              <Link to="/auth">
+                <Button variant="ghost">Sign In</Button>
+              </Link>
+              <Link to="/auth">
+                <Button>Sign Up</Button>
+              </Link>
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900">
               Senior Care Made <span className="text-primary">Simple</span>
             </h1>
