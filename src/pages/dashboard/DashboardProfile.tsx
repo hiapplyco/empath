@@ -1,10 +1,9 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { ProfileSection } from "@/components/profile/CaregiverProfileCard";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Languages, BadgeCheck, Calendar, Hospital, Shield } from "lucide-react";
+import { Heart, Languages, BadgeCheck, Calendar, Hospital, Shield, Clock } from "lucide-react";
 
 const DashboardProfile = () => {
   const { data: profile, isLoading } = useQuery({
