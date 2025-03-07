@@ -1,7 +1,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/Navbar";
-import { ArrowRight, Heart, Shield, Users } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ArrowRight, Heart, Shield, Users, Star, MapPin, Search } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -9,73 +12,128 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
+      <section className="pt-32 pb-20 px-4 bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center space-y-8">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 animate-fadeIn">
-              Connecting Hearts, <span className="text-primary">Empowering Care</span>
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900">
+              Senior Care Made <span className="text-primary">Simple</span>
             </h1>
-            <p className="max-w-2xl mx-auto text-xl text-gray-600 animate-slideUp">
-              A caregiver-first platform that creates meaningful connections and supports those who dedicate their lives to caring for others.
+            <p className="max-w-2xl mx-auto text-xl text-gray-600">
+              Find the perfect care solution for your loved ones. Our personalized recommendations come at no cost to your family.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slideUp">
-              <Button size="lg" className="w-full sm:w-auto">
-                Find a Caregiver
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                Become a Caregiver
-              </Button>
+            <div className="max-w-xl mx-auto">
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="Enter city or zip code"
+                  className="text-lg h-12"
+                />
+                <Button size="lg" className="h-12">
+                  <Search className="mr-2" />
+                  Search
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Feature Cards */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-12">
-            <Feature
+          <div className="grid md:grid-cols-3 gap-8">
+            <FeatureCard
               icon={Shield}
-              title="Verified Professionals"
-              description="Every caregiver is thoroughly vetted and background-checked for your peace of mind."
+              title="Trusted Network"
+              description="Access our extensive network of vetted senior living communities and care providers."
             />
-            <Feature
+            <FeatureCard
               icon={Users}
-              title="Perfect Matches"
-              description="Our intelligent matching system connects you with caregivers who match your specific needs."
+              title="Expert Guidance"
+              description="Get personalized support from our experienced advisors every step of the way."
             />
-            <Feature
+            <FeatureCard
               icon={Heart}
-              title="Compassionate Care"
-              description="Experience care that goes beyond the basics, delivered with genuine compassion."
+              title="Personalized Care"
+              description="Find the perfect care solution tailored to your loved one's unique needs."
             />
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Stats Section */}
       <section className="py-20 bg-primary/5">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-8">Ready to Experience Better Care?</h2>
-          <Button size="lg">
-            Get Started Today
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <Stat number="12k+" label="Senior Living Communities" />
+            <Stat number="4k+" label="Home Care Providers" />
+            <Stat number="400k+" label="Consumer Reviews" />
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonial Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center space-y-12">
+            <h2 className="text-3xl font-bold">What Families Say About em.path</h2>
+            <div className="max-w-3xl mx-auto bg-gray-50 p-8 rounded-2xl">
+              <div className="flex justify-center mb-4">
+                {[1, 2, 3, 4, 5].map((_, i) => (
+                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />
+                ))}
+              </div>
+              <blockquote className="text-xl italic text-gray-700 mb-4">
+                "Missy talked to me several times during the process, helping me read through the fine print of places, and offered my family the compassionate guidance needed during these difficult times."
+              </blockquote>
+              <p className="text-gray-600">- Cara, found Memory Care for her grandma</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/10 to-secondary/10">
+        <div className="max-w-7xl mx-auto px-4 text-center space-y-8">
+          <h2 className="text-3xl font-bold">Ready to Find the Perfect Care Solution?</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Take our care assessment quiz and get personalized recommendations tailored to your needs.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="text-lg">
+              Take Care Quiz
+              <ArrowRight className="ml-2" />
+            </Button>
+            <Button size="lg" variant="outline" className="text-lg">
+              Browse Communities
+              <MapPin className="ml-2" />
+            </Button>
+          </div>
         </div>
       </section>
     </div>
   );
 };
 
-const Feature = ({ icon: Icon, title, description }: { icon: any, title: string, description: string }) => {
+const FeatureCard = ({ icon: Icon, title, description }: { icon: any, title: string, description: string }) => {
   return (
-    <div className="text-center p-6">
-      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+    <Card className="text-center p-6 hover:shadow-lg transition-shadow">
+      <CardContent className="pt-6">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
+          <Icon className="h-6 w-6" />
+        </div>
+        <h3 className="text-xl font-semibold mb-2">{title}</h3>
+        <p className="text-gray-600">{description}</p>
+      </CardContent>
+    </Card>
+  );
+};
+
+const Stat = ({ number, label }: { number: string, label: string }) => {
+  return (
+    <div className="space-y-2">
+      <div className="text-4xl font-bold text-primary">{number}</div>
+      <div className="text-gray-600">{label}</div>
     </div>
   );
 };
