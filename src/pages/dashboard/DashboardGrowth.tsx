@@ -16,7 +16,7 @@ const DashboardGrowth = () => {
               <Award className="w-12 h-12 mb-2" />
               <p>Growth tracking coming soon</p>
             </div>
-          </CardContent>
+          </div>
         </CardContent>
       </Card>
     </div>

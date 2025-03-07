@@ -16,7 +16,7 @@ const DashboardReviews = () => {
               <Star className="w-12 h-12 mb-2" />
               <p>Reviews coming soon</p>
             </div>
-          </CardContent>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -16,7 +16,7 @@ const DashboardSettings = () => {
               <Settings className="w-12 h-12 mb-2" />
               <p>Settings configuration coming soon</p>
             </div>
-          </CardContent>
+          </div>
         </CardContent>
       </Card>
     </div>

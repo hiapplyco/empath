@@ -16,7 +16,7 @@ const DashboardEarnings = () => {
               <DollarSign className="w-12 h-12 mb-2" />
               <p>Earnings details coming soon</p>
             </div>
-          </CardContent>
+          </div>
         </CardContent>
       </Card>
     </div>
