@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +21,31 @@ const OnboardingPage = () => {
     phone: "",
     experience: "",
   });
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) return;
+
+        const { data: profile } = await supabase
+          .from('caregiver_profiles')
+          .select('onboarding_step')
+          .eq('user_id', user.id)
+          .single();
+
+        // If onboarding_step is greater than 1, they've already started/completed onboarding
+        if (profile?.onboarding_step && profile.onboarding_step > 1) {
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+      }
+    };
+
+    checkOnboardingStatus();
+  }, [navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
