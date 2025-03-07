@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Calendar, Clock, DollarSign, Award, BookOpen, 
@@ -5,6 +6,8 @@ import {
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from 'react-router-dom';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 const navItems = [
   { icon: Briefcase, label: 'Dashboard', href: '/dashboard' },
@@ -20,6 +23,19 @@ const navItems = [
 
 export const DashboardSidebar = () => {
   const location = useLocation();
+  
+  const { data: profile } = useQuery({
+    queryKey: ['caregiver-profile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data } = await supabase
+        .from('caregiver_profiles')
+        .select('*')
+        .eq('user_id', user?.id)
+        .single();
+      return data;
+    },
+  });
 
   return (
     <div className="w-64 bg-white border-r border-slate-200 p-4 flex flex-col h-screen">
@@ -35,8 +51,10 @@ export const DashboardSidebar = () => {
           <User className="text-purple-600 w-5 h-5" />
         </div>
         <div>
-          <p className="font-medium text-sm">Maria Rodriguez</p>
-          <p className="text-xs text-green-600">Available Now</p>
+          <p className="font-medium text-sm">
+            {profile ? `${profile.first_name} ${profile.last_name}` : 'Loading...'}
+          </p>
+          <p className="text-xs text-green-600">{profile?.status || 'Loading...'}</p>
         </div>
       </div>
 

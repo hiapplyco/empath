@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { ProfileSection } from "@/components/profile/CaregiverProfileCard";
@@ -19,7 +20,7 @@ const DashboardProfile = () => {
     },
   });
 
-  if (isLoading) {
+  if (isLoading || !profile) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -59,7 +60,7 @@ const DashboardProfile = () => {
         <div className="space-y-4">
           <div>
             <p className="text-sm text-gray-500 mb-2">Years of Experience</p>
-            <p className="font-medium">{profile?.years_experience} years</p>
+            <p className="font-medium">{profile?.years_experience || 0} years</p>
           </div>
           <div>
             <p className="text-sm text-gray-500 mb-2">Specialties</p>
@@ -92,18 +93,18 @@ const DashboardProfile = () => {
           <div className="space-y-2">
             <div className="flex items-center">
               <Calendar className="h-5 w-5 mr-2 text-blue-500" />
-              <span>Morning & Evening Shifts</span>
+              <span>Status: {profile?.status || 'Not set'}</span>
             </div>
             <div className="flex items-center">
               <Clock className="h-5 w-5 mr-2 text-blue-500" />
-              <span>40 hours/week</span>
+              <span>{profile?.weekly_hours || 0} hours/week</span>
             </div>
           </div>
         </ProfileSection>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ProfileSection title="Patient Care Expertise" onEdit={() => console.log('Edit patient care')}>
+        <ProfileSection title="Patient Care Details" onEdit={() => console.log('Edit patient care')}>
           <div className="space-y-2">
             <div className="flex items-center">
               <Hospital className="h-5 w-5 mr-2 text-purple-500" />
