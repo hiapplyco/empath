@@ -1,6 +1,5 @@
 
 import { Button } from "@/components/ui/button";
-import { Navbar } from "@/components/layout/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Heart, Shield, Users, Star, MapPin, Search } from "lucide-react";
@@ -9,10 +8,8 @@ import { Link } from "react-router-dom";
 const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 bg-gradient-to-br from-blue-50 to-purple-50">
+      <section className="pt-20 pb-20 px-4 bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center space-y-8">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900">
@@ -72,28 +69,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Testimonial Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center space-y-12">
-            <h2 className="text-3xl font-bold">What Families Say About em.path</h2>
-            <div className="max-w-3xl mx-auto bg-gray-50 p-8 rounded-2xl">
-              <div className="flex justify-center mb-4">
-                {[1, 2, 3, 4, 5].map((_, i) => (
-                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <blockquote className="text-xl italic text-gray-700 mb-4">
-                "Missy talked to me several times during the process, helping me read through the fine print of places, and offered my family the compassionate guidance needed during these difficult times."
-              </blockquote>
-              <p className="text-gray-600">- Cara, found Memory Care for her grandma</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-primary/10 to-secondary/10">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 text-center space-y-8">
           <h2 className="text-3xl font-bold">Ready to Find the Perfect Care Solution?</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
