@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { createClientComponentClient } from "@supabase/auth-helpers-react";
+import { supabase } from "@/lib/supabase";
 
 export const SignInForm = () => {
   const [email, setEmail] = useState("");
@@ -13,7 +12,6 @@ export const SignInForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const supabase = createClientComponentClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +32,7 @@ export const SignInForm = () => {
         description: "You have been signed in.",
       });
       
-      navigate("/dashboard");
+      navigate("/onboarding");
     } catch (error) {
       toast({
         variant: "destructive",

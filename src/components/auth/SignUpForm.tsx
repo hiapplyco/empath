@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { createClientComponentClient } from "@supabase/auth-helpers-react";
+import { supabase } from "@/lib/supabase";
 
 export const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const supabase = createClientComponentClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +20,11 @@ export const SignUpForm = () => {
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            role: 'caregiver'
+          }
+        }
       });
 
       if (error) {
