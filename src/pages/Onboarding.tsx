@@ -37,6 +37,21 @@ const OnboardingPage = () => {
       
       if (!user) throw new Error("No user found");
 
+      // First, check if the table exists by attempting to get the table info
+      const { error: tableCheckError } = await supabase
+        .from('caregiver_profiles')
+        .select('id')
+        .limit(1);
+
+      if (tableCheckError) {
+        toast({
+          variant: "destructive",
+          title: "Database Setup Required",
+          description: "The caregiver_profiles table needs to be created in your Supabase database. Please check the documentation for setup instructions.",
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('caregiver_profiles')
         .insert([
@@ -58,11 +73,11 @@ const OnboardingPage = () => {
       });
 
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to create profile. Please try again.",
+        description: error?.message || "Failed to create profile. The database might not be set up correctly.",
       });
     } finally {
       setIsLoading(false);
