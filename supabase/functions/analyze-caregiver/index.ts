@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai"
@@ -19,7 +18,7 @@ serve(async (req) => {
     const { input_type, content } = await req.json()
     console.log(`Processing ${input_type} input for caregiver analysis`)
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
 
     // Base system prompt that guides the conversation
     const systemPrompt = `
