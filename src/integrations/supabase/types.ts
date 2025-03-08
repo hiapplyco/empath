@@ -11,54 +11,135 @@ export type Database = {
     Tables: {
       caregiver_profiles: {
         Row: {
+          ai_assessment: Json | null
+          availability: Json | null
+          background_check_status: string | null
+          certifications_verified: boolean | null
           created_at: string
           first_name: string | null
           id: string
+          input_method: string | null
           last_name: string | null
+          mentor_id: string | null
           monthly_earnings: number | null
           next_payment_date: string | null
+          onboarding_progress: Json | null
           onboarding_step: number | null
           phone: string | null
+          profile_activated: boolean | null
+          rate_preferences: Json | null
           rating: number | null
+          specializations: string[] | null
           status: string | null
           total_reviews: number | null
+          training_completed: boolean | null
+          training_path: Json | null
           updated_at: string
           weekly_hours: number | null
           years_experience: number | null
         }
         Insert: {
+          ai_assessment?: Json | null
+          availability?: Json | null
+          background_check_status?: string | null
+          certifications_verified?: boolean | null
           created_at?: string
           first_name?: string | null
           id?: string
+          input_method?: string | null
           last_name?: string | null
+          mentor_id?: string | null
           monthly_earnings?: number | null
           next_payment_date?: string | null
+          onboarding_progress?: Json | null
           onboarding_step?: number | null
           phone?: string | null
+          profile_activated?: boolean | null
+          rate_preferences?: Json | null
           rating?: number | null
+          specializations?: string[] | null
           status?: string | null
           total_reviews?: number | null
+          training_completed?: boolean | null
+          training_path?: Json | null
           updated_at?: string
           weekly_hours?: number | null
           years_experience?: number | null
         }
         Update: {
+          ai_assessment?: Json | null
+          availability?: Json | null
+          background_check_status?: string | null
+          certifications_verified?: boolean | null
           created_at?: string
           first_name?: string | null
           id?: string
+          input_method?: string | null
           last_name?: string | null
+          mentor_id?: string | null
           monthly_earnings?: number | null
           next_payment_date?: string | null
+          onboarding_progress?: Json | null
           onboarding_step?: number | null
           phone?: string | null
+          profile_activated?: boolean | null
+          rate_preferences?: Json | null
           rating?: number | null
+          specializations?: string[] | null
           status?: string | null
           total_reviews?: number | null
+          training_completed?: boolean | null
+          training_path?: Json | null
           updated_at?: string
           weekly_hours?: number | null
           years_experience?: number | null
         }
         Relationships: []
+      }
+      caregiver_training: {
+        Row: {
+          assessment_score: number | null
+          caregiver_id: string | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          module_id: string | null
+          progress: number | null
+        }
+        Insert: {
+          assessment_score?: number | null
+          caregiver_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          module_id?: string | null
+          progress?: number | null
+        }
+        Update: {
+          assessment_score?: number | null
+          caregiver_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          module_id?: string | null
+          progress?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caregiver_training_caregiver_id_fkey"
+            columns: ["caregiver_id"]
+            isOneToOne: false
+            referencedRelation: "caregiver_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caregiver_training_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "training_modules"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       certifications: {
         Row: {
@@ -95,6 +176,45 @@ export type Database = {
           {
             foreignKeyName: "certifications_caregiver_id_fkey"
             columns: ["caregiver_id"]
+            isOneToOne: false
+            referencedRelation: "caregiver_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mentor_relationships: {
+        Row: {
+          created_at: string | null
+          id: string
+          mentee_id: string | null
+          mentor_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          mentee_id?: string | null
+          mentor_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          mentee_id?: string | null
+          mentor_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentor_relationships_mentee_id_fkey"
+            columns: ["mentee_id"]
+            isOneToOne: true
+            referencedRelation: "caregiver_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mentor_relationships_mentor_id_fkey"
+            columns: ["mentor_id"]
             isOneToOne: false
             referencedRelation: "caregiver_profiles"
             referencedColumns: ["id"]
@@ -182,6 +302,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      training_modules: {
+        Row: {
+          content: Json
+          created_at: string | null
+          description: string | null
+          id: string
+          title: string
+          type: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          title: string
+          type: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          title?: string
+          type?: string
+        }
+        Relationships: []
       }
     }
     Views: {
