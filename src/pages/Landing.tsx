@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Heart, Calendar, Award, Shield, MessageCircle, ArrowRight } from "lucide-react";
+import { Calendar, Award, Shield, MessageCircle, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Landing() {
@@ -14,9 +14,11 @@ export default function Landing() {
       {/* Navigation */}
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center mr-2">
-            <Heart className="text-white w-5 h-5" />
-          </div>
+          <img 
+            src="/empath-simple-logo.svg" 
+            alt="em.path logo" 
+            className="w-10 h-10 mr-2"
+          />
           <span className="text-2xl font-bold text-purple-800">em.path</span>
         </div>
         <div className="hidden md:flex space-x-6 text-purple-800">
@@ -277,9 +279,11 @@ export default function Landing() {
       <footer className="container mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <div className="flex items-center mb-4 md:mb-0">
-            <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center mr-2">
-              <Heart className="text-white w-5 h-5" />
-            </div>
+            <img 
+              src="/empath-simple-logo.svg" 
+              alt="em.path logo" 
+              className="w-10 h-10 mr-2"
+            />
             <span className="text-xl font-bold text-purple-800">em.path</span>
           </div>
           <div className="flex space-x-8">
