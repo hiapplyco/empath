@@ -25,13 +25,28 @@ Structure the data into clear sections following this format exactly:
 }
 
 Rules for structuring the data:
-1. Personal info should use "list" variant
-2. Skills and specialties should use "badges" variant
-3. Experience details should use "grid" variant
-4. Certifications should use "grid" variant
-5. Choose appropriate Lucide icon names for each section
+1. Use these specific icons:
+   - Personal Information: "user"
+   - Skills & Specialties: "star"
+   - Experience: "briefcase"
+   - Certifications: "award"
 
-Convert ALL values to strings in the items array.`
+2. Format values for better readability:
+   - Split arrays into comma-separated lists
+   - Format certification details into clear bullet points
+   - Convert numbers to strings
+   - Format dates in a consistent "MMM DD, YYYY" format
+   - Ensure phone numbers are properly formatted
+
+3. Use these variants:
+   - Personal info: "list" variant
+   - Skills and specialties: "badges" variant (split into individual badges)
+   - Experience details: "grid" variant
+   - Certifications: "grid" variant with bullet-point formatting
+
+4. Break down complex objects into readable strings:
+   - Certification format: "• Status: [status]\\n• Issued: [date]\\n• Expires: [date]\\n• Verification: [status]"
+   - Split multi-value items into separate badges for the "badges" variant`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -40,7 +55,7 @@ serve(async (req) => {
 
   try {
     const { profileData } = await req.json()
-    console.log('Processing gemini_response data:', profileData)
+    console.log('Processing profile data:', profileData)
 
     // Extract the gemini_response if it exists
     const dataToProcess = profileData.gemini_response || profileData
@@ -59,12 +74,25 @@ serve(async (req) => {
     console.log('Generated profile structure:', text)
 
     try {
+      // Clean and parse the JSON response
       const cleanJson = text
         .replace(/```json\n?/, '')
         .replace(/```/, '')
         .trim()
       
       const processedData = JSON.parse(cleanJson)
+      
+      // Format badges data - split comma-separated values into individual badges
+      processedData.sections = processedData.sections.map(section => {
+        if (section.variant === 'badges') {
+          section.items = section.items.flatMap(item => {
+            const values = item.value.split(',').map(v => v.trim())
+            return values.map(value => ({ label: item.label, value }))
+          })
+        }
+        return section
+      })
+
       console.log('Final processed profile:', processedData)
 
       return new Response(
