@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { FileUpload } from "@/components/onboarding/FileUpload";
 import { AudioRecorder } from "@/components/onboarding/AudioRecorder";
 import { VideoRecorder } from "@/components/onboarding/VideoRecorder";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
+import { QuestionnaireChat } from "@/components/onboarding/QuestionnaireChat";
 
 const OnboardingPage = () => {
   const [step, setStep] = useState(1);
@@ -89,25 +89,7 @@ const OnboardingPage = () => {
               {inputMethod === "resume" && <FileUpload onComplete={() => setStep(3)} />}
               {inputMethod === "audio" && <AudioRecorder onComplete={() => setStep(3)} />}
               {inputMethod === "video" && <VideoRecorder onComplete={() => setStep(3)} />}
-              {inputMethod === "text" && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="experience">Years of Experience</Label>
-                    <Input
-                      id="experience"
-                      type="number"
-                      min="0"
-                      placeholder="Enter years of experience"
-                    />
-                  </div>
-                  <Button 
-                    onClick={() => setStep(3)} 
-                    className="w-full"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              )}
+              {inputMethod === "text" && <QuestionnaireChat />}
             </CardContent>
           </Card>
         )}

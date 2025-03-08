@@ -1,38 +1,13 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "npm:@google/generative-ai"
+import { GoogleGenerativeAI } from "npm:@google/generative-ai"
 
 const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface CaregiverProfileStructure {
-  caregiver_profile: {
-    personal_information: {
-      name: string;
-      contact_info: {
-        phone: string;
-        email: string;
-        address: string;
-      };
-      certifications: string[];
-      languages: string[];
-      bio: string;
-    };
-    experience: {
-      years_experience: number;
-      specialties: string[];
-      previous_roles: string[];
-      availability: {
-        shift_preferences: Array<"Morning" | "Evening" | "Night" | "Live-in">;
-        hours_per_week: number;
-      };
-    };
-    // ... other profile sections as per schema
-  };
 }
 
 serve(async (req) => {
@@ -46,32 +21,37 @@ serve(async (req) => {
 
     const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
-    // Construct prompt based on input type
-    let prompt = `Analyze the following ${input_type} content and extract relevant information about the caregiver. `
-    prompt += `Structure the output exactly according to this JSON schema for a caregiver profile: ${JSON.stringify({ caregiver_profile: {} }, null, 2)}`
+    // Base system prompt that guides the conversation
+    const systemPrompt = `
+You are a friendly AI assistant conducting a caregiver onboarding interview. Your goal is to collect information according to this schema, but do it conversationally and naturally:
+${JSON.stringify({ caregiver_profile: {} }, null, 2)}
 
-    if (input_type === 'resume') {
-      prompt += "\nPay special attention to experience, certifications, and specialties."
-    } else if (input_type === 'text' || input_type === 'audio') {
-      prompt += "\nFocus on personal information, care philosophy, and availability preferences."
-    }
+Guidelines:
+1. Ask ONE question at a time
+2. Be warm and encouraging
+3. Use simple, clear language that can be easily translated
+4. Accept "no experience" or "none" as valid answers
+5. Stay focused on completing the schema
+6. Acknowledge answers before asking the next question
+7. If an answer is unclear, politely ask for clarification
 
-    const result = await model.generateContent(prompt + "\n\nContent to analyze:\n" + content)
+Based on the user's last response, determine what information has been provided and what still needs to be collected. Then, ask the next most appropriate question.
+`;
+
+    // Generate response
+    const result = await model.generateContent([
+      { text: systemPrompt },
+      { text: `User's message: ${content}\n\nProvide a natural response and the next relevant question:` }
+    ])
     const response = await result.response
     const text = response.text()
     
-    console.log('Generated profile structure:', text.substring(0, 100) + '...')
+    console.log('Generated response:', text.substring(0, 100) + '...')
 
-    // Parse and validate the response
-    let parsedResponse: CaregiverProfileStructure
-    try {
-      parsedResponse = JSON.parse(text)
-    } catch (e) {
-      console.error('Failed to parse Gemini response as JSON:', e)
-      throw new Error('Invalid response format from AI')
-    }
-
-    return new Response(JSON.stringify(parsedResponse), {
+    return new Response(JSON.stringify({
+      response: text,
+      next_question: text
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
 
