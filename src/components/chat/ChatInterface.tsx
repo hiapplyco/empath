@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -98,11 +99,22 @@ export const ChatInterface = () => {
       if (error) throw error;
 
       if (data.type === 'profile') {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('No authenticated user found');
+
         const { error: profileError } = await supabase
           .from('caregiver_profiles')
           .upsert({
-            ...data.data,
-            id: (await supabase.auth.getUser()).data.user?.id
+            id: user.id,
+            gemini_response: data.data, // Save the raw Gemini response
+            // Also save structured data for direct queries
+            name: data.data.personal_information?.name,
+            languages: data.data.personal_information?.languages,
+            years_experience: data.data.experience?.years_experience,
+            availability_details: data.data.experience?.availability,
+            patient_types: data.data.patient_care_details?.patient_types,
+            equipment_skills: data.data.patient_care_details?.equipment_skills,
+            emergency_protocols: data.data.emergency_response?.protocols
           });
 
         if (profileError) throw profileError;

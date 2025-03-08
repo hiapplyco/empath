@@ -12,35 +12,42 @@ const systemPrompt = `
 You are an expert at analyzing caregiver profiles and structuring them for display.
 Take the raw profile data and organize it into clear sections for display.
 
-For each profile, return a JSON object with:
-1. sections: Array of profile sections, each containing:
-   - title: Section title
-   - icon: Suggested icon name from Lucide icons
-   - items: Array of items to display
-   - variant: Suggested display style ("default", "grid", "list", "badges")
+For each profile, return a JSON object with sections array containing:
+- title: Section title
+- icon: A Lucide icon name (e.g., "User", "Calendar", "Heart")
+- variant: Display style ("default", "grid", "list", "badges")
+- items: Array of label/value pairs to display
 
-Format the output exactly like this:
+Example structure:
 {
   "sections": [
     {
       "title": "Personal Information",
-      "icon": "user",
-      "variant": "default",
+      "icon": "User",
+      "variant": "list",
       "items": [
         { "label": "Name", "value": "John Doe" },
-        { "label": "Years Experience", "value": "5 years" }
+        { "label": "Languages", "value": "English, Spanish" }
+      ]
+    },
+    {
+      "title": "Experience",
+      "icon": "Briefcase",
+      "variant": "grid",
+      "items": [
+        { "label": "Years Experience", "value": "5" },
+        { "label": "Specialties", "value": "Elderly Care, Dementia" }
       ]
     }
   ]
 }
 
 Important:
-- Use appropriate Lucide icon names
-- Choose appropriate display variants based on content type
-- Structure items logically within each section
-- Include ALL provided information, nothing should be lost
-- Be consistent with data organization
-`
+- Group related information into logical sections
+- Choose appropriate icons from Lucide icon set
+- Select the best display variant for each type of data
+- Format all values as strings
+- Include ALL provided information`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -54,13 +61,15 @@ serve(async (req) => {
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
     const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
-    const result = await model.generateContent(
-      systemPrompt + "\n\nProfile data to process:\n" + JSON.stringify(profileData)
-    )
+    const result = await model.generateContent([
+      { text: systemPrompt },
+      { text: "Profile data to process:\n" + JSON.stringify(profileData) }
+    ])
+    
     const response = await result.response
     const text = response.text()
     
-    console.log('Processed profile structure:', text)
+    console.log('Generated profile structure:', text)
 
     try {
       const processedData = JSON.parse(text)
