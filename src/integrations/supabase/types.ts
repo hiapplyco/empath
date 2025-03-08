@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           emergency_protocols: Json[] | null
           equipment_skills: string[] | null
+          gemini_response: Json | null
           id: string
           input_method: string | null
           languages: string[] | null
@@ -39,6 +40,7 @@ export type Database = {
           created_at?: string
           emergency_protocols?: Json[] | null
           equipment_skills?: string[] | null
+          gemini_response?: Json | null
           id?: string
           input_method?: string | null
           languages?: string[] | null
@@ -59,6 +61,7 @@ export type Database = {
           created_at?: string
           emergency_protocols?: Json[] | null
           equipment_skills?: string[] | null
+          gemini_response?: Json | null
           id?: string
           input_method?: string | null
           languages?: string[] | null
