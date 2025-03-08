@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Send, Bot, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ChatMessage } from "@/types/chat";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,10 +17,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useNavigate } from "react-router-dom";
 
 export const ChatInterface = () => {
-  const [messages, setMessages] = useState<{ role: 'user' | 'assistant', text: string }[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isChatStarted, setIsChatStarted] = useState(false);
@@ -38,7 +38,7 @@ export const ChatInterface = () => {
       if (error) throw error;
 
       if (data.type === 'message') {
-        setMessages([{ role: 'assistant', text: data.text }]);
+        setMessages([{ role: "assistant" as const, text: data.text }]);
       }
     } catch (error: any) {
       toast({
@@ -54,25 +54,25 @@ export const ChatInterface = () => {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
-    const userMessage = input.trim();
+    const userMessage: ChatMessage = { role: "user", text: input.trim() };
     setInput('');
     setIsLoading(true);
 
     try {
-      const newMessages = [...messages, { role: 'user', text: userMessage }];
+      const newMessages = [...messages, userMessage];
       setMessages(newMessages);
 
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: { 
-          message: userMessage,
-          history: newMessages.map(m => ({ role: m.role, text: m.text }))
+          message: userMessage.text,
+          history: newMessages
         }
       });
 
       if (error) throw error;
 
       if (data.type === 'message') {
-        setMessages([...newMessages, { role: 'assistant', text: data.text }]);
+        setMessages([...newMessages, { role: "assistant", text: data.text }]);
       }
     } catch (error: any) {
       toast({
@@ -91,7 +91,7 @@ export const ChatInterface = () => {
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: { 
           action: 'finish',
-          history: messages.map(m => ({ role: m.role, text: m.text }))
+          history: messages
         }
       });
 
