@@ -32,13 +32,13 @@ export const SignUpForm = () => {
       }
 
       toast({
-        title: "Success",
-        description: "Please check your email to confirm your account.",
+        title: "Check your email",
+        description: "We've sent you a confirmation email.",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Sign up failed",
         description: "Something went wrong. Please try again.",
       });
     } finally {
@@ -57,6 +57,7 @@ export const SignUpForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={isLoading}
         />
       </div>
       <div className="space-y-2">
@@ -67,6 +68,7 @@ export const SignUpForm = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={isLoading}
         />
       </div>
       <Button type="submit" className="w-full" disabled={isLoading}>
