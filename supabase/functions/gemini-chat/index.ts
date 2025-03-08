@@ -132,7 +132,10 @@ serve(async (req) => {
         "Hi! I'm interested in joining em.path as a caregiver."
       )
       return new Response(
-        JSON.stringify({ type: 'message', text: result.response.text() }),
+        JSON.stringify({ 
+          type: 'message', 
+          text: result.response.text().replace(/```json[\s\S]*?```/g, '') 
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -200,9 +203,11 @@ serve(async (req) => {
     console.log('Processing chat message:', message)
     const result = await chat.sendMessage(message)
     const response = result.response.text()
+    
+    const cleanedResponse = response.replace(/```json[\s\S]*?```/g, '')
 
     return new Response(
-      JSON.stringify({ type: 'message', text: response }),
+      JSON.stringify({ type: 'message', text: cleanedResponse }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {

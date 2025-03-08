@@ -13,24 +13,27 @@ interface ChatMessageListProps {
 }
 
 export const ChatMessageList = ({ messages }: ChatMessageListProps) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollToBottom();
   }, [messages]);
 
   return (
-    <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+    <ScrollArea className="flex-1 p-4">
       <div className="space-y-4">
         {messages.map((message, i) => (
           <MessageBubble
             key={i}
             role={message.role}
-            content={message.content}
+            content={message.content.replace(/```json[\s\S]*?```/g, '')}
           />
         ))}
+        <div ref={messagesEndRef} />
       </div>
     </ScrollArea>
   );
