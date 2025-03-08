@@ -1,9 +1,14 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChatMessage } from "@/types/chat";
+
+interface Message {
+  role: 'assistant' | 'user';
+  content?: string;
+  text?: string;
+}
 
 interface ChatMessagesListProps {
-  messages: ChatMessage[];
+  messages: Message[];
 }
 
 export const ChatMessagesList = ({ messages }: ChatMessagesListProps) => {
@@ -24,7 +29,7 @@ export const ChatMessagesList = ({ messages }: ChatMessagesListProps) => {
                   : 'bg-primary text-primary-foreground'
               }`}
             >
-              {message.text}
+              {message.text || message.content}
             </div>
           </div>
         ))}
