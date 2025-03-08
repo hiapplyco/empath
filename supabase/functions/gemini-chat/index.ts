@@ -95,9 +95,10 @@ serve(async (req) => {
     if (action === 'finish') {
       console.log('Finalizing chat and generating profile')
       const result = await chat.sendMessage(
-        "Please finalize my caregiver profile now. Provide the JSON only, no extra commentary."
+        "Based on our conversation, please generate a JSON profile for me with these fields: name (string), years_experience (number), skills (string[]), available (boolean), bio (string), contact_info (object with phone and email), languages (string[]), patient_types (array of objects with patient_type field), equipment_skills (string[]), emergency_protocols (array of objects with scenario field), availability_details (object with shift_types array). Format it as valid JSON only, no commentary."
       )
       const response = result.response.text()
+      console.log('Generated profile:', response)
 
       try {
         const profile = JSON.parse(response)
@@ -106,10 +107,18 @@ serve(async (req) => {
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       } catch (error) {
-        console.error('Failed to parse profile JSON:', error)
+        console.error('Failed to parse profile JSON:', error, 'Response was:', response)
         return new Response(
-          JSON.stringify({ type: 'error', message: 'Failed to generate profile. Please try again.' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ 
+            type: 'error', 
+            message: 'Failed to generate profile. Please try again.',
+            details: error.message,
+            response: response 
+          }),
+          { 
+            status: 500, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
         )
       }
     }
