@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
@@ -9,7 +10,12 @@ const DashboardProfile = () => {
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No authenticated user found');
+      if (!user) {
+        console.log('No authenticated user found');
+        throw new Error('No authenticated user found');
+      }
+
+      console.log('Fetching profile for user:', user.id);
 
       const { data: profileData, error: profileError } = await supabase
         .from('caregiver_profiles')
@@ -17,19 +23,30 @@ const DashboardProfile = () => {
         .eq('id', user.id)
         .maybeSingle();
 
-      console.log('Profile data fetched:', profileData);
+      console.log('Raw profile data fetched:', profileData);
 
-      if (profileError) throw profileError;
-      if (!profileData) return null;
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+        throw profileError;
+      }
+      if (!profileData) {
+        console.log('No profile data found');
+        return null;
+      }
 
       if (profileData.gemini_response) {
+        console.log('Processing profile with gemini_response:', profileData.gemini_response);
+        
         const { data: processedProfile, error: processError } = await supabase.functions.invoke('process-profile', {
           body: { profileData }
         });
 
-        console.log('Processed profile:', processedProfile);
+        console.log('Processed profile result:', processedProfile);
 
-        if (processError) throw processError;
+        if (processError) {
+          console.error('Error processing profile:', processError);
+          throw processError;
+        }
         return { ...profileData, processed: processedProfile };
       }
 
@@ -38,6 +55,7 @@ const DashboardProfile = () => {
   });
 
   if (error) {
+    console.error('Error in profile component:', error);
     return (
       <Card className="p-4">
         <p className="text-center text-red-500">Error loading profile: {error.message}</p>
