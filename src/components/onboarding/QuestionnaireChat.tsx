@@ -1,11 +1,11 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAIAnalysis } from "@/hooks/useAIAnalysis";
-import { Send } from "lucide-react";
+import { ArrowLeft, Check, Send } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   role: 'assistant' | 'user';
@@ -17,6 +17,7 @@ export const QuestionnaireChat = () => {
   const [input, setInput] = useState('');
   const { analyzeInput, isAnalyzing } = useAIAnalysis();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   
   useEffect(() => {
     // Initial greeting
@@ -50,6 +51,14 @@ export const QuestionnaireChat = () => {
       role: 'assistant', 
       content: analysis?.next_question || "Could you tell me more about your caregiving experience?"
     }]);
+  };
+
+  const handleBack = () => {
+    navigate('/onboarding');
+  };
+
+  const handleDone = () => {
+    navigate('/dashboard');
   };
 
   return (
@@ -89,6 +98,24 @@ export const QuestionnaireChat = () => {
           <Send className="h-4 w-4" />
         </Button>
       </form>
+
+      <div className="p-4 border-t flex justify-between">
+        <Button
+          variant="outline"
+          onClick={handleBack}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+        <Button
+          onClick={handleDone}
+          className="flex items-center gap-2"
+        >
+          Done
+          <Check className="h-4 w-4" />
+        </Button>
+      </div>
     </Card>
   );
 };
