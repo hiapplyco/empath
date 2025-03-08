@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,15 +21,23 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
         });
-        if (error) throw error;
-        toast({
-          title: "Check your email",
-          description: "We've sent you a verification link",
+        if (signUpError) throw signUpError;
+        
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
         });
+        if (signInError) throw signInError;
+
+        toast({
+          title: "Account created successfully",
+          description: "Welcome to em.path!",
+        });
+        navigate("/onboarding");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
