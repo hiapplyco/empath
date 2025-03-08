@@ -1,5 +1,6 @@
 
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+import { systemPrompt } from "./prompts.ts";
 
 export const createAIClient = () => {
   const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
