@@ -17,28 +17,40 @@ export const SignInForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log("Starting sign in process...");
 
     try {
+      console.log("Attempting to sign in with email:", email);
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error("Auth error:", authError);
+        throw authError;
+      }
 
-      // Check onboarding status
+      console.log("Sign in successful, checking profile:", authData.user.id);
+      
       const { data: profile, error: profileError } = await supabase
         .from('caregiver_profiles')
         .select('onboarding_step')
         .eq('user_id', authData.user.id)
         .single();
       
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error("Profile error:", profileError);
+        throw profileError;
+      }
 
-      // Navigate based on onboarding status
+      console.log("Profile data:", profile);
+
       if (!profile || profile.onboarding_step === 1) {
+        console.log("Navigating to onboarding...");
         navigate('/onboarding');
       } else {
+        console.log("Navigating to dashboard...");
         navigate('/dashboard');
       }
 
@@ -48,6 +60,7 @@ export const SignInForm = () => {
       });
 
     } catch (error: any) {
+      console.error("Error in sign in process:", error);
       toast({
         variant: "destructive",
         title: "Error",
