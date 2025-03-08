@@ -31,7 +31,7 @@ export const DashboardHeader = () => {
     navigate('/auth');
   };
 
-  const displayName = profile?.processed?.sections?.[0]?.items?.[0]?.value || profile?.name || 'Caregiver';
+  const displayName = profile?.processed_profile?.sections?.[0]?.items?.[0]?.value || profile?.name || 'Caregiver';
 
   return (
     <div className="flex justify-between items-center mb-6">

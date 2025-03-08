@@ -56,7 +56,7 @@ export const DashboardSidebar = () => {
         </div>
         <div>
           <p className="font-medium text-sm">
-            {profile?.processed?.sections?.[0]?.items?.[0]?.value || profile?.name || 'Loading...'}
+            {profile?.processed_profile?.sections?.[0]?.items?.[0]?.value || profile?.name || 'Loading...'}
           </p>
           <p className="text-xs text-green-600">{profile?.status || 'Active'}</p>
         </div>

@@ -28,15 +28,8 @@ const DashboardProfile = () => {
         throw profileError;
       }
 
-      if (!profileData || !profileData.processed_profile) {
-        console.log('No profile data found');
-        return null;
-      }
-
-      return { 
-        ...profileData, 
-        processed: profileData.processed_profile 
-      };
+      console.log('Retrieved profile data:', profileData);
+      return profileData;
     },
   });
 
@@ -69,7 +62,7 @@ const DashboardProfile = () => {
     );
   }
 
-  if (!profile?.processed?.sections) {
+  if (!profile?.processed_profile?.sections) {
     return (
       <Card className="p-4">
         <p className="text-center text-gray-500">No profile data available. Please complete the onboarding process.</p>
@@ -84,7 +77,7 @@ const DashboardProfile = () => {
       </div>
 
       <div className="grid gap-6">
-        {profile.processed.sections.map((section, index) => (
+        {profile.processed_profile.sections.map((section, index) => (
           <DynamicProfileSection key={index} section={section} />
         ))}
       </div>
