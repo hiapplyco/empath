@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai"
@@ -95,19 +96,23 @@ serve(async (req) => {
     if (action === 'finish') {
       console.log('Finalizing chat and generating profile')
       const result = await chat.sendMessage(
-        "Based on our conversation, please generate a JSON profile for me with these fields: name (string), years_experience (number), skills (string[]), available (boolean), bio (string), contact_info (object with phone and email), languages (string[]), patient_types (array of objects with patient_type field), equipment_skills (string[]), emergency_protocols (array of objects with scenario field), availability_details (object with shift_types array). Format it as valid JSON only, no commentary."
+        "Based on our conversation, please generate a JSON profile for me with these fields: name (string), years_experience (number), skills (string[]), available (boolean), bio (string), contact_info (object with phone and email), languages (string[]), patient_types (array of objects with patient_type field), equipment_skills (string[]), emergency_protocols (array of objects with scenario field), availability_details (object with shift_types array). Format it as valid JSON only, no markdown formatting or extra text."
       )
       const response = result.response.text()
-      console.log('Generated profile:', response)
+      console.log('Raw generated profile:', response)
 
       try {
-        const profile = JSON.parse(response)
+        // Clean up the response by removing markdown code blocks if present
+        const cleanJson = response.replace(/```json\n/, '').replace(/\n```$/, '').trim()
+        console.log('Cleaned JSON:', cleanJson)
+        
+        const profile = JSON.parse(cleanJson)
         return new Response(
           JSON.stringify({ type: 'profile', data: profile }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       } catch (error) {
-        console.error('Failed to parse profile JSON:', error, 'Response was:', response)
+        console.error('Failed to parse profile JSON:', error, 'Raw response was:', response)
         return new Response(
           JSON.stringify({ 
             type: 'error', 
