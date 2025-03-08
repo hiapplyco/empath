@@ -1,7 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { ChatMessage } from "@/types/chat";
 
 interface Message {
   role: 'assistant' | 'user';
@@ -23,6 +24,7 @@ export const useChat = (): UseChatReturn => {
   const [input, setInput] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const startChat = async () => {
@@ -52,26 +54,37 @@ export const useChat = (): UseChatReturn => {
     startChat();
   }, [toast]);
 
-  const saveProfileData = async (profileData: any) => {
+  const handleProfileData = async (profileData: any) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No authenticated user found');
 
-      const { error } = await supabase
+      const { error: profileError } = await supabase
         .from('caregiver_profiles')
         .upsert({
           id: user.id,
           gemini_response: profileData.raw_profile,
-          processed_profile: profileData.processed_profile // This was missing
+          processed_profile: profileData.processed_profile
         });
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Profile Created",
+        description: "Your profile has been successfully created!"
+      });
+      
+      document.querySelector('.chat-container')?.classList.add('animate-fade-out');
+      
+      setTimeout(() => {
+        navigate('/dashboard/profile');
+      }, 500);
     } catch (error: any) {
-      console.error('Error saving profile:', error);
+      console.error('Profile saving error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to save your profile. Please try again."
+        description: "Failed to save profile. Please try again."
       });
       throw error;
     }
@@ -106,12 +119,7 @@ export const useChat = (): UseChatReturn => {
           content: data.text 
         }]);
       } else if (data.type === 'profile') {
-        await saveProfileData(data.data);
-        toast({
-          title: "Profile Created",
-          description: "Your caregiver profile has been created successfully!"
-        });
-        window.location.href = '/dashboard';
+        await handleProfileData(data.data);
       }
 
     } catch (error: any) {
@@ -144,12 +152,7 @@ export const useChat = (): UseChatReturn => {
       if (error) throw error;
 
       if (data.type === 'profile') {
-        await saveProfileData(data.data);
-        toast({
-          title: "Profile Created",
-          description: "Your caregiver profile has been created successfully!"
-        });
-        window.location.href = '/dashboard/profile';
+        await handleProfileData(data.data);
       }
     } catch (error: any) {
       console.error('Error finishing interview:', error);

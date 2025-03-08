@@ -30,7 +30,7 @@ export const QuestionnaireChat = () => {
   const [showEndConfirmation, setShowEndConfirmation] = useState(false);
 
   return (
-    <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col">
+    <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col chat-container animate-fade-in">
       <ChatMessageList messages={messages} />
       <div className="p-4 border-t space-y-4">
         <ChatInput
@@ -52,7 +52,7 @@ export const QuestionnaireChat = () => {
       </div>
 
       <AlertDialog open={showEndConfirmation} onOpenChange={setShowEndConfirmation}>
-        <AlertDialogContent>
+        <AlertDialogContent className="animate-scale-in">
           <AlertDialogHeader>
             <AlertDialogTitle>End Interview?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -62,8 +62,8 @@ export const QuestionnaireChat = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => {
-              handleFinish();
               setShowEndConfirmation(false);
+              handleFinish();
             }}>
               End Interview
             </AlertDialogAction>
@@ -73,3 +73,4 @@ export const QuestionnaireChat = () => {
     </Card>
   );
 };
+
