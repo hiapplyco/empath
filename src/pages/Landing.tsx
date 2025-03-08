@@ -82,7 +82,7 @@ export default function Landing() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-purple-50 p-8 rounded-xl text-center">
               <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="text-purple-600 w-7 h-7" />
+                <Shield className="text-purple-600 w-7 h-7" />
               </div>
               <h3 className="text-xl font-bold text-purple-800 mb-3">Caregiver-First Approach</h3>
               <p className="text-gray-700">
