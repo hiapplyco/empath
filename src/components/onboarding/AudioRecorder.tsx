@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, Square } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface AudioRecorderProps {
   onComplete: () => void;
@@ -9,6 +9,7 @@ interface AudioRecorderProps {
 
 export const AudioRecorder = ({ onComplete }: AudioRecorderProps) => {
   const [isRecording, setIsRecording] = useState(false);
+  const navigate = useNavigate();
 
   const handleStartRecording = () => {
     setIsRecording(true);
@@ -18,7 +19,9 @@ export const AudioRecorder = ({ onComplete }: AudioRecorderProps) => {
   const handleStopRecording = () => {
     setIsRecording(false);
     // TODO: Implement stopping and uploading recording
-    setTimeout(onComplete, 1000);
+    setTimeout(() => {
+      navigate('/dashboard/profile');
+    }, 1000);
   };
 
   return (

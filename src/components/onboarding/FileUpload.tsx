@@ -1,8 +1,10 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Upload } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 interface FileUploadProps {
   onComplete: () => void;
@@ -11,6 +13,7 @@ interface FileUploadProps {
 export const FileUpload = ({ onComplete }: FileUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -51,7 +54,7 @@ export const FileUpload = ({ onComplete }: FileUploadProps) => {
         description: "Your profile has been created from your resume.",
       });
       
-      onComplete();
+      navigate('/dashboard/profile');
     } catch (error: any) {
       console.error('Error processing resume:', error);
       toast({

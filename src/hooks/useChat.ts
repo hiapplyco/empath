@@ -147,7 +147,7 @@ export const useChat = (): UseChatReturn => {
           title: "Profile Created",
           description: "Your caregiver profile has been created successfully!"
         });
-        window.location.href = '/dashboard';
+        window.location.href = '/dashboard/profile';
       }
     } catch (error: any) {
       console.error('Error finishing interview:', error);

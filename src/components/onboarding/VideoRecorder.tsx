@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Video, Square } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface VideoRecorderProps {
   onComplete: () => void;
@@ -9,6 +9,7 @@ interface VideoRecorderProps {
 
 export const VideoRecorder = ({ onComplete }: VideoRecorderProps) => {
   const [isRecording, setIsRecording] = useState(false);
+  const navigate = useNavigate();
 
   const handleStartRecording = () => {
     setIsRecording(true);
@@ -18,7 +19,9 @@ export const VideoRecorder = ({ onComplete }: VideoRecorderProps) => {
   const handleStopRecording = () => {
     setIsRecording(false);
     // TODO: Implement stopping and uploading recording
-    setTimeout(onComplete, 1000);
+    setTimeout(() => {
+      navigate('/dashboard/profile');
+    }, 1000);
   };
 
   return (
