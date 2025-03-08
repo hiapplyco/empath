@@ -1,10 +1,9 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai"
 
 const systemPrompt = `
-You are Emma, the friendly onboarding assistant for em.path, a modern platform connecting skilled caregivers with clients who need care. Your purpose is to have natural, engaging conversations with new caregivers to learn about their experience, skills, and preferences, and ultimately generate a caregiver profile in JSON format.
+You are Emma, the friendly onboarding assistant for em.path, a modern platform connecting skilled caregivers with clients who need care. Your purpose is to have natural, engaging conversations with new caregivers to learn about their experience, skills, and preferences, and ultimately generate a caregiver profile.
 
 # Conversation Style
 - Be warm, encouraging, and conversational.
@@ -28,19 +27,34 @@ Use natural transitions, e.g., “That’s fascinating about your dementia care 
 - If asked why a certain detail is needed, explain how it helps match them with clients.
 - Validate and affirm their expertise throughout.
 
-# Conversation Wrap-up
-- Summarize what you’ve learned.
-- Thank them for their time.
-- Explain next steps (onboarding).
-- Invite final questions.
+# Profile Generation Guidelines
+When generating the final profile JSON:
+- Only include fields that have been explicitly mentioned in the conversation
+- Omit any fields where information is missing or unclear
+- Do not make assumptions or fill in default values
+- Format the output as clean JSON without any markdown or extra text
+- Make sure all array fields are initialized as empty arrays if no data is provided
+- Return null for optional text fields that weren't discussed
 
-# Structured Output Requirements
-1. Throughout the conversation, collect data internally but do NOT show partial JSON.
-2. Only when the conversation naturally concludes, finalize the caregiver profile.
-3. Present the final JSON object as your last message, with no extra text before or after the JSON.
-4. The final JSON must match the schema exactly (same property names, no extras).
-
-End the conversation gracefully by providing the final JSON in the correct order and format. No additional commentary should follow the JSON output.
+The profile should follow this structure (all fields are optional):
+{
+  "name": string | null,
+  "years_experience": number | null,
+  "skills": string[],
+  "available": boolean | null,
+  "bio": string | null,
+  "contact_info": {
+    "phone": string | null,
+    "email": string | null
+  },
+  "languages": string[],
+  "patient_types": { "patient_type": string }[],
+  "equipment_skills": string[],
+  "emergency_protocols": { "scenario": string }[],
+  "availability_details": {
+    "shift_types": string[]
+  }
+}
 `
 
 const corsHeaders = {
@@ -96,23 +110,56 @@ serve(async (req) => {
     if (action === 'finish') {
       console.log('Finalizing chat and generating profile')
       const result = await chat.sendMessage(
-        "Based on our conversation, please generate a JSON profile for me with these fields: name (string), years_experience (number), skills (string[]), available (boolean), bio (string), contact_info (object with phone and email), languages (string[]), patient_types (array of objects with patient_type field), equipment_skills (string[]), emergency_protocols (array of objects with scenario field), availability_details (object with shift_types array). Format it as valid JSON only, no markdown formatting or extra text."
+        "Based on our conversation, please generate a JSON profile including only the information that was explicitly provided. Omit any fields where information is missing. Format as clean JSON without any markdown or extra text."
       )
       const response = result.response.text()
-      console.log('Raw generated profile:', response)
+      console.log('Raw response:', response)
 
       try {
-        // Clean up the response by removing markdown code blocks if present
-        const cleanJson = response.replace(/```json\n/, '').replace(/\n```$/, '').trim()
+        // Clean up the response by removing any potential markdown or extra text
+        const cleanJson = response
+          .replace(/```json\n?/, '')
+          .replace(/```/, '')
+          .replace(/^[\s\S]*?({[\s\S]*})[\s\S]*$/, '$1')
+          .trim()
+        
         console.log('Cleaned JSON:', cleanJson)
         
         const profile = JSON.parse(cleanJson)
+
+        // Ensure required array fields exist
+        const defaultProfile = {
+          skills: [],
+          languages: [],
+          patient_types: [],
+          equipment_skills: [],
+          emergency_protocols: [],
+          availability_details: { shift_types: [] },
+          contact_info: { phone: null, email: null }
+        }
+
+        const finalProfile = {
+          ...defaultProfile,
+          ...profile,
+          contact_info: {
+            ...defaultProfile.contact_info,
+            ...profile.contact_info
+          },
+          availability_details: {
+            ...defaultProfile.availability_details,
+            ...profile.availability_details
+          }
+        }
+
+        console.log('Final profile:', finalProfile)
+
         return new Response(
-          JSON.stringify({ type: 'profile', data: profile }),
+          JSON.stringify({ type: 'profile', data: finalProfile }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       } catch (error) {
-        console.error('Failed to parse profile JSON:', error, 'Raw response was:', response)
+        console.error('Profile generation error:', error)
+        console.error('Raw response was:', response)
         return new Response(
           JSON.stringify({ 
             type: 'error', 

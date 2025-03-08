@@ -22,7 +22,7 @@ export type Database = {
           id: string
           input_method: string | null
           languages: string[] | null
-          name: string
+          name: string | null
           patient_types: Json[] | null
           phone: string | null
           rate_preferences: Json | null
@@ -42,7 +42,7 @@ export type Database = {
           id?: string
           input_method?: string | null
           languages?: string[] | null
-          name: string
+          name?: string | null
           patient_types?: Json[] | null
           phone?: string | null
           rate_preferences?: Json | null
@@ -62,7 +62,7 @@ export type Database = {
           id?: string
           input_method?: string | null
           languages?: string[] | null
-          name?: string
+          name?: string | null
           patient_types?: Json[] | null
           phone?: string | null
           rate_preferences?: Json | null
