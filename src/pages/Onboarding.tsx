@@ -15,7 +15,7 @@ import { QuestionnaireChat } from "@/components/onboarding/QuestionnaireChat";
 
 const OnboardingPage = () => {
   const [step, setStep] = useState(1);
-  const [inputMethod, setInputMethod] = useState<"resume" | "audio" | "video" | "text">("text");
+  const [inputMethod, setInputMethod] = useState<"resume" | "audio" | "video" | "text" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
@@ -80,7 +80,7 @@ const OnboardingPage = () => {
               <div className="space-y-4">
                 <Label className="text-base">Choose how you'd like to start</Label>
                 <RadioGroup
-                  defaultValue={inputMethod}
+                  value={inputMethod || undefined}
                   onValueChange={(value: "resume" | "audio" | "video" | "text") => 
                     handleMethodSelection(value)
                   }
