@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { AudioRecorder } from "@/components/onboarding/AudioRecorder";
 import { VideoRecorder } from "@/components/onboarding/VideoRecorder";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 import { QuestionnaireChat } from "@/components/onboarding/QuestionnaireChat";
+import { AudioExperienceRecorder } from "@/components/onboarding/AudioExperienceRecorder";
 
 const OnboardingPage = () => {
   const [step, setStep] = useState(1);
@@ -112,7 +112,7 @@ const OnboardingPage = () => {
           <Card>
             <CardContent className="pt-6">
               {inputMethod === "resume" && <FileUpload onComplete={() => setStep(3)} />}
-              {inputMethod === "audio" && <AudioRecorder onComplete={() => setStep(3)} />}
+              {inputMethod === "audio" && <AudioExperienceRecorder />}
               {inputMethod === "video" && <VideoRecorder onComplete={() => setStep(3)} />}
               {inputMethod === "text" && <QuestionnaireChat />}
             </CardContent>
