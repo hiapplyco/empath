@@ -13,18 +13,25 @@ export type Database = {
         Row: {
           ai_assessment: Json | null
           availability: Json | null
+          availability_details: Json | null
           background_check_status: string | null
+          bio: string | null
           certifications_verified: boolean | null
+          contact_info: Json | null
           created_at: string
+          emergency_protocols: Json[] | null
+          equipment_skills: string[] | null
           first_name: string | null
           id: string
           input_method: string | null
+          languages: string[] | null
           last_name: string | null
           mentor_id: string | null
           monthly_earnings: number | null
           next_payment_date: string | null
           onboarding_progress: Json | null
           onboarding_step: number | null
+          patient_types: Json[] | null
           phone: string | null
           profile_activated: boolean | null
           rate_preferences: Json | null
@@ -41,18 +48,25 @@ export type Database = {
         Insert: {
           ai_assessment?: Json | null
           availability?: Json | null
+          availability_details?: Json | null
           background_check_status?: string | null
+          bio?: string | null
           certifications_verified?: boolean | null
+          contact_info?: Json | null
           created_at?: string
+          emergency_protocols?: Json[] | null
+          equipment_skills?: string[] | null
           first_name?: string | null
           id?: string
           input_method?: string | null
+          languages?: string[] | null
           last_name?: string | null
           mentor_id?: string | null
           monthly_earnings?: number | null
           next_payment_date?: string | null
           onboarding_progress?: Json | null
           onboarding_step?: number | null
+          patient_types?: Json[] | null
           phone?: string | null
           profile_activated?: boolean | null
           rate_preferences?: Json | null
@@ -69,18 +83,25 @@ export type Database = {
         Update: {
           ai_assessment?: Json | null
           availability?: Json | null
+          availability_details?: Json | null
           background_check_status?: string | null
+          bio?: string | null
           certifications_verified?: boolean | null
+          contact_info?: Json | null
           created_at?: string
+          emergency_protocols?: Json[] | null
+          equipment_skills?: string[] | null
           first_name?: string | null
           id?: string
           input_method?: string | null
+          languages?: string[] | null
           last_name?: string | null
           mentor_id?: string | null
           monthly_earnings?: number | null
           next_payment_date?: string | null
           onboarding_progress?: Json | null
           onboarding_step?: number | null
+          patient_types?: Json[] | null
           phone?: string | null
           profile_activated?: boolean | null
           rate_preferences?: Json | null

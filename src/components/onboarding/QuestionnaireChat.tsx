@@ -7,24 +7,33 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft, Check, Send } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   role: 'assistant' | 'user';
   content: string;
 }
 
+interface GeminiResponse {
+  parsed_data: any;
+  next_question: string;
+  completed: boolean;
+}
+
 export const QuestionnaireChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [profileData, setProfileData] = useState<any>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   useEffect(() => {
     // Initial greeting
     setMessages([{
       role: 'assistant',
-      content: "Hi! I'm here to learn about your caregiving experience. I'm an AI assistant powered by Gemini. Let's start with your name - what should I call you?"
+      content: "Welcome! I'll help you create your caregiver profile. Let's start with your name - what should I call you?"
     }]);
   }, []);
 
@@ -33,6 +42,53 @@ export const QuestionnaireChat = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const saveProfileData = async (data: any) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user found');
+
+      const { error } = await supabase
+        .from('caregiver_profiles')
+        .upsert({
+          id: user.id,
+          contact_info: data.personal_information?.contact_info,
+          languages: data.personal_information?.languages,
+          first_name: data.personal_information?.name?.split(' ')[0],
+          last_name: data.personal_information?.name?.split(' ').slice(1).join(' '),
+          specializations: data.experience?.specialties,
+          years_experience: data.experience?.years_experience,
+          availability: { shift_types: data.experience?.availability?.shift_types },
+          patient_types: data.patient_care_details?.patient_types,
+          equipment_skills: data.patient_care_details?.equipment_skills,
+          emergency_protocols: data.emergency_response?.protocols
+        });
+
+      if (error) throw error;
+
+      // Save certifications separately
+      if (data.personal_information?.certifications) {
+        const certPromises = data.personal_information.certifications.map((cert: string) =>
+          supabase
+            .from('certifications')
+            .upsert({
+              caregiver_id: user.id,
+              name: cert,
+              status: 'pending'
+            })
+        );
+        await Promise.all(certPromises);
+      }
+
+    } catch (error: any) {
+      console.error('Error saving profile:', error);
+      toast({
+        variant: "destructive",
+        title: "Error saving profile",
+        description: error.message
+      });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +102,7 @@ export const QuestionnaireChat = () => {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
 
     try {
-      // Call the Gemini edge function
-      const { data, error } = await supabase.functions.invoke('gemini', {
+      const { data: response, error } = await supabase.functions.invoke('gemini', {
         body: { 
           type: 'text',
           prompt: userMessage,
@@ -57,14 +112,32 @@ export const QuestionnaireChat = () => {
 
       if (error) throw error;
 
+      const geminiResponse = response as GeminiResponse;
+      
+      // Update stored profile data
+      setProfileData(prev => ({
+        ...prev,
+        ...geminiResponse.parsed_data
+      }));
+
       // Add AI response
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: data?.response || "I apologize, but I couldn't process that properly. Could you try rephrasing?"
+        content: geminiResponse.next_question
       }]);
 
+      // If profile is complete, save and proceed
+      if (geminiResponse.completed) {
+        await saveProfileData(geminiResponse.parsed_data);
+        toast({
+          title: "Profile Created",
+          description: "Your caregiver profile has been saved successfully!"
+        });
+        navigate('/dashboard');
+      }
+
     } catch (error: any) {
-      console.error('Error calling Gemini:', error);
+      console.error('Error in conversation:', error);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
         content: "I apologize, but I encountered an error. Could you please try again?"
@@ -76,10 +149,6 @@ export const QuestionnaireChat = () => {
 
   const handleBack = () => {
     navigate('/onboarding');
-  };
-
-  const handleDone = () => {
-    navigate('/dashboard');
   };
 
   return (
@@ -129,14 +198,8 @@ export const QuestionnaireChat = () => {
           <ArrowLeft className="h-4 w-4" />
           Back
         </Button>
-        <Button
-          onClick={handleDone}
-          className="flex items-center gap-2"
-        >
-          Done
-          <Check className="h-4 w-4" />
-        </Button>
       </div>
     </Card>
   );
 };
+

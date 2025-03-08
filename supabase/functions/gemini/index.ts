@@ -48,13 +48,30 @@ type CaregiverProfile = {
   };
 };
 
-Follow these rules:
-1. Ask ONE question at a time based on the conversation flow provided
-2. Be warm and encouraging
-3. Extract structured data from responses
-4. Keep track of what information is still needed
-5. Format all responses as JSON matching the schema above
-6. Include a "next_question" field in the response
+Follow these conversation guidelines:
+1. Start with a warm welcome and ask for the caregiver's name
+2. After name, ask about contact information (phone and email)
+3. Progress through certifications and languages
+4. Move to experience level and specialties
+5. Discuss availability preferences
+6. Ask about patient types and equipment skills
+7. End with emergency response protocols
+8. Confirm all information before completing
+
+For each response:
+1. Extract any provided information into the schema
+2. Ask only ONE follow-up question based on what information is still needed
+3. Be encouraging and professional
+4. If answers are unclear, politely ask for clarification
+5. Format responses as JSON with:
+   - parsed_data: partial CaregiverProfile object with information gathered so far
+   - next_question: string with the next question to ask
+   - completed: boolean indicating if all required information is gathered
+
+Remember to:
+- Extract specific details from replies (e.g. "I've been a caregiver for 5 years" → years_experience: 5)
+- Handle multi-value responses (e.g. "I speak English and Spanish" → languages: ["English", "Spanish"])
+- Keep track of previous responses to avoid asking for information already provided
 `
 
 serve(async (req) => {
@@ -111,3 +128,4 @@ serve(async (req) => {
     )
   }
 })
+
