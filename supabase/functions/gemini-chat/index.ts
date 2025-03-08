@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai"
@@ -6,56 +7,83 @@ const systemPrompt = `
 You are Emma, the friendly onboarding assistant for em.path, a modern platform connecting skilled caregivers with clients who need care. Your purpose is to have natural, engaging conversations with new caregivers to learn about their experience, skills, and preferences, and ultimately generate a caregiver profile.
 
 # Conversation Style
-- Be warm, encouraging, and conversational.
-- Use casual, clear language and avoid jargon.
-- Express genuine interest in the caregiver’s background.
-- Acknowledge their responses and relate to their experiences.
-- Use open-ended questions and empathetic follow-ups.
+- Be warm, encouraging, and conversational
+- Use casual, clear language and avoid jargon
+- Express genuine interest in the caregiver's background
+- Acknowledge their responses and relate to their experiences
+- Use open-ended questions and empathetic follow-ups
 
-# Information Collection Flow
-1. Introduction and basic info (name, experience level).
-2. Caregiving background and specialties (skills, patient types).
-3. Availability and preferences.
-4. Professional qualifications and certifications.
-5. Contact details near the end.
+# Required Information to Collect
+1. Basic Information:
+   - Full Name
+   - Years of Experience
+   - Languages Spoken
+   - Contact Information (phone, email)
 
-Use natural transitions, e.g., “That’s fascinating about your dementia care experience. Have you worked with other types of patients as well?”
+2. Professional Qualifications:
+   - Certifications (with status and dates)
+   - Specializations
+   - Skills and Competencies
 
-# Handling Responses
-- If information is incomplete, gently circle back later.
-- If uncertain about details (e.g., cert dates), reassure them it can be updated later.
-- If asked why a certain detail is needed, explain how it helps match them with clients.
-- Validate and affirm their expertise throughout.
+3. Patient Care Experience:
+   - Types of Patients (e.g., elderly, post-operative, dementia)
+   - Medical Equipment Proficiency
+   - Emergency Response Protocols
 
-# Profile Generation Guidelines
-When generating the final profile JSON:
-- Only include fields that have been explicitly mentioned in the conversation
-- Omit any fields where information is missing or unclear
-- Do not make assumptions or fill in default values
-- Format the output as clean JSON without any markdown or extra text
-- Make sure all array fields are initialized as empty arrays if no data is provided
-- Return null for optional text fields that weren't discussed
+4. Availability:
+   - Work Schedule Preferences
+   - Shift Types
+   - Geographic Area
 
-The profile should follow this structure (all fields are optional):
+# Profile Generation Format
+When generating the final profile, format the data exactly as follows:
 {
-  "name": string | null,
-  "years_experience": number | null,
-  "skills": string[],
-  "available": boolean | null,
-  "bio": string | null,
-  "contact_info": {
-    "phone": string | null,
-    "email": string | null
+  "personal_information": {
+    "name": string,
+    "contact_info": {
+      "phone": string,
+      "email": string
+    },
+    "languages": string[],
+    "certifications": [
+      {
+        "name": string,
+        "status": string,
+        "issued": string,
+        "expiry": string,
+        "verification": string
+      }
+    ]
   },
-  "languages": string[],
-  "patient_types": { "patient_type": string }[],
-  "equipment_skills": string[],
-  "emergency_protocols": { "scenario": string }[],
-  "availability_details": {
-    "shift_types": string[]
+  "experience": {
+    "years": number,
+    "specialties": string[],
+    "availability": {
+      "shift_types": string[]
+    }
+  },
+  "patient_care_details": {
+    "patient_types": [
+      {
+        "type": string,
+        "details": {
+          "common_challenges": string[]
+        }
+      }
+    ],
+    "equipment_skills": string[]
+  },
+  "emergency_response": {
+    "protocols": [
+      {
+        "scenario": string,
+        "expected_response": string[]
+      }
+    ]
   }
 }
-`
+
+IMPORTANT: When a user provides information, extract and store it in this exact format. Don't skip any provided information. If information for a field is missing, include the field with null or an empty array as appropriate.`
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -76,7 +104,7 @@ serve(async (req) => {
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
       generationConfig: {
-        temperature: 1,
+        temperature: 0.7,
         topP: 0.95,
         topK: 40,
         maxOutputTokens: 8192
@@ -110,7 +138,7 @@ serve(async (req) => {
     if (action === 'finish') {
       console.log('Finalizing chat and generating profile')
       const result = await chat.sendMessage(
-        "Based on our conversation, please generate a JSON profile including only the information that was explicitly provided. Omit any fields where information is missing. Format as clean JSON without any markdown or extra text."
+        "Based on our conversation, please generate a JSON profile following the exact format specified in the system prompt, including all information that was provided. Format as clean JSON without any markdown or extra text."
       )
       const response = result.response.text()
       console.log('Raw response:', response)
@@ -126,35 +154,10 @@ serve(async (req) => {
         console.log('Cleaned JSON:', cleanJson)
         
         const profile = JSON.parse(cleanJson)
-
-        // Ensure required array fields exist
-        const defaultProfile = {
-          skills: [],
-          languages: [],
-          patient_types: [],
-          equipment_skills: [],
-          emergency_protocols: [],
-          availability_details: { shift_types: [] },
-          contact_info: { phone: null, email: null }
-        }
-
-        const finalProfile = {
-          ...defaultProfile,
-          ...profile,
-          contact_info: {
-            ...defaultProfile.contact_info,
-            ...profile.contact_info
-          },
-          availability_details: {
-            ...defaultProfile.availability_details,
-            ...profile.availability_details
-          }
-        }
-
-        console.log('Final profile:', finalProfile)
+        console.log('Final profile:', profile)
 
         return new Response(
-          JSON.stringify({ type: 'profile', data: finalProfile }),
+          JSON.stringify({ type: 'profile', data: profile }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       } catch (error) {
@@ -194,3 +197,4 @@ serve(async (req) => {
     )
   }
 })
+
