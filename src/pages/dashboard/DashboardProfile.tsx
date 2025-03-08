@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
@@ -9,11 +8,11 @@ const DashboardProfile = () => {
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
-      // First get the profile data
+      // First get the profile data using maybeSingle() instead of single()
       const { data: profileData, error: profileError } = await supabase
         .from('caregiver_profiles')
         .select('*')
-        .single();
+        .maybeSingle();
 
       if (profileError) throw profileError;
       if (!profileData) return null;
@@ -61,10 +60,18 @@ const DashboardProfile = () => {
     );
   }
 
-  if (!profile?.processed?.sections) {
+  if (!profile) {
     return (
       <Card className="p-4">
         <p className="text-center text-gray-500">No profile data available. Please complete the onboarding chat to create your profile.</p>
+      </Card>
+    );
+  }
+
+  if (!profile.processed?.sections) {
+    return (
+      <Card className="p-4">
+        <p className="text-center text-gray-500">Profile data needs to be processed. Please complete the onboarding chat again.</p>
       </Card>
     );
   }
