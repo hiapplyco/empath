@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -60,7 +61,8 @@ export const useChat = (): UseChatReturn => {
         .from('caregiver_profiles')
         .upsert({
           id: user.id,
-          gemini_response: profileData
+          gemini_response: profileData.raw_profile,
+          processed_profile: profileData.processed_profile // This was missing
         });
 
       if (error) throw error;
