@@ -1,10 +1,13 @@
 
 import React from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, LogOut } from 'lucide-react';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export const DashboardHeader = () => {
+  const navigate = useNavigate();
   const { data: profile } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
@@ -15,6 +18,11 @@ export const DashboardHeader = () => {
       return data;
     },
   });
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
+  };
 
   return (
     <div className="flex justify-between items-center mb-6">
@@ -35,6 +43,10 @@ export const DashboardHeader = () => {
           <Bell className="w-5 h-5" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </button>
+        <Button variant="ghost" size="sm" onClick={handleSignOut}>
+          <LogOut className="w-4 h-4 mr-2" />
+          Sign out
+        </Button>
       </div>
     </div>
   );
