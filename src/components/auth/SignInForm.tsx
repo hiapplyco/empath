@@ -19,13 +19,27 @@ export const SignInForm = () => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        throw error;
+      if (authError) throw authError;
+
+      // Check onboarding status
+      const { data: profile, error: profileError } = await supabase
+        .from('caregiver_profiles')
+        .select('onboarding_step')
+        .eq('user_id', authData.user.id)
+        .single();
+      
+      if (profileError) throw profileError;
+
+      // Navigate based on onboarding status
+      if (!profile || profile.onboarding_step === 1) {
+        navigate('/onboarding');
+      } else {
+        navigate('/dashboard');
       }
 
       toast({
@@ -33,9 +47,6 @@ export const SignInForm = () => {
         description: "Successfully signed in.",
       });
 
-      // Navigate to dashboard after successful sign in
-      navigate("/dashboard");
-      
     } catch (error: any) {
       toast({
         variant: "destructive",
