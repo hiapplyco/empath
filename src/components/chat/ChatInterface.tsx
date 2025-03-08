@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,10 +41,11 @@ export const ChatInterface = () => {
         setMessages([{ role: "assistant" as const, text: data.text }]);
       }
     } catch (error: any) {
+      console.error('Chat initialization error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message
+        description: "Failed to start chat. Please try again."
       });
     } finally {
       setIsLoading(false);
@@ -66,7 +66,7 @@ export const ChatInterface = () => {
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: { 
           message: userMessage.text,
-          history: newMessages
+          history: messages.map(m => ({ role: m.role, text: m.text }))
         }
       });
 
@@ -74,12 +74,15 @@ export const ChatInterface = () => {
 
       if (data.type === 'message') {
         setMessages([...newMessages, { role: "assistant", text: data.text }]);
+      } else if (data.type === 'profile') {
+        await handleProfileData(data.data);
       }
     } catch (error: any) {
+      console.error('Message sending error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message
+        description: "Failed to send message. Please try again."
       });
     } finally {
       setIsLoading(false);
@@ -99,46 +102,49 @@ export const ChatInterface = () => {
       if (error) throw error;
 
       if (data.type === 'profile') {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('No authenticated user found');
-
-        // Save both raw and structured data
-        const { error: profileError } = await supabase
-          .from('caregiver_profiles')
-          .upsert({
-            id: user.id,
-            gemini_response: data.data, // Save the complete raw response
-            // Also save structured data for direct queries
-            name: data.data.personal_information?.name,
-            languages: data.data.personal_information?.languages,
-            years_experience: data.data.experience?.years_experience,
-            availability_details: data.data.experience?.availability,
-            patient_types: data.data.patient_care_details?.patient_types,
-            equipment_skills: data.data.patient_care_details?.equipment_skills,
-            emergency_protocols: data.data.emergency_response?.protocols
-          });
-
-        if (profileError) throw profileError;
-
-        toast({
-          title: "Profile Created",
-          description: "Your profile has been successfully created!"
-        });
-        
-        // Navigate to the profile page after successful completion
-        navigate('/dashboard/profile');
-      } else {
-        throw new Error('Failed to generate profile');
+        await handleProfileData(data.data);
       }
     } catch (error: any) {
+      console.error('Profile generation error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message
+        description: "Failed to generate profile. Please try again."
       });
       setShowEndConfirmation(false);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleProfileData = async (profileData: any) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user found');
+
+      const { error: profileError } = await supabase
+        .from('caregiver_profiles')
+        .upsert({
+          id: user.id,
+          gemini_response: profileData
+        });
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Profile Created",
+        description: "Your profile has been successfully created!"
+      });
+      
+      navigate('/dashboard/profile');
+    } catch (error: any) {
+      console.error('Profile saving error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save profile. Please try again."
+      });
+      throw error;
     }
   };
 
