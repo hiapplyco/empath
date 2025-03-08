@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   Calendar, DollarSign, Award, BookOpen, 
-  MessageSquare, Star, Heart, User, Settings, Briefcase 
+  MessageSquare, Star, Settings, Briefcase, User 
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from 'react-router-dom';
@@ -44,9 +44,11 @@ export const DashboardSidebar = () => {
   return (
     <div className="w-64 bg-white border-r border-slate-200 p-4 flex flex-col h-screen">
       <div className="flex items-center mb-8">
-        <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
-          <Heart className="text-white w-5 h-5" />
-        </div>
+        <img 
+          src="/empath-simple-logo.svg" 
+          alt="Empath Logo" 
+          className="w-10 h-10"
+        />
         <h1 className="text-xl font-bold ml-2">em.path</h1>
       </div>
 
