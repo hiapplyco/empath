@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Heart, Calendar, Award, Shield, MessageCircle, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Landing() {
+  const navigate = useNavigate();
+
+  const handleAuthNavigation = () => {
+    navigate('/auth');
+  };
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-purple-50 to-white font-sans">
       {/* Navigation */}
@@ -19,10 +26,17 @@ export default function Landing() {
           <a href="#about" className="hover:text-purple-600 transition-colors">About Us</a>
         </div>
         <div className="flex space-x-3">
-          <Button variant="outline" className="border-purple-600 text-purple-700 hover:bg-purple-50">
+          <Button 
+            variant="outline" 
+            className="border-purple-600 text-purple-700 hover:bg-purple-50"
+            onClick={handleAuthNavigation}
+          >
             Log in
           </Button>
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+          <Button 
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+            onClick={handleAuthNavigation}
+          >
             Sign up
           </Button>
         </div>
@@ -41,16 +55,21 @@ export default function Landing() {
             <Button className="bg-purple-600 hover:bg-purple-700 text-white py-6 px-8 rounded-xl shadow-md">
               I need a caregiver
             </Button>
-            <Button variant="outline" className="border-purple-600 text-purple-700 hover:bg-purple-50 py-6 px-8 rounded-xl">
+            <Button 
+              variant="outline" 
+              className="border-purple-600 text-purple-700 hover:bg-purple-50 py-6 px-8 rounded-xl"
+              onClick={handleAuthNavigation}
+            >
               I'm a caregiver
             </Button>
           </div>
         </div>
-        <div className="md:w-1/2 bg-purple-100 rounded-2xl overflow-hidden shadow-lg h-80 flex items-center justify-center">
-          <div className="text-center px-6">
-            <p className="text-purple-800 font-medium mb-4">Imagine a warm image of a caregiver and client sharing a moment</p>
-            <p className="text-sm text-purple-600">A photograph representing connection and compassionate care</p>
-          </div>
+        <div className="md:w-1/2 rounded-2xl overflow-hidden shadow-lg h-80">
+          <img 
+            src="https://upbnysrcdcpumjyjhysy.supabase.co/storage/v1/object/public/assets//image_fx_%20(20).jpg"
+            alt="Caregiver and client sharing a moment"
+            className="w-full h-full object-cover"
+          />
         </div>
       </section>
 
@@ -128,11 +147,12 @@ export default function Landing() {
       <section id="for-caregivers" className="bg-purple-50 py-16">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="md:w-1/2 bg-white rounded-2xl overflow-hidden shadow-md h-80 flex items-center justify-center">
-              <div className="text-center px-6">
-                <p className="text-purple-800 font-medium mb-4">Imagine a caregiver using the em.path platform on a tablet</p>
-                <p className="text-sm text-purple-600">A photograph showing the ease of use and accessibility</p>
-              </div>
+            <div className="md:w-1/2 rounded-2xl overflow-hidden shadow-md h-80">
+              <img 
+                src="https://upbnysrcdcpumjyjhysy.supabase.co/storage/v1/object/public/assets//image_fx_%20(21).jpg"
+                alt="Caregiver using the em.path platform"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="md:w-1/2 space-y-6">
               <h2 className="text-3xl font-bold text-purple-900">For caregivers, by caregivers</h2>
@@ -181,7 +201,10 @@ export default function Landing() {
                   <p className="ml-3 text-gray-700">Community support and mentorship opportunities</p>
                 </div>
               </div>
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+              <Button 
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+                onClick={handleAuthNavigation}
+              >
                 Join as a caregiver
               </Button>
             </div>
@@ -232,11 +255,18 @@ export default function Landing() {
             Join our community where caregivers are valued and care recipients find perfect matches. Emma is ready to welcome you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white py-6 px-8 rounded-xl shadow-md text-lg">
+            <Button 
+              className="bg-purple-600 hover:bg-purple-700 text-white py-6 px-8 rounded-xl shadow-md text-lg"
+              onClick={handleAuthNavigation}
+            >
               Get started
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <Button variant="outline" className="border-purple-600 text-purple-700 hover:bg-purple-200 py-6 px-8 rounded-xl text-lg">
+            <Button 
+              variant="outline" 
+              className="border-purple-600 text-purple-700 hover:bg-purple-200 py-6 px-8 rounded-xl text-lg"
+              onClick={handleAuthNavigation}
+            >
               Learn more
             </Button>
           </div>
