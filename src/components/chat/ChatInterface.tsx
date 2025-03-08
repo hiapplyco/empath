@@ -5,19 +5,27 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { Send, StopCircle, Bot } from "lucide-react";
-
-interface Message {
-  role: 'user' | 'assistant';
-  text: string;
-}
+import { Send, Bot, AlertCircle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useNavigate } from "react-router-dom";
 
 export const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<{ role: 'user' | 'assistant', text: string }[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isChatStarted, setIsChatStarted] = useState(false);
+  const [showEndConfirmation, setShowEndConfirmation] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const initializeChat = async () => {
     setIsChatStarted(true);
@@ -51,7 +59,7 @@ export const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      const newMessages = [...messages, { role: 'user' as const, text: userMessage }];
+      const newMessages = [...messages, { role: 'user', text: userMessage }];
       setMessages(newMessages);
 
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
@@ -92,7 +100,10 @@ export const ChatInterface = () => {
       if (data.type === 'profile') {
         const { error: profileError } = await supabase
           .from('caregiver_profiles')
-          .upsert(data.data);
+          .upsert({
+            ...data.data,
+            id: (await supabase.auth.getUser()).data.user?.id
+          });
 
         if (profileError) throw profileError;
 
@@ -100,10 +111,9 @@ export const ChatInterface = () => {
           title: "Profile Created",
           description: "Your profile has been successfully created!"
         });
-
-        window.location.href = '/dashboard';
+        navigate('/dashboard');
       } else {
-        setMessages([...messages, { role: 'assistant', text: data.text }]);
+        throw new Error('Failed to generate profile');
       }
     } catch (error: any) {
       toast({
@@ -111,6 +121,7 @@ export const ChatInterface = () => {
         title: "Error",
         description: error.message
       });
+      setShowEndConfirmation(false);
     } finally {
       setIsLoading(false);
     }
@@ -171,13 +182,30 @@ export const ChatInterface = () => {
         <Button 
           variant="destructive" 
           className="w-full"
-          onClick={handleFinish}
-          disabled={isLoading || messages.length === 0}
+          onClick={() => setShowEndConfirmation(true)}
+          disabled={isLoading}
         >
-          <StopCircle className="h-4 w-4 mr-2" />
+          <AlertCircle className="h-4 w-4 mr-2" />
           End Interview
         </Button>
       </div>
+
+      <AlertDialog open={showEndConfirmation} onOpenChange={setShowEndConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>End Interview?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to end the interview? Emma will generate your profile based on the information you've provided.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleFinish}>
+              End Interview
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

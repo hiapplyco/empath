@@ -1,9 +1,7 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai"
 
-// System prompt (Emma's instructions)
 const systemPrompt = `
 You are Emma, the friendly onboarding assistant for em.path, a modern platform connecting skilled caregivers with clients who need care. Your purpose is to have natural, engaging conversations with new caregivers to learn about their experience, skills, and preferences, and ultimately generate a caregiver profile in JSON format.
 
@@ -43,6 +41,7 @@ Use natural transitions, e.g., “That’s fascinating about your dementia care 
 
 End the conversation gracefully by providing the final JSON in the correct order and format. No additional commentary should follow the JSON output.
 `
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
@@ -69,7 +68,6 @@ serve(async (req) => {
       }
     })
 
-    // Build chat context, injecting your system prompt as the first message
     const chat = model.startChat({
       history: [
         {
@@ -83,11 +81,10 @@ serve(async (req) => {
       ]
     })
 
-    // Start chat scenario
     if (message === 'START_CHAT') {
       console.log('Initiating new chat')
       const result = await chat.sendMessage(
-        "Hi! I'm a new caregiver interested in joining em.path."
+        "Hi! I'm interested in joining em.path as a caregiver."
       )
       return new Response(
         JSON.stringify({ type: 'message', text: result.response.text() }),
@@ -95,16 +92,14 @@ serve(async (req) => {
       )
     }
 
-    // End and produce final JSON
     if (action === 'finish') {
       console.log('Finalizing chat and generating profile')
       const result = await chat.sendMessage(
-        "Please finalize the caregiver profile now. Provide the JSON only, no extra commentary."
+        "Please finalize my caregiver profile now. Provide the JSON only, no extra commentary."
       )
       const response = result.response.text()
 
       try {
-        // Attempt to parse the final JSON in the response
         const profile = JSON.parse(response)
         return new Response(
           JSON.stringify({ type: 'profile', data: profile }),
@@ -113,13 +108,12 @@ serve(async (req) => {
       } catch (error) {
         console.error('Failed to parse profile JSON:', error)
         return new Response(
-          JSON.stringify({ type: 'message', text: response }),
+          JSON.stringify({ type: 'error', message: 'Failed to generate profile. Please try again.' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
     }
 
-    // Normal chat message flow
     console.log('Processing chat message:', message)
     const result = await chat.sendMessage(message)
     const response = result.response.text()
