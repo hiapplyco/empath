@@ -1,8 +1,5 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import * as Icons from "lucide-react";
-import { LucideIcon } from "lucide-react";
 
 interface ProfileItem {
   label: string;
@@ -11,7 +8,6 @@ interface ProfileItem {
 
 interface ProfileSection {
   title: string;
-  icon: keyof typeof Icons;
   variant: "default" | "grid" | "list" | "badges";
   items: ProfileItem[];
 }
@@ -21,9 +17,6 @@ interface DynamicProfileSectionProps {
 }
 
 export const DynamicProfileSection = ({ section }: DynamicProfileSectionProps) => {
-  // Get the icon component directly from the Icons object
-  const Icon: LucideIcon = (Icons[section.icon] as LucideIcon) || Icons.FileQuestion;
-
   const renderItems = () => {
     switch (section.variant) {
       case "badges":
@@ -77,9 +70,8 @@ export const DynamicProfileSection = ({ section }: DynamicProfileSectionProps) =
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-semibold flex items-center gap-2">
-          <Icon className="h-5 w-5" />
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold">
           {section.title}
         </CardTitle>
       </CardHeader>
