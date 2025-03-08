@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai"
@@ -8,45 +9,29 @@ const corsHeaders = {
 }
 
 const systemPrompt = `
-You are an expert at analyzing caregiver profiles and structuring them for display.
-Take the raw profile data and organize it into clear sections for display.
+You are an expert at analyzing caregiver profile data and structuring it for display.
+Take the raw profile data and organize it into sections for the dashboard display.
 
-For each profile, return a JSON object with sections array containing:
-- title: Section title
-- icon: A Lucide icon name (e.g., "User", "Calendar", "Heart")
-- variant: Display style ("default", "grid", "list", "badges")
-- items: Array of label/value pairs to display
-
-Example structure:
+Structure the data into clear sections following this format exactly:
 {
   "sections": [
     {
-      "title": "Personal Information",
-      "icon": "User",
-      "variant": "list",
-      "items": [
-        { "label": "Name", "value": "John Doe" },
-        { "label": "Languages", "value": "English, Spanish" }
-      ]
-    },
-    {
-      "title": "Experience",
-      "icon": "Briefcase",
-      "variant": "grid",
-      "items": [
-        { "label": "Years Experience", "value": "5" },
-        { "label": "Specialties", "value": "Elderly Care, Dementia" }
-      ]
+      "title": string,
+      "icon": string (Lucide icon name),
+      "variant": "default" | "grid" | "list" | "badges",
+      "items": Array<{ label: string, value: string }>
     }
   ]
 }
 
-Important:
-- Group related information into logical sections
-- Choose appropriate icons from Lucide icon set
-- Select the best display variant for each type of data
-- Format all values as strings
-- Include ALL provided information`
+Rules for structuring the data:
+1. Personal info should use "list" variant
+2. Skills and specialties should use "badges" variant
+3. Experience details should use "grid" variant
+4. Certifications should use "grid" variant
+5. Choose appropriate Lucide icon names for each section
+
+Convert ALL values to strings in the items array.`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -55,14 +40,17 @@ serve(async (req) => {
 
   try {
     const { profileData } = await req.json()
-    console.log('Processing profile data:', profileData)
+    console.log('Processing gemini_response data:', profileData)
 
+    // Extract the gemini_response if it exists
+    const dataToProcess = profileData.gemini_response || profileData
+    
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
 
     const result = await model.generateContent([
       { text: systemPrompt },
-      { text: "Profile data to process:\n" + JSON.stringify(profileData) }
+      { text: JSON.stringify(dataToProcess) }
     ])
     
     const response = await result.response
@@ -71,10 +59,18 @@ serve(async (req) => {
     console.log('Generated profile structure:', text)
 
     try {
-      const processedData = JSON.parse(text)
-      return new Response(JSON.stringify(processedData), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
+      const cleanJson = text
+        .replace(/```json\n?/, '')
+        .replace(/```/, '')
+        .trim()
+      
+      const processedData = JSON.parse(cleanJson)
+      console.log('Final processed profile:', processedData)
+
+      return new Response(
+        JSON.stringify(processedData),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     } catch (error) {
       console.error('Failed to parse Gemini response:', error)
       throw new Error('Invalid response format from AI')
@@ -90,3 +86,4 @@ serve(async (req) => {
     )
   }
 })
+

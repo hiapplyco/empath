@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
@@ -12,25 +11,23 @@ const DashboardProfile = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No authenticated user found');
 
-      // First get the profile data using maybeSingle() instead of single()
       const { data: profileData, error: profileError } = await supabase
         .from('caregiver_profiles')
         .select('*')
         .eq('id', user.id)
         .maybeSingle();
 
-      console.log('Profile data fetched:', profileData); // Debug log
+      console.log('Profile data fetched:', profileData);
 
       if (profileError) throw profileError;
       if (!profileData) return null;
 
-      // If we have gemini_response, process it through the process-profile function
       if (profileData.gemini_response) {
         const { data: processedProfile, error: processError } = await supabase.functions.invoke('process-profile', {
-          body: { profileData: profileData.gemini_response }
+          body: { profileData }
         });
 
-        console.log('Processed profile:', processedProfile); // Debug log
+        console.log('Processed profile:', processedProfile);
 
         if (processError) throw processError;
         return { ...profileData, processed: processedProfile };
@@ -69,18 +66,10 @@ const DashboardProfile = () => {
     );
   }
 
-  if (!profile) {
+  if (!profile?.processed?.sections) {
     return (
       <Card className="p-4">
-        <p className="text-center text-gray-500">No profile data available. Please complete the onboarding chat to create your profile.</p>
-      </Card>
-    );
-  }
-
-  if (!profile.processed?.sections) {
-    return (
-      <Card className="p-4">
-        <p className="text-center text-gray-500">Profile data needs to be processed. Please complete the onboarding chat again.</p>
+        <p className="text-center text-gray-500">No profile data available or profile needs to be processed. Please complete the onboarding chat to create your profile.</p>
       </Card>
     );
   }
