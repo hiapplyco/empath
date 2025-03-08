@@ -9,7 +9,8 @@ const corsHeaders = {
 }
 
 const systemPrompt = `
-Analyze the transcribed audio and extract information into this exact format:
+You are analyzing an audio transcript from a caregiver describing their experience. Extract their information into this exact JSON format. If a piece of information is not mentioned, use "N/A" for the value. Pay special attention to certifications, years of experience, and specialized skills:
+
 {
   "sections": [
     {
@@ -18,7 +19,7 @@ Analyze the transcribed audio and extract information into this exact format:
       "items": [
         {
           "label": "Name",
-          "value": string
+          "value": "string"
         }
       ]
     },
@@ -38,24 +39,39 @@ Analyze the transcribed audio and extract information into this exact format:
       "items": [
         {
           "label": "Years of Experience",
-          "value": string
+          "value": string (extract number of years mentioned)
         },
         {
           "label": "Shift Types",
-          "value": string
+          "value": string (extract any mentions of day/night/flexible shifts)
         },
         {
           "label": "Patient Types",
-          "value": string
+          "value": string (extract mentions of elderly, children, disabled, etc.)
         },
         {
           "label": "Equipment Skills",
-          "value": string
+          "value": string (extract mentions of medical equipment experience)
         }
       ]
+    },
+    {
+      "title": "Certifications",
+      "variant": "badges",
+      "items": Array<{ label: "Certification", value: string }> (extract any mentioned certifications like CPR, First Aid, etc.)
     }
   ]
-}`
+}
+
+Look for specific details about:
+1. Any certifications mentioned (e.g., CPR, First Aid, etc.)
+2. Years of experience in caregiving
+3. Types of patients they've worked with
+4. Special skills or training
+5. Languages spoken
+6. Equipment they're familiar with
+
+If something is mentioned in the audio, make sure to include it in the appropriate section. Don't leave arrays empty if information is provided - populate them with the mentioned items.`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -66,7 +82,6 @@ serve(async (req) => {
     const { audio } = await req.json()
     console.log('Processing audio data...')
 
-    // First, transcribe the audio using Google AI
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
 
@@ -79,7 +94,8 @@ serve(async (req) => {
     const response = await result.response
     const parsedText = response.text()
     
-    console.log('Processing transcribed information...')
+    console.log('Processed transcript:', parsedText)
+    
     try {
       const cleanJson = parsedText
         .replace(/```json\n?/, '')
@@ -87,6 +103,7 @@ serve(async (req) => {
         .trim()
       
       const profileData = JSON.parse(cleanJson)
+      console.log('Extracted profile data:', profileData)
 
       return new Response(
         JSON.stringify({
