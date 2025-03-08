@@ -1,35 +1,34 @@
 
 export interface CaregiverProfile {
-  personal_information: {
-    name: string;
-    contact_info: {
-      phone: string;
-      email: string;
-    };
-    certifications: string[];
-    languages: string[];
+  name: string;
+  years_experience: number;
+  skills: string[];
+  available: boolean;
+  bio?: string;
+  contact_info: {
+    phone?: string;
+    email?: string;
   };
-  experience: {
-    years_experience: number;
-    specialties: string[];
-    availability: {
-      shift_types: string[];
-    };
-  };
-  patient_care_details: {
-    patient_types: Array<{
-      type: string;
-      details: {
-        common_challenges: string[];
-      };
-    }>;
-    equipment_skills: string[];
-  };
-  emergency_response: {
-    protocols: Array<{
-      scenario: string;
-      expected_response: string[];
-    }>;
+  languages: string[];
+  patient_types: Array<{
+    patient_type: string;
+  }>;
+  equipment_skills: string[];
+  emergency_protocols: Array<{
+    scenario: string;
+  }>;
+  availability_details: {
+    shift_types: string[];
   };
 }
 
+export interface Certification {
+  id: string;
+  name: string;
+  status: string;
+  issued_date?: string;
+  expiry_date?: string;
+  verification_status: string;
+  created_at: string;
+  updated_at: string;
+}

@@ -11,109 +11,64 @@ export type Database = {
     Tables: {
       caregiver_profiles: {
         Row: {
-          ai_assessment: Json | null
           availability: Json | null
           availability_details: Json | null
-          background_check_status: string | null
+          available: boolean | null
           bio: string | null
-          certifications_verified: boolean | null
           contact_info: Json | null
           created_at: string
           emergency_protocols: Json[] | null
           equipment_skills: string[] | null
-          first_name: string | null
           id: string
           input_method: string | null
           languages: string[] | null
-          last_name: string | null
-          mentor_id: string | null
-          monthly_earnings: number | null
-          next_payment_date: string | null
-          onboarding_progress: Json | null
-          onboarding_step: number | null
+          name: string
           patient_types: Json[] | null
           phone: string | null
-          profile_activated: boolean | null
           rate_preferences: Json | null
-          rating: number | null
-          specializations: string[] | null
-          status: string | null
-          total_reviews: number | null
-          training_completed: boolean | null
-          training_path: Json | null
+          skills: string[] | null
           updated_at: string
-          weekly_hours: number | null
-          years_experience: number | null
+          years_experience: number
         }
         Insert: {
-          ai_assessment?: Json | null
           availability?: Json | null
           availability_details?: Json | null
-          background_check_status?: string | null
+          available?: boolean | null
           bio?: string | null
-          certifications_verified?: boolean | null
           contact_info?: Json | null
           created_at?: string
           emergency_protocols?: Json[] | null
           equipment_skills?: string[] | null
-          first_name?: string | null
           id?: string
           input_method?: string | null
           languages?: string[] | null
-          last_name?: string | null
-          mentor_id?: string | null
-          monthly_earnings?: number | null
-          next_payment_date?: string | null
-          onboarding_progress?: Json | null
-          onboarding_step?: number | null
+          name: string
           patient_types?: Json[] | null
           phone?: string | null
-          profile_activated?: boolean | null
           rate_preferences?: Json | null
-          rating?: number | null
-          specializations?: string[] | null
-          status?: string | null
-          total_reviews?: number | null
-          training_completed?: boolean | null
-          training_path?: Json | null
+          skills?: string[] | null
           updated_at?: string
-          weekly_hours?: number | null
-          years_experience?: number | null
+          years_experience?: number
         }
         Update: {
-          ai_assessment?: Json | null
           availability?: Json | null
           availability_details?: Json | null
-          background_check_status?: string | null
+          available?: boolean | null
           bio?: string | null
-          certifications_verified?: boolean | null
           contact_info?: Json | null
           created_at?: string
           emergency_protocols?: Json[] | null
           equipment_skills?: string[] | null
-          first_name?: string | null
           id?: string
           input_method?: string | null
           languages?: string[] | null
-          last_name?: string | null
-          mentor_id?: string | null
-          monthly_earnings?: number | null
-          next_payment_date?: string | null
-          onboarding_progress?: Json | null
-          onboarding_step?: number | null
+          name?: string
           patient_types?: Json[] | null
           phone?: string | null
-          profile_activated?: boolean | null
           rate_preferences?: Json | null
-          rating?: number | null
-          specializations?: string[] | null
-          status?: string | null
-          total_reviews?: number | null
-          training_completed?: boolean | null
-          training_path?: Json | null
+          skills?: string[] | null
           updated_at?: string
-          weekly_hours?: number | null
-          years_experience?: number | null
+          years_experience?: number
         }
         Relationships: []
       }
@@ -165,43 +120,38 @@ export type Database = {
       certifications: {
         Row: {
           caregiver_id: string
-          completed_at: string | null
-          created_at: string | null
-          expires_at: string | null
+          created_at: string
+          expiry_date: string | null
           id: string
+          issued_date: string | null
           name: string
           status: string
-          updated_at: string | null
+          updated_at: string
+          verification_status: string
         }
         Insert: {
           caregiver_id: string
-          completed_at?: string | null
-          created_at?: string | null
-          expires_at?: string | null
+          created_at?: string
+          expiry_date?: string | null
           id?: string
+          issued_date?: string | null
           name: string
-          status: string
-          updated_at?: string | null
+          status?: string
+          updated_at?: string
+          verification_status?: string
         }
         Update: {
           caregiver_id?: string
-          completed_at?: string | null
-          created_at?: string | null
-          expires_at?: string | null
+          created_at?: string
+          expiry_date?: string | null
           id?: string
+          issued_date?: string | null
           name?: string
           status?: string
-          updated_at?: string | null
+          updated_at?: string
+          verification_status?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "certifications_caregiver_id_fkey"
-            columns: ["caregiver_id"]
-            isOneToOne: false
-            referencedRelation: "caregiver_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       mentor_relationships: {
         Row: {
