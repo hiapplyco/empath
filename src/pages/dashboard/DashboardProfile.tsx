@@ -1,20 +1,17 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { ProfileSection } from "@/components/profile/CaregiverProfileCard";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Languages, BadgeCheck, Calendar, Hospital, Shield, Clock } from "lucide-react";
+import { Heart, BadgeCheck, Calendar, Hospital, Shield, Clock } from "lucide-react";
 
 const DashboardProfile = () => {
   const { data: profile, isLoading } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
       const { data } = await supabase
         .from('caregiver_profiles')
         .select('*')
-        .eq('user_id', user?.id)
         .single();
       return data;
     },

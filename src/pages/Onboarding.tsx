@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,10 +7,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 const OnboardingPage = () => {
-  useAuthRedirect();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -21,31 +19,6 @@ const OnboardingPage = () => {
     phone: "",
     experience: "",
   });
-
-  useEffect(() => {
-    const checkOnboardingStatus = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) return;
-
-        const { data: profile } = await supabase
-          .from('caregiver_profiles')
-          .select('onboarding_step')
-          .eq('user_id', user.id)
-          .single();
-
-        // If onboarding_step is greater than 1, they've already started/completed onboarding
-        if (profile?.onboarding_step && profile.onboarding_step > 1) {
-          navigate('/dashboard');
-        }
-      } catch (error) {
-        console.error('Error checking onboarding status:', error);
-      }
-    };
-
-    checkOnboardingStatus();
-  }, [navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -60,20 +33,15 @@ const OnboardingPage = () => {
     setIsLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) throw new Error("No user found");
-
       const { error } = await supabase
         .from('caregiver_profiles')
-        .update({
+        .insert({
           first_name: formData.firstName,
           last_name: formData.lastName,
           phone: formData.phone,
           years_experience: parseInt(formData.experience),
           onboarding_step: 2
-        })
-        .eq('user_id', user.id);
+        });
 
       if (error) throw error;
 
@@ -82,7 +50,7 @@ const OnboardingPage = () => {
         description: "Your profile has been updated successfully.",
       });
 
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (error: any) {
       toast({
         variant: "destructive",

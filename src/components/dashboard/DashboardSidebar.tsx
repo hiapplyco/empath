@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { 
-  Calendar, Clock, DollarSign, Award, BookOpen, 
+  Calendar, DollarSign, Award, BookOpen, 
   MessageSquare, Star, Heart, User, Settings, Briefcase 
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
@@ -27,11 +26,9 @@ export const DashboardSidebar = () => {
   const { data: profile } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
       const { data } = await supabase
         .from('caregiver_profiles')
         .select('*')
-        .eq('user_id', user?.id)
         .single();
       return data;
     },

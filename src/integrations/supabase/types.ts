@@ -23,7 +23,6 @@ export type Database = {
           status: string | null
           total_reviews: number | null
           updated_at: string
-          user_id: string
           weekly_hours: number | null
           years_experience: number | null
         }
@@ -40,7 +39,6 @@ export type Database = {
           status?: string | null
           total_reviews?: number | null
           updated_at?: string
-          user_id: string
           weekly_hours?: number | null
           years_experience?: number | null
         }
@@ -57,7 +55,6 @@ export type Database = {
           status?: string | null
           total_reviews?: number | null
           updated_at?: string
-          user_id?: string
           weekly_hours?: number | null
           years_experience?: number | null
         }
