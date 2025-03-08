@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Calendar, DollarSign, Award, BookOpen, 
@@ -26,10 +27,16 @@ export const DashboardSidebar = () => {
   const { data: profile } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user found');
+
       const { data } = await supabase
         .from('caregiver_profiles')
         .select('*')
+        .eq('id', user.id)
         .single();
+      
+      console.log('Fetched profile:', data);
       return data;
     },
   });
@@ -49,9 +56,9 @@ export const DashboardSidebar = () => {
         </div>
         <div>
           <p className="font-medium text-sm">
-            {profile ? `${profile.first_name} ${profile.last_name}` : 'Loading...'}
+            {profile?.processed?.sections?.[0]?.items?.[0]?.value || profile?.name || 'Loading...'}
           </p>
-          <p className="text-xs text-green-600">{profile?.status || 'Loading...'}</p>
+          <p className="text-xs text-green-600">{profile?.status || 'Active'}</p>
         </div>
       </div>
 

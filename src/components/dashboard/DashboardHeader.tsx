@@ -8,13 +8,20 @@ import { Button } from "@/components/ui/button";
 
 export const DashboardHeader = () => {
   const navigate = useNavigate();
+  
   const { data: profile } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user found');
+
       const { data } = await supabase
         .from('caregiver_profiles')
         .select('*')
+        .eq('id', user.id)
         .single();
+      
+      console.log('Fetched profile for header:', data);
       return data;
     },
   });
@@ -24,11 +31,13 @@ export const DashboardHeader = () => {
     navigate('/auth');
   };
 
+  const displayName = profile?.processed?.sections?.[0]?.items?.[0]?.value || profile?.name || 'Caregiver';
+
   return (
     <div className="flex justify-between items-center mb-6">
       <div>
         <h2 className="text-2xl font-bold">
-          Welcome back, {profile?.first_name || 'Caregiver'}
+          Welcome back, {displayName}
         </h2>
         <p className="text-slate-500">{new Date().toLocaleDateString('en-US', { 
           weekday: 'long',
