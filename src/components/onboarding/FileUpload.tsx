@@ -37,6 +37,9 @@ export const FileUpload = ({ onComplete }: FileUploadProps) => {
 
       if (processError) throw processError;
 
+      // Log the processed data to help with debugging
+      console.log('Processed resume data:', processedData);
+
       // Update the caregiver profile with both raw and processed data
       const { error: updateError } = await supabase
         .from('caregiver_profiles')
@@ -48,6 +51,17 @@ export const FileUpload = ({ onComplete }: FileUploadProps) => {
         });
 
       if (updateError) throw updateError;
+
+      // Verify the data was saved
+      const { data: verifyData, error: verifyError } = await supabase
+        .from('caregiver_profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+        
+      if (verifyError) throw verifyError;
+      
+      console.log('Verified saved profile:', verifyData);
 
       toast({
         title: "Resume processed successfully",

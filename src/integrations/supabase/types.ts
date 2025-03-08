@@ -26,6 +26,7 @@ export type Database = {
           name: string | null
           patient_types: Json[] | null
           phone: string | null
+          processed_profile: Json | null
           rate_preferences: Json | null
           skills: string[] | null
           updated_at: string
@@ -47,6 +48,7 @@ export type Database = {
           name?: string | null
           patient_types?: Json[] | null
           phone?: string | null
+          processed_profile?: Json | null
           rate_preferences?: Json | null
           skills?: string[] | null
           updated_at?: string
@@ -68,6 +70,7 @@ export type Database = {
           name?: string | null
           patient_types?: Json[] | null
           phone?: string | null
+          processed_profile?: Json | null
           rate_preferences?: Json | null
           skills?: string[] | null
           updated_at?: string
