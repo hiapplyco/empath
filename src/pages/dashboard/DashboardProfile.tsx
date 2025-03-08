@@ -3,20 +3,28 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { DynamicProfileSection } from "@/components/profile/DynamicProfileSection";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const DashboardProfile = () => {
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading, error } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
-      const { data: profileData } = await supabase
+      // First get the profile data
+      const { data: profileData, error: profileError } = await supabase
         .from('caregiver_profiles')
         .select('*')
         .single();
 
-      if (profileData?.gemini_response) {
-        const { data: processedProfile } = await supabase.functions.invoke('process-profile', {
+      if (profileError) throw profileError;
+      if (!profileData) return null;
+
+      // If we have gemini_response, process it through the process-profile function
+      if (profileData.gemini_response) {
+        const { data: processedProfile, error: processError } = await supabase.functions.invoke('process-profile', {
           body: { profileData: profileData.gemini_response }
         });
+
+        if (processError) throw processError;
         return { ...profileData, processed: processedProfile };
       }
 
@@ -24,18 +32,40 @@ const DashboardProfile = () => {
     },
   });
 
-  if (isLoading || !profile) {
+  if (error) {
+    return (
+      <Card className="p-4">
+        <p className="text-center text-red-500">Error loading profile: {error.message}</p>
+      </Card>
+    );
+  }
+
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">My Profile</h2>
         </div>
         <div className="grid gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="h-[200px] animate-pulse bg-gray-100" />
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="p-6">
+              <div className="space-y-4">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
+                <Skeleton className="h-4 w-[300px]" />
+              </div>
+            </Card>
           ))}
         </div>
       </div>
+    );
+  }
+
+  if (!profile?.processed?.sections) {
+    return (
+      <Card className="p-4">
+        <p className="text-center text-gray-500">No profile data available. Please complete the onboarding chat to create your profile.</p>
+      </Card>
     );
   }
 
@@ -45,17 +75,11 @@ const DashboardProfile = () => {
         <h2 className="text-2xl font-bold">My Profile</h2>
       </div>
 
-      {profile.processed?.sections ? (
-        <div className="grid gap-6">
-          {profile.processed.sections.map((section, index) => (
-            <DynamicProfileSection key={index} section={section} />
-          ))}
-        </div>
-      ) : (
-        <Card className="p-4">
-          <p className="text-center text-gray-500">No profile data available</p>
-        </Card>
-      )}
+      <div className="grid gap-6">
+        {profile.processed.sections.map((section, index) => (
+          <DynamicProfileSection key={index} section={section} />
+        ))}
+      </div>
     </div>
   );
 };

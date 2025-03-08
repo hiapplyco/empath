@@ -102,11 +102,12 @@ export const ChatInterface = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('No authenticated user found');
 
+        // Save both raw and structured data
         const { error: profileError } = await supabase
           .from('caregiver_profiles')
           .upsert({
             id: user.id,
-            gemini_response: data.data, // Save the raw Gemini response
+            gemini_response: data.data, // Save the complete raw response
             // Also save structured data for direct queries
             name: data.data.personal_information?.name,
             languages: data.data.personal_information?.languages,
@@ -123,7 +124,9 @@ export const ChatInterface = () => {
           title: "Profile Created",
           description: "Your profile has been successfully created!"
         });
-        navigate('/dashboard');
+        
+        // Navigate to the profile page after successful completion
+        navigate('/dashboard/profile');
       } else {
         throw new Error('Failed to generate profile');
       }
