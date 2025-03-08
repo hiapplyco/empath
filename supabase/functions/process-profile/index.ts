@@ -30,23 +30,28 @@ Rules for structuring the data:
    - Skills & Specialties: "star"
    - Experience: "briefcase"
    - Certifications: "award"
+   - Languages: "globe"
+   - Contact: "phone"
 
 2. Format values for better readability:
-   - Split arrays into comma-separated lists
-   - Format certification details into clear bullet points
-   - Convert numbers to strings
-   - Format dates in a consistent "MMM DD, YYYY" format
-   - Ensure phone numbers are properly formatted
+   - Format phone numbers as (XXX) XXX-XXXX
+   - Format dates as "MMM DD, YYYY"
+   - Format arrays into comma-separated lists
+   - Format certification details with bullet points
+   - Convert boolean values to "Yes" or "No"
+   - Always include units for numeric values (e.g., "5 years")
 
-3. Use these variants:
-   - Personal info: "list" variant
-   - Skills and specialties: "badges" variant (split into individual badges)
+3. Use appropriate variants:
+   - Contact/Personal info: "list" variant
+   - Skills and languages: "badges" variant
    - Experience details: "grid" variant
-   - Certifications: "grid" variant with bullet-point formatting
+   - Certifications: "grid" variant
 
-4. Break down complex objects into readable strings:
-   - Certification format: "• Status: [status]\\n• Issued: [date]\\n• Expires: [date]\\n• Verification: [status]"
-   - Split multi-value items into separate badges for the "badges" variant`
+4. Data transformation rules:
+   - Split comma-separated values into individual badges
+   - Format certification details as bullet points: "• Status: Active\\n• Issued: Jan 2024\\n• Expires: Jan 2026"
+   - Clean and capitalize names appropriately
+   - Ensure all phone numbers are consistently formatted`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -55,9 +60,9 @@ serve(async (req) => {
 
   try {
     const { profileData } = await req.json()
-    console.log('Processing profile data:', profileData)
+    console.log('Processing raw profile data:', profileData)
 
-    // Extract the gemini_response if it exists
+    // Handle both direct profile data and gemini_response
     const dataToProcess = profileData.gemini_response || profileData
     
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
@@ -82,12 +87,20 @@ serve(async (req) => {
       
       const processedData = JSON.parse(cleanJson)
       
-      // Format badges data - split comma-separated values into individual badges
+      // Ensure sections array exists
+      if (!processedData.sections || !Array.isArray(processedData.sections)) {
+        throw new Error('Invalid profile structure: missing sections array')
+      }
+
+      // Post-process the sections
       processedData.sections = processedData.sections.map(section => {
         if (section.variant === 'badges') {
           section.items = section.items.flatMap(item => {
-            const values = item.value.split(',').map(v => v.trim())
-            return values.map(value => ({ label: item.label, value }))
+            if (typeof item.value === 'string') {
+              const values = item.value.split(',').map(v => v.trim())
+              return values.map(value => ({ label: item.label, value }))
+            }
+            return item
           })
         }
         return section
@@ -114,4 +127,3 @@ serve(async (req) => {
     )
   }
 })
-

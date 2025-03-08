@@ -9,6 +9,7 @@ const DashboardProfile = () => {
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
+      // Get authenticated user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         console.log('No authenticated user found');
@@ -17,6 +18,7 @@ const DashboardProfile = () => {
 
       console.log('Fetching profile for user:', user.id);
 
+      // First try to get profile directly
       const { data: profileData, error: profileError } = await supabase
         .from('caregiver_profiles')
         .select('*')
@@ -29,11 +31,13 @@ const DashboardProfile = () => {
         console.error('Error fetching profile:', profileError);
         throw profileError;
       }
+
       if (!profileData) {
         console.log('No profile data found');
         return null;
       }
 
+      // Process the profile data if gemini_response exists
       if (profileData.gemini_response) {
         console.log('Processing profile with gemini_response:', profileData.gemini_response);
         
@@ -47,6 +51,7 @@ const DashboardProfile = () => {
           console.error('Error processing profile:', processError);
           throw processError;
         }
+
         return { ...profileData, processed: processedProfile };
       }
 
