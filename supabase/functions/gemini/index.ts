@@ -1,53 +1,61 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "npm:@google/generative-ai"
+import { GoogleGenerativeAI } from "npm:@google/generative-ai"
 import { CaregiverProfile } from "./types.ts"
+
+const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
+const systemPrompt = `
+You are conducting a caregiver onboarding interview. Extract information according to this schema:
 
-// Structured prompt templates for profile generation
-const prompts = {
-  onboarding: {
-    analyze_resume: (resume: string) => `
-      Analyze this caregiver resume and extract information into the following JSON structure. 
-      Only include fields that can be confidently extracted from the resume. 
-      Leave other fields empty or null:
-      ${JSON.stringify({ caregiver_profile: {} }, null, 2)}
-    `,
-    generate_profile: (input: any) => `
-      Based on the provided information, generate a complete caregiver profile.
-      Fill in any missing fields with reasonable defaults based on the context.
-      Return the response in this exact JSON structure:
-      ${JSON.stringify({ caregiver_profile: {} }, null, 2)}
-    `,
-    skill_assessment: (skills: string) => `
-      Evaluate these caregiver skills and provide a structured assessment that fits into
-      the experience and patient_care_details sections of our profile schema:
-      ${JSON.stringify({ caregiver_profile: { experience: {}, patient_care_details: {} } }, null, 2)}
-    `
-  }
-}
+type CaregiverProfile = {
+  personal_information: {
+    name: string;
+    contact_info: {
+      phone: string;
+      email: string;
+    };
+    certifications: string[];
+    languages: string[];
+  };
+  experience: {
+    years_experience: number;
+    specialties: string[];
+    availability: {
+      shift_types: string[];
+    };
+  };
+  patient_care_details: {
+    patient_types: Array<{
+      type: string;
+      details: {
+        common_challenges: string[];
+      };
+    }>;
+    equipment_skills: string[];
+  };
+  emergency_response: {
+    protocols: Array<{
+      scenario: string;
+      expected_response: string[];
+    }>;
+  };
+};
 
-// Gemini model configuration
-const getModel = (modelType = 'default') => {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
-  
-  const config = {
-    temperature: 0.7, // Slightly lower for more consistent structured output
-    topP: 0.95,
-    topK: 40,
-    maxOutputTokens: 8192,
-  }
-  
-  return { model, config }
-}
+Follow these rules:
+1. Ask ONE question at a time based on the conversation flow provided
+2. Be warm and encouraging
+3. Extract structured data from responses
+4. Keep track of what information is still needed
+5. Format all responses as JSON matching the schema above
+6. Include a "next_question" field in the response
+`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -55,51 +63,36 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, type = 'default', input = {}, history = [] } = await req.json()
-    
-    const { model, config } = getModel()
-    console.log(`Processing ${type} request with input:`, input)
+    const { prompt, type = 'default', history = [] } = await req.json()
+    console.log(`Processing ${type} request with input:`, prompt)
 
-    // Start chat session
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
     const chat = model.startChat({
-      generationConfig: config,
       history: history.map(({ role, text }: { role: string, text: string }) => ({
         role: role === 'user' ? 'user' : 'model',
         parts: [{ text }],
       })),
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 8192,
+      },
     })
 
-    // Get response based on prompt type
-    let promptTemplate = ''
-    switch (type) {
-      case 'analyze_resume':
-        promptTemplate = prompts.onboarding.analyze_resume(prompt)
-        break
-      case 'generate_profile':
-        promptTemplate = prompts.onboarding.generate_profile(input)
-        break
-      case 'skill_assessment':
-        promptTemplate = prompts.onboarding.skill_assessment(prompt)
-        break
-      default:
-        throw new Error('Invalid prompt type')
-    }
-
-    const result = await chat.sendMessage(promptTemplate)
+    const result = await chat.sendMessage(systemPrompt + "\n\nUser message: " + prompt)
     const response = await result.response
     const text = response.text()
 
-    // Parse and validate the response as a CaregiverProfile
+    // Parse and validate the response
     let parsedResponse
     try {
       parsedResponse = JSON.parse(text)
-      // TODO: Add validation against CaregiverProfile type
+      console.log('Extracted profile data:', parsedResponse)
     } catch (e) {
       console.error('Failed to parse Gemini response as JSON:', e)
       throw new Error('Invalid response format from AI')
     }
-
-    console.log('Generated profile:', JSON.stringify(parsedResponse).substring(0, 100) + '...')
 
     return new Response(
       JSON.stringify(parsedResponse),
