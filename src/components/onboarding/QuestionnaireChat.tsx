@@ -1,11 +1,12 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAIAnalysis } from "@/hooks/useAIAnalysis";
 import { ArrowLeft, Check, Send } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "@/lib/supabase";
 
 interface Message {
   role: 'assistant' | 'user';
@@ -15,7 +16,7 @@ interface Message {
 export const QuestionnaireChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const { analyzeInput, isAnalyzing } = useAIAnalysis();
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   
@@ -23,7 +24,7 @@ export const QuestionnaireChat = () => {
     // Initial greeting
     setMessages([{
       role: 'assistant',
-      content: "Hi! I'm here to learn about your caregiving experience. Let's start with your name - what should I call you?"
+      content: "Hi! I'm here to learn about your caregiving experience. I'm an AI assistant powered by Gemini. Let's start with your name - what should I call you?"
     }]);
   }, []);
 
@@ -39,18 +40,38 @@ export const QuestionnaireChat = () => {
 
     const userMessage = input.trim();
     setInput('');
+    setIsAnalyzing(true);
     
     // Add user message
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
 
-    // Analyze with Gemini
-    const analysis = await analyzeInput('text', userMessage);
-    
-    // Add AI response
-    setMessages(prev => [...prev, { 
-      role: 'assistant', 
-      content: analysis?.next_question || "Could you tell me more about your caregiving experience?"
-    }]);
+    try {
+      // Call the Gemini edge function
+      const { data, error } = await supabase.functions.invoke('gemini', {
+        body: { 
+          type: 'text',
+          prompt: userMessage,
+          history: messages.map(m => ({ role: m.role, text: m.content }))
+        }
+      });
+
+      if (error) throw error;
+
+      // Add AI response
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: data?.response || "I apologize, but I couldn't process that properly. Could you try rephrasing?"
+      }]);
+
+    } catch (error: any) {
+      console.error('Error calling Gemini:', error);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: "I apologize, but I encountered an error. Could you please try again?"
+      }]);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const handleBack = () => {
