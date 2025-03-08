@@ -9,6 +9,71 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      caregiver_metrics: {
+        Row: {
+          average_rating: number | null
+          caregiver_id: string
+          certifications_count: number | null
+          completed_trainings: number | null
+          created_at: string | null
+          id: string
+          monthly_earnings: number | null
+          next_payment_date: string | null
+          next_shift_client: string | null
+          next_shift_time: string | null
+          pending_messages: number | null
+          remaining_weekly_hours: number | null
+          todays_shifts: number | null
+          total_reviews: number | null
+          updated_at: string | null
+          weekly_hours: number | null
+        }
+        Insert: {
+          average_rating?: number | null
+          caregiver_id: string
+          certifications_count?: number | null
+          completed_trainings?: number | null
+          created_at?: string | null
+          id?: string
+          monthly_earnings?: number | null
+          next_payment_date?: string | null
+          next_shift_client?: string | null
+          next_shift_time?: string | null
+          pending_messages?: number | null
+          remaining_weekly_hours?: number | null
+          todays_shifts?: number | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          weekly_hours?: number | null
+        }
+        Update: {
+          average_rating?: number | null
+          caregiver_id?: string
+          certifications_count?: number | null
+          completed_trainings?: number | null
+          created_at?: string | null
+          id?: string
+          monthly_earnings?: number | null
+          next_payment_date?: string | null
+          next_shift_client?: string | null
+          next_shift_time?: string | null
+          pending_messages?: number | null
+          remaining_weekly_hours?: number | null
+          todays_shifts?: number | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          weekly_hours?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caregiver_metrics_caregiver_id_fkey"
+            columns: ["caregiver_id"]
+            isOneToOne: false
+            referencedRelation: "caregiver_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       caregiver_profiles: {
         Row: {
           availability: Json | null
