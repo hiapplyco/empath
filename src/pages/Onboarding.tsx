@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,16 +17,39 @@ const OnboardingPage = () => {
   const [step, setStep] = useState(1);
   const [inputMethod, setInputMethod] = useState<"resume" | "audio" | "video" | "text">("text");
   const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        navigate('/auth');
+        return;
+      }
+      setUserId(session.user.id);
+    };
+    
+    checkSession();
+  }, [navigate]);
+
   const handleMethodSelection = async (method: "resume" | "audio" | "video" | "text") => {
+    if (!userId) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please sign in to continue",
+      });
+      return;
+    }
+
     setInputMethod(method);
     try {
       const { error } = await supabase
         .from('caregiver_profiles')
         .update({ input_method: method })
-        .eq('id', ''); // We'll add user ID here when auth is implemented
+        .eq('id', userId);
 
       if (error) throw error;
       setStep(2);
