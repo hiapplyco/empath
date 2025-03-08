@@ -27,8 +27,6 @@ serve(async (req) => {
       }
     })
 
-    const systemInstruction = `You are Emma, the friendly onboarding assistant for em.path, a modern platform connecting skilled caregivers with clients who need care...`  // Keep the full system instruction
-
     const chat = model.startChat({
       history: [
         ...history.map(({ role, text }: { role: string, text: string }) => ({
@@ -38,35 +36,40 @@ serve(async (req) => {
       ],
     })
 
+    if (message === 'START_CHAT') {
+      const result = await chat.sendMessage("Hi! I'd like to get started with the onboarding process.")
+      return new Response(
+        JSON.stringify({ type: 'message', text: result.response.text() }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     if (action === 'finish') {
-      // Send a message to finish the interview and get the profile data
       const result = await chat.sendMessage("Please finish the interview and provide the final JSON profile.")
       const response = result.response.text()
       
       try {
-        // Try to parse the response as JSON
         const profile = JSON.parse(response)
         return new Response(
           JSON.stringify({ type: 'profile', data: profile }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       } catch {
-        // If not JSON, return as regular message
         return new Response(
           JSON.stringify({ type: 'message', text: response }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
-    } else {
-      // Regular chat message
-      const result = await chat.sendMessage(message)
-      const response = result.response.text()
-      
-      return new Response(
-        JSON.stringify({ type: 'message', text: response }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
     }
+
+    // Regular chat message
+    const result = await chat.sendMessage(message)
+    const response = result.response.text()
+    
+    return new Response(
+      JSON.stringify({ type: 'message', text: response }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
   } catch (error) {
     console.error('Error:', error)
     return new Response(

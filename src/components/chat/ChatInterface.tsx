@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { Send, StopCircle } from "lucide-react";
+import { Send, StopCircle, Bot } from "lucide-react";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -16,7 +16,32 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isChatStarted, setIsChatStarted] = useState(false);
   const { toast } = useToast();
+
+  const initializeChat = async () => {
+    setIsChatStarted(true);
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('gemini-chat', {
+        body: { message: "START_CHAT" }
+      });
+
+      if (error) throw error;
+
+      if (data.type === 'message') {
+        setMessages([{ role: 'assistant', text: data.text }]);
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -26,11 +51,9 @@ export const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      // Add user message to chat
-      const newMessages = [...messages, { role: 'user', text: userMessage }];
+      const newMessages = [...messages, { role: 'user' as const, text: userMessage }];
       setMessages(newMessages);
 
-      // Send message to edge function
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: { 
           message: userMessage,
@@ -67,7 +90,6 @@ export const ChatInterface = () => {
       if (error) throw error;
 
       if (data.type === 'profile') {
-        // Store profile data in Supabase
         const { error: profileError } = await supabase
           .from('caregiver_profiles')
           .upsert(data.data);
@@ -79,7 +101,6 @@ export const ChatInterface = () => {
           description: "Your profile has been successfully created!"
         });
 
-        // Redirect to dashboard or next step
         window.location.href = '/dashboard';
       } else {
         setMessages([...messages, { role: 'assistant', text: data.text }]);
@@ -94,6 +115,20 @@ export const ChatInterface = () => {
       setIsLoading(false);
     }
   };
+
+  if (!isChatStarted) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4">
+        <Button onClick={initializeChat} size="lg" className="gap-2">
+          <Bot className="h-5 w-5" />
+          Chat with Emma
+        </Button>
+        <p className="text-sm text-muted-foreground">
+          Start your onboarding journey with Emma, our AI assistant
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[600px] max-w-2xl mx-auto border rounded-lg">
