@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <!-- Background Gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5f3ff" />
+      <stop offset="100%" stop-color="#ede9fe" />
+    </linearGradient>
+    <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#6d28d9" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)" />
+  
+  <!-- Decorative Elements -->
+  <circle cx="900" cy="150" r="300" fill="#ddd6fe" opacity="0.5" />
+  <circle cx="200" cy="500" r="250" fill="#ddd6fe" opacity="0.5" />
+  
+  <!-- Logo Container -->
+  <g transform="translate(150, 240) scale(1.5)">
+    <!-- Vertical Stem (Rounded Rectangle) -->
+    <rect x="50" y="50" width="30" height="100" rx="15" ry="15" fill="url(#purpleGradient)" />
+    
+    <!-- Top Circle -->
+    <circle cx="110" cy="65" r="15" fill="url(#purpleGradient)" />
+    
+    <!-- Middle Circle -->
+    <circle cx="110" cy="100" r="15" fill="url(#purpleGradient)" />
+    
+    <!-- Bottom Circle -->
+    <circle cx="110" cy="135" r="15" fill="url(#purpleGradient)" />
+  </g>
+  
+  <!-- Text Elements -->
+  <text x="400" y="270" font-family="Arial, sans-serif" font-weight="bold" font-size="70" fill="#4c1d95">em.path</text>
+  <text x="400" y="340" font-family="Arial, sans-serif" font-size="36" fill="#6d28d9">Care that connects on a human level</text>
+  
+  <!-- Descriptive Elements -->
+  <g transform="translate(400, 380)">
+    <circle cx="15" cy="15" r="8" fill="#7c3aed" />
+    <text x="40" y="23" font-family="Arial, sans-serif" font-size="24" fill="#6b7280">Caregiver-first platform</text>
+    
+    <circle cx="15" cy="55" r="8" fill="#7c3aed" />
+    <text x="40" y="63" font-family="Arial, sans-serif" font-size="24" fill="#6b7280">Empathetic matching</text>
+    
+    <circle cx="15" cy="95" r="8" fill="#7c3aed" />
+    <text x="40" y="103" font-family="Arial, sans-serif" font-size="24" fill="#6b7280">Building meaningful connections</text>
+  </g>
+</svg>
