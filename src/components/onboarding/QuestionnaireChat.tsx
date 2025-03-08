@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -8,6 +7,8 @@ import { ArrowLeft, Send } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { ChatMessageList } from "./chat/ChatMessageList";
+import { ChatInput } from "./chat/ChatInput";
 
 interface Message {
   role: 'assistant' | 'user';
@@ -18,10 +19,9 @@ export const QuestionnaireChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   useEffect(() => {
     // Initial chat start
     const startChat = async () => {
@@ -51,14 +51,11 @@ export const QuestionnaireChat = () => {
     startChat();
   }, [toast]);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+  const handleInputChange = (value: string) => {
+    setInput(value);
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!input.trim() || isAnalyzing) return;
 
     const userMessage = input.trim();
@@ -133,52 +130,14 @@ export const QuestionnaireChat = () => {
 
   return (
     <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col">
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-        <div className="space-y-4">
-          {messages.map((message, i) => (
-            <div
-              key={i}
-              className={`flex ${
-                message.role === 'assistant' ? 'justify-start' : 'justify-end'
-              }`}
-            >
-              <div
-                className={`rounded-lg px-4 py-2 max-w-[80%] ${
-                  message.role === 'assistant'
-                    ? 'bg-secondary text-secondary-foreground'
-                    : 'bg-primary text-primary-foreground'
-                }`}
-              >
-                {message.content}
-              </div>
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-      
-      <form onSubmit={handleSubmit} className="p-4 border-t flex gap-2">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
-          disabled={isAnalyzing}
-          className="flex-1"
-        />
-        <Button type="submit" disabled={isAnalyzing}>
-          <Send className="h-4 w-4" />
-        </Button>
-      </form>
-
-      <div className="p-4 border-t flex justify-between">
-        <Button
-          variant="outline"
-          onClick={handleBack}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Button>
-      </div>
+      <ChatMessageList messages={messages} />
+      <ChatInput
+        input={input}
+        isAnalyzing={isAnalyzing}
+        onInputChange={handleInputChange}
+        onSubmit={handleSubmit}
+        onBack={handleBack}
+      />
     </Card>
   );
 };
