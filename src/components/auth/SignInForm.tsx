@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ export const SignInForm = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -27,16 +28,18 @@ export const SignInForm = () => {
         throw error;
       }
 
-      // The redirect will be handled by the AuthProvider's onAuthStateChange listener
-      toast({
-        title: "Success",
-        description: "You have been signed in.",
-      });
-    } catch (error) {
+      if (data.user) {
+        toast({
+          title: "Success",
+          description: "Successfully signed in.",
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Invalid email or password.",
+        description: error.message || "Failed to sign in. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -54,6 +57,7 @@ export const SignInForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={isLoading}
         />
       </div>
       <div className="space-y-2">
@@ -64,6 +68,7 @@ export const SignInForm = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={isLoading}
         />
       </div>
       <Button type="submit" className="w-full" disabled={isLoading}>
