@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +14,7 @@ interface UseChatReturn {
   handleInputChange: (value: string) => void;
   handleSubmit: () => Promise<void>;
   handleBack: () => void;
+  handleFinish: () => Promise<void>;
 }
 
 export const useChat = (): UseChatReturn => {
@@ -128,12 +128,46 @@ export const useChat = (): UseChatReturn => {
     window.location.href = '/onboarding';
   };
 
+  const handleFinish = async () => {
+    setIsAnalyzing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('gemini-chat', {
+        body: { 
+          message: 'END_INTERVIEW',
+          history: messages.map(m => ({ role: m.role, text: m.content })),
+          action: 'finish'
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.type === 'profile') {
+        await saveProfileData(data.data);
+        toast({
+          title: "Profile Created",
+          description: "Your caregiver profile has been created successfully!"
+        });
+        window.location.href = '/dashboard';
+      }
+    } catch (error: any) {
+      console.error('Error finishing interview:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to generate your profile. Please try again."
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   return {
     messages,
     input,
     isAnalyzing,
     handleInputChange,
     handleSubmit,
-    handleBack
+    handleBack,
+    handleFinish
   };
 };
