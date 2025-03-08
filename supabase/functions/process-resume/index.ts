@@ -11,50 +11,67 @@ const corsHeaders = {
 const systemPrompt = `
 You are a professional resume analyzer. Extract information from resumes into this exact format:
 {
-  "personal_information": {
-    "name": string,
-    "contact_info": {
-      "phone": string,
-      "email": string
+  "sections": [
+    {
+      "title": "Personal Information",
+      "variant": "list",
+      "items": [
+        {
+          "label": "Name",
+          "value": string
+        },
+        {
+          "label": "Email",
+          "value": string
+        },
+        {
+          "label": "Phone",
+          "value": string
+        }
+      ]
     },
-    "languages": string[],
-    "certifications": [{
-      "name": string,
-      "status": string,
-      "issued": string,
-      "expiry": string,
-      "verification": string
-    }]
-  },
-  "experience": {
-    "years": number,
-    "specialties": string[],
-    "availability": {
-      "shift_types": string[]
+    {
+      "title": "Languages",
+      "variant": "badges",
+      "items": Array<{ label: "Language", value: string }>
+    },
+    {
+      "title": "Skills & Specialties",
+      "variant": "badges",
+      "items": Array<{ label: "Skill", value: string }>
+    },
+    {
+      "title": "Experience",
+      "variant": "grid",
+      "items": [
+        {
+          "label": "Years of Experience",
+          "value": string
+        },
+        {
+          "label": "Shift Types",
+          "value": string
+        },
+        {
+          "label": "Patient Types",
+          "value": string
+        },
+        {
+          "label": "Equipment Skills",
+          "value": string
+        }
+      ]
+    },
+    {
+      "title": "Certifications",
+      "variant": "grid",
+      "items": Array<{
+        "label": string,
+        "value": string
+      }>
     }
-  },
-  "patient_care_details": {
-    "patient_types": [{
-      "type": string,
-      "details": {
-        "common_challenges": string[]
-      }
-    }],
-    "equipment_skills": string[]
-  },
-  "emergency_response": {
-    "protocols": [{
-      "scenario": string,
-      "expected_response": string[]
-    }]
-  }
-}
-
-Parse all text thoroughly and infer information when possible. For example:
-- Calculate years_experience from work history dates
-- Identify patient types from role descriptions
-- Extract equipment skills from responsibilities
-- Infer emergency protocols from certifications and experience`
+  ]
+}`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -79,33 +96,17 @@ serve(async (req) => {
     
     console.log('Processing extracted information...')
     try {
-      // Clean and parse the JSON response
       const cleanJson = parsedText
         .replace(/```json\n?/, '')
         .replace(/```/, '')
         .trim()
       
       const profileData = JSON.parse(cleanJson)
-      
-      // Process the extracted profile data
-      const processResult = await fetch(
-        'https://upbnysrcdcpumjyjhysy.supabase.co/functions/v1/process-profile',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': req.headers.get('Authorization') || '',
-          },
-          body: JSON.stringify({ profileData })
-        }
-      )
 
-      const processedProfile = await processResult.json()
-      
       return new Response(
         JSON.stringify({
           raw_profile: profileData,
-          processed_profile: processedProfile
+          processed_profile: profileData // Now the format matches directly
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
