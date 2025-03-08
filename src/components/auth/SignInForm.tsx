@@ -25,10 +25,12 @@ export const SignInForm = () => {
       if (error) {
         throw error;
       }
+      
       toast({
         title: "Success",
         description: "Successfully signed in.",
-      }
+      });
+      
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -71,3 +73,4 @@ export const SignInForm = () => {
     </form>
   );
 };
+
