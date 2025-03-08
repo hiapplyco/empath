@@ -99,8 +99,10 @@ serve(async (req) => {
     console.log('Request received:', { message, action, historyLength: history.length })
     
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
+    console.log('Initialized Gemini AI client')
+
     const model = genAI.getGenerativeModel({
-      model: "gemini-pro",
+      model: "gemini-1.0-pro",
       generationConfig: {
         temperature: 0.7,
         topP: 0.95,
@@ -108,6 +110,7 @@ serve(async (req) => {
         maxOutputTokens: 8192
       }
     })
+    console.log('Got generative model')
 
     const chat = model.startChat({
       history: [
@@ -121,6 +124,7 @@ serve(async (req) => {
         }))
       ]
     })
+    console.log('Started chat with history length:', history.length + 1)
 
     if (message === 'START_CHAT') {
       console.log('Initiating new chat')
@@ -186,7 +190,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        stack: error.stack
+      }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
