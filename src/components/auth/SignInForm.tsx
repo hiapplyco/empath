@@ -20,8 +20,9 @@ export const SignInForm = () => {
     console.log("Starting sign in process...");
 
     try {
+      // Step 1: Sign in
       console.log("Attempting to sign in with email:", email);
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      const { data: { user }, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -31,13 +32,18 @@ export const SignInForm = () => {
         throw authError;
       }
 
-      console.log("Sign in successful, checking profile:", authData.user.id);
+      if (!user) {
+        throw new Error("No user returned from auth");
+      }
+
+      console.log("Sign in successful, checking profile for user:", user.id);
       
+      // Step 2: Get profile
       const { data: profile, error: profileError } = await supabase
         .from('caregiver_profiles')
         .select('onboarding_step')
-        .eq('user_id', authData.user.id)
-        .single();
+        .eq('user_id', user.id)
+        .maybeSingle();
       
       if (profileError) {
         console.error("Profile error:", profileError);
@@ -46,13 +52,10 @@ export const SignInForm = () => {
 
       console.log("Profile data:", profile);
 
-      if (!profile || profile.onboarding_step === 1) {
-        console.log("Navigating to onboarding...");
-        navigate('/onboarding');
-      } else {
-        console.log("Navigating to dashboard...");
-        navigate('/dashboard');
-      }
+      // Step 3: Navigate based on onboarding status
+      const destination = (!profile || profile.onboarding_step === 1) ? '/onboarding' : '/dashboard';
+      console.log("Navigating to:", destination);
+      navigate(destination);
 
       toast({
         title: "Success",
