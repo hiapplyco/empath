@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
@@ -9,7 +8,6 @@ const DashboardProfile = () => {
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
-      // Get authenticated user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         console.log('No authenticated user found');
@@ -17,50 +15,31 @@ const DashboardProfile = () => {
       }
 
       console.log('Fetching profile for user:', user.id);
-
-      // First try to get profile directly
+      
       const { data: profileData, error: profileError } = await supabase
         .from('caregiver_profiles')
         .select('*')
         .eq('id', user.id)
         .maybeSingle();
 
-      console.log('Raw profile data fetched:', profileData);
-
       if (profileError) {
         console.error('Error fetching profile:', profileError);
         throw profileError;
       }
 
-      if (!profileData) {
+      if (!profileData || !profileData.processed_profile) {
         console.log('No profile data found');
         return null;
       }
 
-      // Process the profile data if gemini_response exists
-      if (profileData.gemini_response) {
-        console.log('Processing profile with gemini_response:', profileData.gemini_response);
-        
-        const { data: processedProfile, error: processError } = await supabase.functions.invoke('process-profile', {
-          body: { profileData }
-        });
-
-        console.log('Processed profile result:', processedProfile);
-
-        if (processError) {
-          console.error('Error processing profile:', processError);
-          throw processError;
-        }
-
-        return { ...profileData, processed: processedProfile };
-      }
-
-      return profileData;
+      return { 
+        ...profileData, 
+        processed: profileData.processed_profile 
+      };
     },
   });
 
   if (error) {
-    console.error('Error in profile component:', error);
     return (
       <Card className="p-4">
         <p className="text-center text-red-500">Error loading profile: {error.message}</p>
@@ -92,7 +71,7 @@ const DashboardProfile = () => {
   if (!profile?.processed?.sections) {
     return (
       <Card className="p-4">
-        <p className="text-center text-gray-500">No profile data available or profile needs to be processed. Please complete the onboarding chat to create your profile.</p>
+        <p className="text-center text-gray-500">No profile data available. Please complete the onboarding process.</p>
       </Card>
     );
   }

@@ -154,11 +154,29 @@ serve(async (req) => {
         
         console.log('Cleaned JSON:', cleanJson)
         
+        const processResult = await fetch(
+          'https://upbnysrcdcpumjyjhysy.supabase.co/functions/v1/process-profile',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': req.headers.get('Authorization') || '',
+            },
+            body: JSON.stringify({ profileData: JSON.parse(cleanJson) })
+          }
+        )
+
+        const processedProfile = await processResult.json()
         const profile = JSON.parse(cleanJson)
-        console.log('Final profile:', profile)
 
         return new Response(
-          JSON.stringify({ type: 'profile', data: profile }),
+          JSON.stringify({ 
+            type: 'profile', 
+            data: {
+              raw_profile: profile,
+              processed_profile: processedProfile
+            }
+          }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       } catch (error) {
