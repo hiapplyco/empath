@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
@@ -8,11 +9,17 @@ const DashboardProfile = () => {
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['caregiver-profile'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user found');
+
       // First get the profile data using maybeSingle() instead of single()
       const { data: profileData, error: profileError } = await supabase
         .from('caregiver_profiles')
         .select('*')
+        .eq('id', user.id)
         .maybeSingle();
+
+      console.log('Profile data fetched:', profileData); // Debug log
 
       if (profileError) throw profileError;
       if (!profileData) return null;
@@ -22,6 +29,8 @@ const DashboardProfile = () => {
         const { data: processedProfile, error: processError } = await supabase.functions.invoke('process-profile', {
           body: { profileData: profileData.gemini_response }
         });
+
+        console.log('Processed profile:', processedProfile); // Debug log
 
         if (processError) throw processError;
         return { ...profileData, processed: processedProfile };
