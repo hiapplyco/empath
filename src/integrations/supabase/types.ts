@@ -9,6 +9,210 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      care_needs: {
+        Row: {
+          care_duration: string | null
+          care_frequency: Database["public"]["Enums"]["care_frequency"] | null
+          care_level: Database["public"]["Enums"]["care_level"]
+          created_at: string | null
+          id: string
+          location_details: Json | null
+          primary_care_reason: string
+          recipient_id: string
+          schedule_requirements: Json | null
+          shift_length: number | null
+          specific_needs: string[] | null
+          start_date: string | null
+          urgency: string | null
+        }
+        Insert: {
+          care_duration?: string | null
+          care_frequency?: Database["public"]["Enums"]["care_frequency"] | null
+          care_level: Database["public"]["Enums"]["care_level"]
+          created_at?: string | null
+          id?: string
+          location_details?: Json | null
+          primary_care_reason: string
+          recipient_id: string
+          schedule_requirements?: Json | null
+          shift_length?: number | null
+          specific_needs?: string[] | null
+          start_date?: string | null
+          urgency?: string | null
+        }
+        Update: {
+          care_duration?: string | null
+          care_frequency?: Database["public"]["Enums"]["care_frequency"] | null
+          care_level?: Database["public"]["Enums"]["care_level"]
+          created_at?: string | null
+          id?: string
+          location_details?: Json | null
+          primary_care_reason?: string
+          recipient_id?: string
+          schedule_requirements?: Json | null
+          shift_length?: number | null
+          specific_needs?: string[] | null
+          start_date?: string | null
+          urgency?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_needs_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "care_recipients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      care_preferences: {
+        Row: {
+          allergies: string[] | null
+          created_at: string | null
+          desired_traits: string[] | null
+          driving_required: boolean | null
+          experience_level: number | null
+          gender_preference:
+            | Database["public"]["Enums"]["gender_preference"]
+            | null
+          hourly_rate_range: Json | null
+          id: string
+          language_requirements: string[] | null
+          lifting_requirement: number | null
+          other_requirements: string | null
+          recipient_id: string
+          required_certifications: string[] | null
+          special_skills: string[] | null
+          vaccination_requirements: string[] | null
+          weekly_hours: number | null
+        }
+        Insert: {
+          allergies?: string[] | null
+          created_at?: string | null
+          desired_traits?: string[] | null
+          driving_required?: boolean | null
+          experience_level?: number | null
+          gender_preference?:
+            | Database["public"]["Enums"]["gender_preference"]
+            | null
+          hourly_rate_range?: Json | null
+          id?: string
+          language_requirements?: string[] | null
+          lifting_requirement?: number | null
+          other_requirements?: string | null
+          recipient_id: string
+          required_certifications?: string[] | null
+          special_skills?: string[] | null
+          vaccination_requirements?: string[] | null
+          weekly_hours?: number | null
+        }
+        Update: {
+          allergies?: string[] | null
+          created_at?: string | null
+          desired_traits?: string[] | null
+          driving_required?: boolean | null
+          experience_level?: number | null
+          gender_preference?:
+            | Database["public"]["Enums"]["gender_preference"]
+            | null
+          hourly_rate_range?: Json | null
+          id?: string
+          language_requirements?: string[] | null
+          lifting_requirement?: number | null
+          other_requirements?: string | null
+          recipient_id?: string
+          required_certifications?: string[] | null
+          special_skills?: string[] | null
+          vaccination_requirements?: string[] | null
+          weekly_hours?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_preferences_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "care_recipients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      care_recipients: {
+        Row: {
+          accessibility_needs: string[] | null
+          additional_languages: string[] | null
+          age: number | null
+          first_name: string
+          gender: string | null
+          id: string
+          last_name: string | null
+          medical_overview: string | null
+          primary_language: string | null
+          profile_id: string
+        }
+        Insert: {
+          accessibility_needs?: string[] | null
+          additional_languages?: string[] | null
+          age?: number | null
+          first_name: string
+          gender?: string | null
+          id?: string
+          last_name?: string | null
+          medical_overview?: string | null
+          primary_language?: string | null
+          profile_id: string
+        }
+        Update: {
+          accessibility_needs?: string[] | null
+          additional_languages?: string[] | null
+          age?: number | null
+          first_name?: string
+          gender?: string | null
+          id?: string
+          last_name?: string | null
+          medical_overview?: string | null
+          primary_language?: string | null
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_recipients_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "care_seeker_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      care_seeker_profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          onboarding_completed: boolean | null
+          onboarding_step: number | null
+          relationship_to_recipient: Database["public"]["Enums"]["care_recipient_relation"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          onboarding_completed?: boolean | null
+          onboarding_step?: number | null
+          relationship_to_recipient: Database["public"]["Enums"]["care_recipient_relation"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          onboarding_completed?: boolean | null
+          onboarding_step?: number | null
+          relationship_to_recipient?: Database["public"]["Enums"]["care_recipient_relation"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       caregiver_metrics: {
         Row: {
           average_rating: number | null
@@ -380,7 +584,10 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      care_frequency: "one_time" | "recurring" | "full_time"
+      care_level: "light" | "moderate" | "extensive"
+      care_recipient_relation: "self" | "family_member" | "friend" | "client"
+      gender_preference: "no_preference" | "male" | "female" | "other"
     }
     CompositeTypes: {
       [_ in never]: never
