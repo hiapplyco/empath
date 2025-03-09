@@ -8,8 +8,6 @@ interface OnboardingProgressProps {
 const steps = [
   "Initial Assessment",
   "Document Verification",
-  "Skills Assessment",
-  "Training",
   "Personalization",
   "Welcome"
 ];
