@@ -9,10 +9,6 @@ export default function LandingHero() {
     navigate('/auth');
   };
 
-  const handleCaregiverSearch = () => {
-    navigate('/care-seeker/onboarding');
-  };
-
   return (
     <section className="container mx-auto px-6 py-16 md:py-24 flex flex-col md:flex-row items-center gap-10">
       <div className="md:w-1/2 space-y-6">
@@ -23,12 +19,15 @@ export default function LandingHero() {
           em.path brings caregivers and care recipients together through empathy, understanding, and support—creating relationships that truly matter.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-          <Button 
-            className="bg-purple-600 hover:bg-purple-700 text-white py-6 px-8 rounded-xl shadow-md"
-            onClick={handleCaregiverSearch}
-          >
-            I need a caregiver
-          </Button>
+          <div className="flex flex-col items-center">
+            <Button 
+              className="bg-gray-300 hover:bg-gray-300 cursor-not-allowed text-gray-600 py-6 px-8 rounded-xl shadow-md"
+              disabled
+            >
+              I need a caregiver
+            </Button>
+            <span className="text-sm text-gray-500 mt-1">Coming soon</span>
+          </div>
           <Button 
             variant="outline" 
             className="border-purple-600 text-purple-700 hover:bg-purple-50 py-6 px-8 rounded-xl"
