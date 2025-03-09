@@ -14,7 +14,7 @@ export const MessageBubble = ({ role, content }: MessageBubbleProps) => {
       <div
         className={`rounded-lg px-4 py-2 max-w-[80%] ${
           role === 'assistant'
-            ? 'bg-secondary text-secondary-foreground'
+            ? 'bg-[#E5DEFF] text-gray-800'
             : 'bg-primary text-primary-foreground'
         }`}
       >
