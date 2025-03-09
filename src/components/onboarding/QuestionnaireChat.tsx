@@ -49,7 +49,9 @@ export const QuestionnaireChat = () => {
             <Check className="h-4 w-4 mr-2" />
             End Interview
           </Button>
-          <p className="text-sm text-center text-gray-500">End the interview at anytime by clicking here</p>
+          <p className="text-sm text-center text-gray-500">
+            End the interview at anytime by clicking here
+          </p>
         </div>
       </div>
 

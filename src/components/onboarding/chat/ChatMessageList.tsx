@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 interface Message {
   role: 'assistant' | 'user';
   content: string;
+  isProfileData?: boolean;
 }
 
 interface ChatMessageListProps {
@@ -30,7 +31,8 @@ export const ChatMessageList = ({ messages }: ChatMessageListProps) => {
           <MessageBubble
             key={i}
             role={message.role}
-            content={message.content.replace(/```json[\s\S]*?```/g, '')}
+            content={message.content}
+            isProfileData={message.isProfileData}
           />
         ))}
         <div ref={messagesEndRef} />

@@ -152,6 +152,11 @@ export const useChat = (): UseChatReturn => {
       if (error) throw error;
 
       if (data.type === 'profile') {
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: JSON.stringify(data.data.raw_profile),
+          isProfileData: true
+        }]);
         await handleProfileData(data.data);
       }
     } catch (error: any) {
