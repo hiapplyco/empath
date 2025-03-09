@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { ChatMessageList } from "./chat/ChatMessageList";
 import { ChatInput } from "./chat/ChatInput";
 import { useChat } from "@/hooks/useChat";
-import { AlertCircle } from "lucide-react";
+import { Check } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,15 +40,17 @@ export const QuestionnaireChat = () => {
           onSubmit={handleSubmit}
           onBack={handleBack}
         />
-        <Button 
-          variant="destructive" 
-          className="w-full"
-          onClick={() => setShowEndConfirmation(true)}
-          disabled={isAnalyzing}
-        >
-          <AlertCircle className="h-4 w-4 mr-2" />
-          End Interview
-        </Button>
+        <div className="space-y-1">
+          <Button 
+            className="w-full bg-green-600 hover:bg-green-700"
+            onClick={() => setShowEndConfirmation(true)}
+            disabled={isAnalyzing}
+          >
+            <Check className="h-4 w-4 mr-2" />
+            End Interview
+          </Button>
+          <p className="text-sm text-center text-gray-500">End the interview at anytime by clicking here</p>
+        </div>
       </div>
 
       <AlertDialog open={showEndConfirmation} onOpenChange={setShowEndConfirmation}>
@@ -73,4 +75,3 @@ export const QuestionnaireChat = () => {
     </Card>
   );
 };
-
