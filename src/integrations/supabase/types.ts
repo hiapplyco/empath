@@ -213,6 +213,54 @@ export type Database = {
         }
         Relationships: []
       }
+      caregiver_documents: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          expires_at: string | null
+          file_name: string | null
+          file_path: string | null
+          id: string
+          required: boolean | null
+          status: Database["public"]["Enums"]["document_status"] | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          verification_notes: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          expires_at?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          required?: boolean | null
+          status?: Database["public"]["Enums"]["document_status"] | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          verification_notes?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          document_type?: Database["public"]["Enums"]["document_type"]
+          expires_at?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          required?: boolean | null
+          status?: Database["public"]["Enums"]["document_status"] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          verification_notes?: string | null
+        }
+        Relationships: []
+      }
       caregiver_metrics: {
         Row: {
           average_rating: number | null
@@ -587,6 +635,22 @@ export type Database = {
       care_frequency: "one_time" | "recurring" | "full_time"
       care_level: "light" | "moderate" | "extensive"
       care_recipient_relation: "self" | "family_member" | "friend" | "client"
+      document_status:
+        | "pending"
+        | "uploading"
+        | "uploaded"
+        | "verified"
+        | "rejected"
+        | "expired"
+      document_type:
+        | "government_id"
+        | "certification"
+        | "background_check"
+        | "medical"
+        | "tax"
+        | "training"
+        | "insurance"
+        | "other"
       gender_preference: "no_preference" | "male" | "female" | "other"
     }
     CompositeTypes: {
