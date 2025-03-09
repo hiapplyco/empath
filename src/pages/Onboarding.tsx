@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 import { QuestionnaireChat } from "@/components/onboarding/QuestionnaireChat";
 import { AudioExperienceRecorder } from "@/components/onboarding/AudioExperienceRecorder";
 import { SkipForward } from "lucide-react";
+import { OnboardingNavigation } from "@/components/onboarding/OnboardingNavigation";
 
 const OnboardingPage = () => {
   const [step, setStep] = useState(1);
@@ -73,20 +73,13 @@ const OnboardingPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-8">
-        <div className="flex justify-between items-center">
-          <OnboardingProgress currentStep={step} />
-          <Button 
-            variant="ghost" 
-            onClick={handleSkip}
-            className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-          >
-            <SkipForward className="h-4 w-4 mr-2" />
-            Skip to Documents
-          </Button>
+        <div className="flex flex-col space-y-6">
+          <OnboardingNavigation showSkip={true} />
+          <OnboardingProgress currentStep={1} />
         </div>
 
         {step === 1 && (
-          <Card>
+          <Card className="shadow-lg border-gray-100">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl font-bold">
                 Welcome to em.path!
@@ -125,7 +118,7 @@ const OnboardingPage = () => {
         )}
 
         {step === 2 && (
-          <Card>
+          <Card className="shadow-lg border-gray-100">
             <CardContent className="pt-6">
               {inputMethod === "resume" && <FileUpload onComplete={() => setStep(3)} />}
               {inputMethod === "audio" && <AudioExperienceRecorder />}
