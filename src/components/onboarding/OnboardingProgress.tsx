@@ -29,7 +29,7 @@ export const OnboardingProgress = ({ currentStep }: OnboardingProgressProps) => 
           return (
             <div
               key={step}
-              className={`relative flex flex-col items-center space-y-3 ${
+              className={`relative flex flex-col items-center ${
                 isCurrent ? "text-purple-600" : isCompleted ? "text-green-600" : "text-gray-400"
               }`}
             >
@@ -43,7 +43,13 @@ export const OnboardingProgress = ({ currentStep }: OnboardingProgressProps) => 
                   <Circle className={`h-8 w-8 bg-white rounded-full ${isCurrent ? "animate-pulse" : ""}`} />
                 )}
               </div>
-              <span className="absolute -bottom-6 text-xs font-medium text-center w-20 hidden sm:block">
+              <span 
+                className={`
+                  absolute -bottom-8 text-xs font-medium text-center w-24 
+                  hidden sm:block whitespace-normal px-1
+                  ${isCurrent ? "text-purple-600" : "text-gray-500"}
+                `}
+              >
                 {step}
               </span>
             </div>
