@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
 interface BasicInfoProps {
   onComplete: (data: any) => void;
@@ -10,12 +12,32 @@ interface BasicInfoProps {
 
 export const BasicInfo = ({ onComplete }: BasicInfoProps) => {
   const [relationship, setRelationship] = useState<string>("");
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onComplete({
-      relationship_to_recipient: relationship,
-    });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Please sign in to continue"
+        });
+        return;
+      }
+
+      onComplete({
+        relationship_to_recipient: relationship,
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message
+      });
+    }
   };
 
   return (
