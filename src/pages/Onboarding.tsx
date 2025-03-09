@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +12,7 @@ import { VideoRecorder } from "@/components/onboarding/VideoRecorder";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 import { QuestionnaireChat } from "@/components/onboarding/QuestionnaireChat";
 import { AudioExperienceRecorder } from "@/components/onboarding/AudioExperienceRecorder";
+import { SkipForward } from "lucide-react";
 
 const OnboardingPage = () => {
   const [step, setStep] = useState(1);
@@ -64,10 +65,24 @@ const OnboardingPage = () => {
     }
   };
 
+  const handleSkip = () => {
+    navigate('/onboarding/documents');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-8">
-        <OnboardingProgress currentStep={step} />
+        <div className="flex justify-between items-center">
+          <OnboardingProgress currentStep={step} />
+          <Button 
+            variant="ghost" 
+            onClick={handleSkip}
+            className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+          >
+            <SkipForward className="h-4 w-4 mr-2" />
+            Skip to Documents
+          </Button>
+        </div>
 
         {step === 1 && (
           <Card>

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { ChatMessage } from "@/types/chat";
 
 interface Message {
   role: 'assistant' | 'user';
@@ -77,7 +76,7 @@ export const useChat = (): UseChatReturn => {
       document.querySelector('.chat-container')?.classList.add('animate-fade-out');
       
       setTimeout(() => {
-        navigate('/dashboard/profile');
+        navigate('/onboarding/documents');
       }, 500);
     } catch (error: any) {
       console.error('Profile saving error:', error);
