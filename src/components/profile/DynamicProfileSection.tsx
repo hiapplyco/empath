@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -158,8 +157,8 @@ export const DynamicProfileSection = ({ section }: DynamicProfileSectionProps) =
           <div className="space-y-2">
             {section.items.map((item, index) => (
               <div key={index} className="flex items-center">
-                <span className="text-sm text-gray-500 w-1/3">{item.label}:</span>
-                <span className="font-medium">{item.value}</span>
+                <span className="text-sm text-gray-500 w-24">{item.label}:</span>
+                <span className="font-medium ml-4">{item.value}</span>
               </div>
             ))}
           </div>
@@ -170,7 +169,7 @@ export const DynamicProfileSection = ({ section }: DynamicProfileSectionProps) =
           <div className="space-y-4">
             {section.items.map((item, index) => (
               <div key={index}>
-                <p className="text-sm text-gray-500">{item.label}</p>
+                <p className="text-sm text-gray-500 mb-1">{item.label}</p>
                 <p className="font-medium">{item.value}</p>
               </div>
             ))}
