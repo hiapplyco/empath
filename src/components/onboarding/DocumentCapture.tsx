@@ -6,6 +6,7 @@ import { SubmittedDocumentsSection } from "./documents/SubmittedDocumentsSection
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 export const DocumentCapture = () => {
   const navigate = useNavigate();
@@ -14,10 +15,24 @@ export const DocumentCapture = () => {
     navigate('/dashboard');
   };
 
+  const handleBack = () => {
+    navigate('/onboarding');
+  };
+
   return (
     <div className="container max-w-4xl mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Document Verification</h1>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={handleBack}
+            className="rounded-full"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-2xl font-bold text-gray-900">Document Verification</h1>
+        </div>
         <Button 
           variant="ghost" 
           onClick={handleSkip}
