@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Star, Filter, Search, MessageSquare, Calendar, CreditCard, Settings, Phone, MapPin, Clock, ChevronRight, BookOpen, Shield } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const CareRecipientDashboard = () => {
   const [activeTab, setActiveTab] = useState('matches');
+  const navigate = useNavigate();
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -92,7 +94,12 @@ const CareRecipientDashboard = () => {
                 <Filter className="h-4 w-4" />
                 Filters
               </Button>
-              <Button className="bg-purple-600 hover:bg-purple-700">View Care Profile</Button>
+              <Button 
+                className="bg-purple-600 hover:bg-purple-700"
+                onClick={() => navigate('/care-seeker/profile')}
+              >
+                View Care Profile
+              </Button>
             </div>
           </div>
 
