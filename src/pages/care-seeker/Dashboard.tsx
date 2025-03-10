@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CareRecipientDashboard } from '@/components/care-seeker/dashboard/CareRecipientDashboard';
+import CareRecipientDashboard from '@/components/care-seeker/dashboard/CareRecipientDashboard';
 
 const Dashboard = () => {
   return <CareRecipientDashboard />;
