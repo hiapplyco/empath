@@ -11,9 +11,7 @@ export default function LandingNavigation() {
   return (
     <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
       <div className="flex items-center">
-        <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center mr-2">
-          <img src="/empath-simple-logo.svg" alt="em.path logo" className="w-6 h-6" />
-        </div>
+        <img src="/empath-simple-logo.svg" alt="em.path logo" className="w-8 h-8 mr-2" />
         <span className="text-2xl font-bold text-purple-800">em.path</span>
       </div>
       <div className="hidden md:flex space-x-6 text-purple-800">
