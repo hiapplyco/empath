@@ -1,4 +1,4 @@
-
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { SupabaseClient, createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
@@ -121,7 +121,7 @@ serve(async (req) => {
   try {
     const { message, history = [], language = 'en', action } = await req.json();
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-2.0" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" }); // Changed from gemini-flash-2.0 to gemini-pro
 
     const chat = model.startChat({
       history: [
@@ -144,8 +144,9 @@ serve(async (req) => {
 
     if (action === 'start') {
       const result = await chat.sendMessage(
-        "Start a conversation with a warm greeting and ask about language preference."
+        `Start a conversation in ${language === 'en' ? 'English' : language === 'es' ? 'Spanish' : 'French'} with a warm greeting and ask about who needs care (self or loved one).`
       );
+      
       return new Response(
         JSON.stringify({ 
           type: 'message',
@@ -155,7 +156,10 @@ serve(async (req) => {
       );
     }
 
+    console.log('Sending message:', message);
     const result = await chat.sendMessage(message);
+    console.log('Received response');
+    
     return new Response(
       JSON.stringify({ 
         type: 'message',
