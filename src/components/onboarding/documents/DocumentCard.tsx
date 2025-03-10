@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { UploadCloud, Camera, Clock, FileText } from "lucide-react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useToast } from "@/hooks/use-toast";
+import { DocumentUpload } from "./DocumentUpload";
 
 interface DocumentCardProps {
   title: string;
