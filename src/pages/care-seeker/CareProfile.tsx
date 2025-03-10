@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -65,13 +64,15 @@ const CareProfile = () => {
       return recipientData;
     },
     retry: 1,
-    onError: (error) => {
-      console.error('Profile fetch error:', error);
-      toast({
-        variant: "destructive",
-        title: "Error loading profile",
-        description: "Could not load your care profile. Please try again later."
-      });
+    onSettled: (data, error) => {
+      if (error) {
+        console.error('Profile fetch error:', error);
+        toast({
+          variant: "destructive",
+          title: "Error loading profile",
+          description: "Could not load your care profile. Please try again later."
+        });
+      }
     }
   });
 
