@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -33,8 +34,9 @@ export const QuestionnaireChat = () => {
   const [showEndConfirmation, setShowEndConfirmation] = useState(false);
 
   return (
-    <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col chat-container animate-fade-in">
-      <div className="border-b p-4 flex items-center justify-between">
+    <div className="flex flex-col h-[calc(100vh-200px)]">
+      {/* Header */}
+      <div className="border-b p-4 flex items-center justify-between bg-white">
         <Button variant="ghost" onClick={handleBack} className="gap-2">Back</Button>
         <div className="flex items-center gap-4">
           <LanguageSelector 
@@ -42,7 +44,7 @@ export const QuestionnaireChat = () => {
             onLanguageChange={handleLanguageChange}
           />
           <Button 
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-purple-600 hover:bg-purple-700"
             onClick={() => setShowEndConfirmation(true)}
             disabled={isAnalyzing}
           >
@@ -52,15 +54,21 @@ export const QuestionnaireChat = () => {
         </div>
       </div>
 
-      <ChatMessageList messages={messages} />
-      
-      <div className="p-4 border-t space-y-4">
+      {/* Progress Bar */}
+      <Progress value={messages.length * 10} className="h-1" />
+
+      {/* Messages */}
+      <div className="flex-grow overflow-y-auto p-4 space-y-4">
+        <ChatMessageList messages={messages} />
+      </div>
+
+      {/* Input */}
+      <div className="border-t p-4 bg-white">
         <ChatInput
           input={input}
-          isAnalyzing={isAnalyzing}
+          isLoading={isAnalyzing}
           onInputChange={handleInputChange}
-          onSubmit={handleSubmit}
-          onBack={handleBack}
+          onSendMessage={handleSubmit}
         />
       </div>
 
@@ -83,6 +91,6 @@ export const QuestionnaireChat = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Card>
+    </div>
   );
 };

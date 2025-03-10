@@ -1,12 +1,9 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageBubble } from "./MessageBubble";
-import { useEffect, useRef } from "react";
 
 interface Message {
   role: 'assistant' | 'user';
   content: string;
-  isProfileData?: boolean;
 }
 
 interface ChatMessageListProps {
@@ -14,29 +11,19 @@ interface ChatMessageListProps {
 }
 
 export const ChatMessageList = ({ messages }: ChatMessageListProps) => {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   return (
-    <ScrollArea className="flex-1 p-4">
-      <div className="space-y-4">
-        {messages.map((message, i) => (
-          <MessageBubble
-            key={i}
-            role={message.role}
-            content={message.content}
-            isProfileData={message.isProfileData}
-          />
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
-    </ScrollArea>
+    <div className="space-y-4">
+      {messages.map((message, index) => (
+        <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div className={`rounded-xl px-4 py-2 max-w-2xl ${
+            message.role === 'user' 
+              ? 'bg-purple-100 text-gray-700' 
+              : 'bg-gray-100 text-gray-700'
+          }`}>
+            {message.content}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };

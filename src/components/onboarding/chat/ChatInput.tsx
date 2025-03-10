@@ -1,48 +1,36 @@
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Send, ArrowLeft } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Send } from "lucide-react";
 
 interface ChatInputProps {
   input: string;
-  isAnalyzing: boolean;
+  isLoading: boolean;
   onInputChange: (value: string) => void;
-  onSubmit: () => void;
-  onBack: () => void;
+  onSendMessage: () => void;
 }
 
-export const ChatInput = ({
-  input,
-  isAnalyzing,
-  onInputChange,
-  onSubmit,
-  onBack,
-}: ChatInputProps) => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit();
+export const ChatInput = ({ input, isLoading, onInputChange, onSendMessage }: ChatInputProps) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      onSendMessage();
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <Input
+    <div className="flex items-center gap-2">
+      <Textarea
+        rows={1}
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
-        placeholder="Type your message..."
-        disabled={isAnalyzing}
+        onKeyDown={handleKeyDown}
+        placeholder="Type your message here..."
+        className="resize-none border-none focus-visible:ring-0"
       />
-      <Button type="submit" disabled={isAnalyzing}>
-        <Send className="h-4 w-4" />
+      <Button onClick={onSendMessage} disabled={isLoading}>
+        <Send className="h-5 w-5" />
       </Button>
-      <Button
-        type="button"
-        variant="outline"
-        onClick={onBack}
-        className="flex items-center gap-2"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Button>
-    </form>
+    </div>
   );
 };
