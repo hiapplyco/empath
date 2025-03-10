@@ -1,8 +1,9 @@
+
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 
 interface ReviewProfileProps {
@@ -12,6 +13,7 @@ interface ReviewProfileProps {
 
 export const ReviewProfile = ({ formData, onBack }: ReviewProfileProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const handleSubmit = async () => {
     try {
@@ -83,3 +85,4 @@ export const ReviewProfile = ({ formData, onBack }: ReviewProfileProps) => {
     </div>
   );
 };
+
