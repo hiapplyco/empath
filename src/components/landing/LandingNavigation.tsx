@@ -1,6 +1,4 @@
-
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function LandingNavigation() {
@@ -14,7 +12,7 @@ export default function LandingNavigation() {
     <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
       <div className="flex items-center">
         <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center mr-2">
-          <Heart className="text-white w-5 h-5" />
+          <img src="/empath-simple-logo.svg" alt="em.path logo" className="w-6 h-6" />
         </div>
         <span className="text-2xl font-bold text-purple-800">em.path</span>
       </div>
