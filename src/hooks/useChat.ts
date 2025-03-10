@@ -1,91 +1,56 @@
-import { useState, useEffect } from 'react';
+
+import { useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useConversation } from './chat/useConversation';
+import { useProfileGeneration } from './chat/useProfileGeneration';
+import { useOnboardingNavigation } from './chat/useOnboardingNavigation';
+import { Message } from './chat/types';
 
-interface Message {
-  role: 'assistant' | 'user';
-  content: string;
-}
+export const useChat = () => {
+  const {
+    messages,
+    chatState,
+    setChatState,
+    input,
+    setInput,
+    addMessage,
+    clearConversation
+  } = useConversation();
+  
+  const { generateProfile, isExiting } = useProfileGeneration(messages);
+  const { handleBack, proceedToDocuments } = useOnboardingNavigation();
 
-interface UseChatReturn {
-  messages: Message[];
-  input: string;
-  isAnalyzing: boolean;
-  handleInputChange: (value: string) => void;
-  handleSubmit: () => Promise<void>;
-  handleBack: () => void;
-  handleFinish: () => Promise<void>;
-}
-
-export const useChat = (): UseChatReturn => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
-
+  // Initialize chat if no saved conversation exists
   useEffect(() => {
-    const startChat = async () => {
-      setIsAnalyzing(true);
-      try {
-        const { data, error } = await supabase.functions.invoke('gemini-chat', {
-          body: { message: 'START_CHAT' }
-        });
+    if (messages.length === 0) {
+      startChat();
+    }
+  }, [messages]);
 
-        if (error) throw error;
-
-        if (data.type === 'message') {
-          setMessages([{ role: 'assistant', content: data.text }]);
-        }
-      } catch (error: any) {
-        console.error('Error starting chat:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to start the chat. Please try again."
-        });
-      } finally {
-        setIsAnalyzing(false);
-      }
-    };
-
-    startChat();
-  }, [toast]);
-
-  const handleProfileData = async (profileData: any) => {
+  const startChat = async () => {
+    setChatState('initializing');
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No authenticated user found');
-
-      const { error: profileError } = await supabase
-        .from('caregiver_profiles')
-        .upsert({
-          id: user.id,
-          gemini_response: profileData.raw_profile,
-          processed_profile: profileData.processed_profile
-        });
-
-      if (profileError) throw profileError;
-
-      toast({
-        title: "Profile Created",
-        description: "Your profile has been successfully created!"
+      const { data, error } = await supabase.functions.invoke('gemini-chat', {
+        body: { 
+          message: 'START_CHAT',
+          userContext: {
+            name: user?.user_metadata?.full_name,
+            email: user?.email,
+            onboardingStep: 'profile_creation'
+          }
+        }
       });
-      
-      document.querySelector('.chat-container')?.classList.add('animate-fade-out');
-      
-      setTimeout(() => {
-        navigate('/onboarding/documents');
-      }, 500);
-    } catch (error: any) {
-      console.error('Profile saving error:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save profile. Please try again."
-      });
-      throw error;
+
+      if (error) throw error;
+
+      if (data.type === 'message') {
+        addMessage({ role: 'assistant', content: data.text });
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+    } finally {
+      setChatState('idle');
     }
   };
 
@@ -94,86 +59,67 @@ export const useChat = (): UseChatReturn => {
   };
 
   const handleSubmit = async () => {
-    if (!input.trim() || isAnalyzing) return;
+    if (!input.trim() || chatState !== 'idle') return;
 
     const userMessage = input.trim();
     setInput('');
-    setIsAnalyzing(true);
+    setChatState('sending');
     
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    addMessage({ role: 'user', content: userMessage });
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: { 
           message: userMessage,
-          history: messages.map(m => ({ role: m.role, text: m.content }))
+          history: messages.map(m => ({ role: m.role, text: m.content })),
+          userContext: {
+            name: user?.user_metadata?.full_name,
+            email: user?.email,
+            onboardingStep: 'profile_creation'
+          }
         }
       });
 
       if (error) throw error;
 
       if (data.type === 'message') {
-        setMessages(prev => [...prev, { 
+        addMessage({ 
           role: 'assistant', 
           content: data.text 
-        }]);
-      } else if (data.type === 'profile') {
-        await handleProfileData(data.data);
+        });
       }
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error in conversation:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to process your message. Please try again."
-      });
     } finally {
-      setIsAnalyzing(false);
+      setChatState('idle');
     }
-  };
-
-  const handleBack = () => {
-    window.location.href = '/onboarding';
   };
 
   const handleFinish = async () => {
-    setIsAnalyzing(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('gemini-chat', {
-        body: { 
-          message: 'END_INTERVIEW',
-          history: messages.map(m => ({ role: m.role, text: m.content })),
-          action: 'finish'
-        }
-      });
+    setChatState('generating-profile');
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    const success = await generateProfile({
+      name: user?.user_metadata?.full_name,
+      email: user?.email,
+      onboardingStep: 'profile_creation'
+    });
 
-      if (error) throw error;
-
-      if (data.type === 'profile') {
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: JSON.stringify(data.data.raw_profile),
-          isProfileData: true
-        }]);
-        await handleProfileData(data.data);
-      }
-    } catch (error: any) {
-      console.error('Error finishing interview:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to generate your profile. Please try again."
-      });
-    } finally {
-      setIsAnalyzing(false);
+    if (success) {
+      clearConversation();
+      proceedToDocuments();
     }
+    
+    setChatState('idle');
   };
 
   return {
     messages,
     input,
-    isAnalyzing,
+    isAnalyzing: chatState !== 'idle',
+    isExiting,
     handleInputChange,
     handleSubmit,
     handleBack,
