@@ -29,7 +29,8 @@ export const QuestionnaireChat = () => {
     handleSubmit,
     handleBack,
     handleFinish,
-    handleLanguageChange
+    handleLanguageChange,
+    generateAndProceedToDocuments
   } = useChat();
   const [showEndConfirmation, setShowEndConfirmation] = useState(false);
 
@@ -93,14 +94,14 @@ export const QuestionnaireChat = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Continue to Document Upload</AlertDialogTitle>
             <AlertDialogDescription>
-              Thank you for completing the interview! The next step is to upload your required documents. Would you like to proceed?
+              We'll analyze your responses and prepare your profile before proceeding to document upload. Would you like to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Stay Here</AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
+            <AlertDialogAction onClick={async () => {
               setShowEndConfirmation(false);
-              handleFinish();
+              await generateAndProceedToDocuments();
             }}>
               Continue to Documents
             </AlertDialogAction>

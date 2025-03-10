@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
 import { useConversation } from './chat/useConversation';
@@ -23,7 +22,6 @@ export const useChat = () => {
   const { generateProfile, isExiting } = useProfileGeneration(messages);
   const { handleBack, proceedToDocuments } = useOnboardingNavigation();
 
-  // Initialize chat if no saved conversation exists
   useEffect(() => {
     if (messages.length === 0) {
       startChat();
@@ -138,7 +136,7 @@ export const useChat = () => {
     }
   };
 
-  const handleFinish = async () => {
+  const generateAndProceedToDocuments = async () => {
     setChatState('generating-profile');
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -156,6 +154,10 @@ export const useChat = () => {
     setChatState('idle');
   };
 
+  const handleFinish = async () => {
+    await generateAndProceedToDocuments();
+  };
+
   return {
     messages,
     input,
@@ -166,6 +168,7 @@ export const useChat = () => {
     handleSubmit,
     handleBack,
     handleFinish,
-    handleLanguageChange
+    handleLanguageChange,
+    generateAndProceedToDocuments
   };
 };
