@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 
 interface CameraCaptureProps {
-  documentType: 'government_id' | 'certification' | 'background_check' | 'medical';
+  documentType: 'government_id' | 'certification' | 'background_check' | 'medical' | 'training' | 'insurance' | 'other';
   onCapture: (filePath: string) => void;
   isOpen: boolean;
   onClose: () => void;

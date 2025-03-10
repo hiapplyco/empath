@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { CameraCapture } from './CameraCapture';
 
 interface DocumentUploadProps {
-  documentType: 'government_id' | 'certification' | 'background_check' | 'medical';
+  documentType: 'government_id' | 'certification' | 'background_check' | 'medical' | 'training' | 'insurance' | 'other';
   onUploadComplete: (filePath: string) => void;
 }
 
@@ -38,3 +38,4 @@ export const DocumentUpload = ({ documentType, onUploadComplete }: DocumentUploa
     </>
   );
 };
+
