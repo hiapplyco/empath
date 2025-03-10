@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft } from "lucide-react";
@@ -37,7 +36,7 @@ export const ManualOnboarding = ({ onBack }: ManualOnboardingProps) => {
   const progress = Math.min((step / 6) * 100, 100);
 
   return (
-    <Card className="p-6">
+    <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <Button variant="ghost" onClick={onBack} className="gap-2">
           <ChevronLeft className="h-4 w-4" /> Back to Selection
@@ -102,6 +101,6 @@ export const ManualOnboarding = ({ onBack }: ManualOnboardingProps) => {
           onBack={() => setStep(6)}
         />
       )}
-    </Card>
+    </div>
   );
 };
