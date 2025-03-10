@@ -476,6 +476,39 @@ export type Database = {
         }
         Relationships: []
       }
+      document_verifications: {
+        Row: {
+          created_at: string | null
+          document_path: string
+          document_type: string
+          id: string
+          status: string
+          updated_at: string | null
+          user_id: string
+          verification_results: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          document_path: string
+          document_type: string
+          id?: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+          verification_results?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          document_path?: string
+          document_type?: string
+          id?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+          verification_results?: Json | null
+        }
+        Relationships: []
+      }
       mentor_relationships: {
         Row: {
           created_at: string | null

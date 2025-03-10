@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -129,7 +128,7 @@ export const DocumentCard = ({
             >
               <UploadCloud className="h-10 w-10 text-purple-500 mb-2 group-hover:scale-110 transition-transform" />
               <p className="text-sm text-center text-purple-700 font-medium">
-                Click to upload or drag and drop
+                Click to upload or use camera
               </p>
               <p className="text-xs text-gray-500 text-center mt-1">
                 PDF, PNG, or JPG (max. 5MB)
@@ -137,25 +136,13 @@ export const DocumentCard = ({
             </div>
             
             {showOptions && (
-              <div className="mt-3 flex justify-center space-x-2">
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="text-xs"
-                  onClick={() => {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = '.pdf,.png,.jpg,.jpeg';
-                    input.onchange = (e) => handleFileSelect(e as any);
-                    input.click();
-                  }}
-                >
-                  <UploadCloud className="w-3 h-3 mr-1" /> Browse Files
-                </Button>
-                <Button size="sm" variant="outline" className="text-xs">
-                  <Camera className="w-3 h-3 mr-1" /> Use Camera
-                </Button>
-              </div>
+              <DocumentUpload
+                documentType={type}
+                onUploadComplete={(filePath) => {
+                  handleFileUpload(new File([], filePath));
+                  setShowOptions(false);
+                }}
+              />
             )}
           </>
         )}
