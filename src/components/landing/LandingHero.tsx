@@ -5,8 +5,12 @@ import { useNavigate } from "react-router-dom";
 export default function LandingHero() {
   const navigate = useNavigate();
 
-  const handleAuthNavigation = () => {
-    navigate('/auth');
+  const handleAuthNavigation = (type: 'caregiver' | 'care-seeker') => {
+    if (type === 'care-seeker') {
+      navigate('/care-seeker/onboarding');
+    } else {
+      navigate('/auth');
+    }
   };
 
   return (
@@ -19,19 +23,16 @@ export default function LandingHero() {
           em.path brings caregivers and care recipients together through empathy, understanding, and support—creating relationships that truly matter.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-          <div className="flex flex-col items-center">
-            <Button 
-              className="bg-gray-300 hover:bg-gray-300 cursor-not-allowed text-gray-600 py-6 px-8 rounded-xl shadow-md"
-              disabled
-            >
-              I need a caregiver
-            </Button>
-            <span className="text-sm text-gray-500 mt-1">Coming soon</span>
-          </div>
+          <Button 
+            className="bg-purple-600 hover:bg-purple-700 text-white py-6 px-8 rounded-xl"
+            onClick={() => handleAuthNavigation('care-seeker')}
+          >
+            I need a caregiver
+          </Button>
           <Button 
             variant="outline" 
             className="border-purple-600 text-purple-700 hover:bg-purple-50 py-6 px-8 rounded-xl"
-            onClick={handleAuthNavigation}
+            onClick={() => handleAuthNavigation('caregiver')}
           >
             I'm a caregiver
           </Button>
