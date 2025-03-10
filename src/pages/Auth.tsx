@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,28 @@ const Auth = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const checkProfileAndRedirect = async (userId: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('caregiver_profiles')
+        .select('processed_profile, gemini_response')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+
+      if (profile && (profile.processed_profile || profile.gemini_response)) {
+        navigate('/dashboard');
+        return;
+      }
+
+      navigate('/onboarding');
+    } catch (error) {
+      console.error('Error checking profile:', error);
+      navigate('/onboarding');
+    }
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -29,7 +50,7 @@ const Auth = () => {
         });
         if (signUpError) throw signUpError;
         
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -39,14 +60,20 @@ const Auth = () => {
           title: "Account created successfully",
           description: "Welcome to em.path!",
         });
-        navigate("/onboarding");
+        
+        if (user) {
+          await checkProfileAndRedirect(user.id);
+        }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data: { user }, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
-        navigate("/onboarding");
+        
+        if (user) {
+          await checkProfileAndRedirect(user.id);
+        }
       }
     } catch (error: any) {
       toast({
@@ -54,7 +81,6 @@ const Auth = () => {
         title: "Error",
         description: error.message,
       });
-    } finally {
       setIsLoading(false);
     }
   };
