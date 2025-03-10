@@ -151,10 +151,10 @@ export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
 
       toast({
         title: "Interview Completed",
-        description: "Thank you for sharing your care needs. Our team will review your information shortly.",
+        description: "Thank you for sharing your care needs. We're taking you to your dashboard.",
       });
 
-      navigate('/care-seeker/onboarding/documents');
+      navigate('/care-seeker/dashboard');
     } catch (error: any) {
       console.error('Error ending interview:', error);
       toast({
