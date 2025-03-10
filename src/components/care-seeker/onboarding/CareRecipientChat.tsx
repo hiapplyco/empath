@@ -1,31 +1,34 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Paperclip, Camera, Send, ChevronLeft, Languages } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
+import { Send, ChevronLeft, Languages } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Message {
   role: 'assistant' | 'user';
   content: string;
 }
 
-export const CareRecipientChat = ({ onBack }: { onBack: () => void }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+interface CareRecipientChatProps {
+  onBack: () => void;
+}
+
+export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
+  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [input, setInput] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [language, setLanguage] = React.useState('en');
+  const [progress, setProgress] = React.useState(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
-  const [language, setLanguage] = useState('en');
 
   useEffect(() => {
-    // Start the conversation with a greeting when the component mounts
     startConversation();
   }, []);
 
   useEffect(() => {
-    // Scroll to the bottom of the chat container when new messages are added
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
@@ -50,6 +53,7 @@ export const CareRecipientChat = ({ onBack }: { onBack: () => void }) => {
       setMessages([
         { role: 'assistant', content: data.text }
       ]);
+      setProgress(10);
     } catch (error) {
       console.error('Failed to start conversation:', error);
       setMessages([
@@ -61,11 +65,11 @@ export const CareRecipientChat = ({ onBack }: { onBack: () => void }) => {
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = { role: 'user', content: newMessage };
-    setMessages(prevMessages => [...prevMessages, userMessage]);
-    setNewMessage('');
+    const userMessage: Message = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
     setIsLoading(true);
 
     try {
@@ -74,7 +78,11 @@ export const CareRecipientChat = ({ onBack }: { onBack: () => void }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: newMessage, history: messages, language }),
+        body: JSON.stringify({ 
+          message: input,
+          history: messages,
+          language
+        }),
       });
 
       if (!response.ok) {
@@ -82,13 +90,13 @@ export const CareRecipientChat = ({ onBack }: { onBack: () => void }) => {
       }
 
       const data = await response.json();
-      const botMessage: Message = { role: 'assistant', content: data.text };
-      setMessages(prevMessages => [...prevMessages, botMessage]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.text }]);
+      setProgress(prev => Math.min(prev + 10, 100));
     } catch (error) {
       console.error('Failed to send message:', error);
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { role: 'assistant', content: "Sorry, I couldn't send your message. Please try again." }
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: "Sorry, I couldn't process your message. Please try again." }
       ]);
     } finally {
       setIsLoading(false);
@@ -103,7 +111,7 @@ export const CareRecipientChat = ({ onBack }: { onBack: () => void }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-[calc(100vh-200px)]">
       {/* Header */}
       <div className="border-b p-4 flex items-center gap-4">
         <Button variant="ghost" onClick={onBack} className="gap-2">
@@ -125,11 +133,13 @@ export const CareRecipientChat = ({ onBack }: { onBack: () => void }) => {
             <SelectContent>
               <SelectItem value="en">English</SelectItem>
               <SelectItem value="es">Español</SelectItem>
-              {/* Add more languages here */}
+              <SelectItem value="fr">Français</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
+
+      <Progress value={progress} className="h-1" />
 
       {/* Chat Messages */}
       <div ref={chatContainerRef} className="flex-grow overflow-y-auto p-4 space-y-4">
@@ -152,16 +162,10 @@ export const CareRecipientChat = ({ onBack }: { onBack: () => void }) => {
       {/* Chat Input */}
       <div className="border-t p-4">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
-            <Paperclip className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <Camera className="h-5 w-5" />
-          </Button>
           <Textarea
             rows={1}
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message here..."
             className="resize-none border-none focus-visible:ring-0"
