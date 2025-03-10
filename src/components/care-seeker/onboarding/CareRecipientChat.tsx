@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Send, ChevronLeft, Languages } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/lib/supabase";
 
 interface Message {
   role: 'assistant' | 'user';
@@ -37,19 +38,17 @@ export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
   const startConversation = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: '', history: [], language, action: 'start' }),
+      const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
+        body: { 
+          message: '', 
+          history: [], 
+          language,
+          action: 'start'
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      if (error) throw error;
+      
       setMessages([
         { role: 'assistant', content: data.text }
       ]);
@@ -73,23 +72,16 @@ export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
+      const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
+        body: { 
           message: input,
-          history: messages,
+          history: messages.map(m => ({ role: m.role, text: m.content })),
           language
-        }),
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (error) throw error;
 
-      const data = await response.json();
       setMessages(prev => [...prev, { role: 'assistant', content: data.text }]);
       setProgress(prev => Math.min(prev + 10, 100));
     } catch (error) {
