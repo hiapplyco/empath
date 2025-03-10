@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { UploadCloud, Camera, Clock, FileText, RefreshCw, Trash2 } from "lucide-react";
+import { UploadCloud, Camera, Clock, FileText } from "lucide-react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -11,9 +11,11 @@ interface DocumentCardProps {
   title: string;
   description: string;
   required?: boolean;
-  type: string;
+  type: 'government_id' | 'certification' | 'background_check' | 'medical' | 'training' | 'insurance' | 'other';
   onUploadComplete?: () => void;
 }
+
+type UploadState = 'pending' | 'uploading' | 'preview';
 
 export const DocumentCard = ({
   title,
@@ -22,7 +24,7 @@ export const DocumentCard = ({
   type,
   onUploadComplete
 }: DocumentCardProps) => {
-  const [uploadState, setUploadState] = useState<'pending' | 'uploading' | 'preview'>('pending');
+  const [uploadState, setUploadState] = useState<UploadState>('pending');
   const [showOptions, setShowOptions] = useState(false);
   const supabase = useSupabaseClient();
   const { toast } = useToast();
@@ -88,26 +90,30 @@ export const DocumentCard = ({
   };
 
   return (
-    <Card className={`border ${uploadState === 'pending' && required ? 'border-red-200' : 'border-gray-200'}`}>
+    <Card className={`border ${uploadState === 'pending' && required ? 'border-red-200' : 'border-gray-200'} transition-all duration-200 hover:shadow-md`}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-lg">{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          {required && <Badge className="bg-red-500">Required</Badge>}
+          {required && (
+            <Badge variant="destructive" className="animate-pulse">
+              Required
+            </Badge>
+          )}
         </div>
       </CardHeader>
       <CardContent>
         {uploadState === 'uploading' ? (
           <div className="h-40 border-2 border-dashed border-purple-300 rounded-lg flex flex-col items-center justify-center bg-purple-50 p-4">
             <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-              <div className="bg-purple-600 h-2.5 rounded-full w-2/3"></div>
+              <div className="bg-purple-600 h-2.5 rounded-full w-2/3 transition-all duration-300"></div>
             </div>
             <p className="text-sm text-purple-700">Uploading...</p>
           </div>
         ) : uploadState === 'preview' ? (
-          <div className="h-40 border border-gray-200 rounded-lg overflow-hidden relative">
+          <div className="h-40 border border-gray-200 rounded-lg overflow-hidden relative group">
             <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
               <FileText className="w-16 h-16 text-gray-400" />
             </div>
@@ -118,10 +124,10 @@ export const DocumentCard = ({
         ) : (
           <>
             <div 
-              className="h-40 border-2 border-dashed border-purple-300 rounded-lg flex flex-col items-center justify-center bg-purple-50 hover:bg-purple-100 transition-colors cursor-pointer"
+              className="h-40 border-2 border-dashed border-purple-300 rounded-lg flex flex-col items-center justify-center bg-purple-50 hover:bg-purple-100 transition-colors cursor-pointer group"
               onClick={() => setShowOptions(true)}
             >
-              <UploadCloud className="h-10 w-10 text-purple-500 mb-2" />
+              <UploadCloud className="h-10 w-10 text-purple-500 mb-2 group-hover:scale-110 transition-transform" />
               <p className="text-sm text-center text-purple-700 font-medium">
                 Click to upload or drag and drop
               </p>
