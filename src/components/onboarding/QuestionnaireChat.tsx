@@ -34,7 +34,7 @@ export const QuestionnaireChat = () => {
   const [showEndConfirmation, setShowEndConfirmation] = useState(false);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-gray-50/50">
+    <div className="flex flex-col h-screen bg-gray-50/50">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b">
         <div className="container flex items-center justify-between h-16 max-w-3xl px-4 mx-auto">
@@ -69,8 +69,8 @@ export const QuestionnaireChat = () => {
       <Progress value={messages.length * 10} className="h-1" />
 
       {/* Chat Container */}
-      <div className="container flex-1 p-4 mx-auto max-w-3xl h-[calc(100vh-8rem)] overflow-hidden">
-        <div className="flex flex-col h-full bg-white rounded-lg shadow-sm border">
+      <div className="container flex-1 p-4 mx-auto max-w-3xl">
+        <div className="flex flex-col h-[calc(100vh-8.5rem)] bg-white rounded-lg shadow-sm border">
           {/* Messages */}
           <div className="flex-1 p-4 overflow-y-auto">
             <ChatMessageList messages={messages} />
