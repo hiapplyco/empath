@@ -1,7 +1,9 @@
-
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { supabase } from "@/lib/supabase";
 
 interface ReviewProfileProps {
   formData: any;
@@ -9,6 +11,39 @@ interface ReviewProfileProps {
 }
 
 export const ReviewProfile = ({ formData, onBack }: ReviewProfileProps) => {
+  const navigate = useNavigate();
+  
+  const handleSubmit = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Save profile data
+      const { error } = await supabase
+        .from('care_seeker_profiles')
+        .insert({
+          user_id: user.id,
+          profile_data: formData,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Profile Created",
+        description: "Your profile has been saved successfully. Taking you to your dashboard.",
+      });
+
+      navigate('/care-seeker/dashboard');
+    } catch (error: any) {
+      console.error('Error saving profile:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save your profile. Please try again.",
+      });
+    }
+  };
+
   return (
     <div>
       <CardHeader className="px-0">
@@ -40,7 +75,7 @@ export const ReviewProfile = ({ formData, onBack }: ReviewProfileProps) => {
           <Button type="button" variant="outline" onClick={onBack}>
             Back to Edit
           </Button>
-          <Button type="button">
+          <Button type="button" onClick={handleSubmit}>
             Submit Profile
           </Button>
         </div>
