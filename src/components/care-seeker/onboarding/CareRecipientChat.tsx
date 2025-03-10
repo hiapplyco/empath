@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase";
 import { ChatHeader } from "./chat/ChatHeader";
@@ -28,6 +29,20 @@ export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          variant: "destructive",
+          title: "Authentication required",
+          description: "Please sign in to continue."
+        });
+        navigate('/auth');
+        return;
+      }
+    };
+    
+    checkAuth();
     startConversation();
   }, []);
 
@@ -125,15 +140,18 @@ export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
   const handleEndInterview = async () => {
     setIsEndingInterview(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        throw new Error('User not authenticated');
+      }
 
       const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
         body: { 
           message: 'END_INTERVIEW',
           history: messages.map(m => ({ role: m.role, text: m.content })),
           language,
-          action: 'finish'
+          action: 'finish',
+          userId: session.user.id
         }
       });
 
@@ -142,7 +160,7 @@ export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
       const { error: insertError } = await supabase
         .from('care_seeker_interviews')
         .insert({
-          user_id: user.id,
+          user_id: session.user.id,
           raw_interview_data: { messages, language },
           processed_profile: data.data
         });
@@ -160,7 +178,7 @@ export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to process interview. Please try again.",
+        description: error.message || "Failed to process interview. Please try again.",
       });
     } finally {
       setIsEndingInterview(false);
