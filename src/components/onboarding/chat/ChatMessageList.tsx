@@ -1,6 +1,7 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProfileSummary } from "./ProfileSummary";
+import { useEffect, useRef } from "react";
 
 interface Message {
   role: 'assistant' | 'user';
@@ -12,6 +13,16 @@ interface ChatMessageListProps {
 }
 
 export const ChatMessageList = ({ messages }: ChatMessageListProps) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   return (
     <div className="space-y-4">
       {messages.map((message, index) => {
@@ -35,6 +46,7 @@ export const ChatMessageList = ({ messages }: ChatMessageListProps) => {
           </div>
         );
       })}
+      <div ref={messagesEndRef} />
     </div>
   );
 };
