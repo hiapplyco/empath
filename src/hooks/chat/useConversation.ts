@@ -6,6 +6,7 @@ export const useConversation = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatState, setChatState] = useState<ChatState>('idle');
   const [input, setInput] = useState('');
+  const [language, setLanguage] = useState('en');
 
   // Load saved conversation
   useEffect(() => {
@@ -37,6 +38,8 @@ export const useConversation = () => {
     setChatState,
     input,
     setInput,
+    language,
+    setLanguage,
     addMessage,
     clearConversation
   };

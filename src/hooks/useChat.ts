@@ -5,6 +5,7 @@ import { useConversation } from './chat/useConversation';
 import { useProfileGeneration } from './chat/useProfileGeneration';
 import { useOnboardingNavigation } from './chat/useOnboardingNavigation';
 import { Message } from './chat/types';
+import { SUPPORTED_LANGUAGES } from '@/components/care-seeker/onboarding/chat/LanguageSelector';
 
 export const useChat = () => {
   const {
@@ -14,7 +15,9 @@ export const useChat = () => {
     input,
     setInput,
     addMessage,
-    clearConversation
+    clearConversation,
+    language,
+    setLanguage
   } = useConversation();
   
   const { generateProfile, isExiting } = useProfileGeneration(messages);
@@ -38,7 +41,8 @@ export const useChat = () => {
             name: user?.user_metadata?.full_name,
             email: user?.email,
             onboardingStep: 'profile_creation'
-          }
+          },
+          language
         }
       });
 
@@ -49,6 +53,42 @@ export const useChat = () => {
       }
     } catch (error) {
       console.error('Error starting chat:', error);
+    } finally {
+      setChatState('idle');
+    }
+  };
+
+  const handleLanguageChange = async (newLanguage: string) => {
+    setLanguage(newLanguage);
+    setChatState('sending');
+    
+    const languageName = SUPPORTED_LANGUAGES[newLanguage as keyof typeof SUPPORTED_LANGUAGES];
+    const message = `Please continue our conversation in ${languageName}.`;
+    
+    addMessage({ role: 'user', content: message });
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await supabase.functions.invoke('gemini-chat', {
+        body: { 
+          message,
+          history: messages.map(m => ({ role: m.role, text: m.content })),
+          userContext: {
+            name: user?.user_metadata?.full_name,
+            email: user?.email,
+            onboardingStep: 'profile_creation'
+          },
+          language: newLanguage
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.type === 'message') {
+        addMessage({ role: 'assistant', content: data.text });
+      }
+    } catch (error) {
+      console.error('Error changing language:', error);
     } finally {
       setChatState('idle');
     }
@@ -77,7 +117,8 @@ export const useChat = () => {
             name: user?.user_metadata?.full_name,
             email: user?.email,
             onboardingStep: 'profile_creation'
-          }
+          },
+          language
         }
       });
 
@@ -118,11 +159,13 @@ export const useChat = () => {
   return {
     messages,
     input,
+    language,
     isAnalyzing: chatState !== 'idle',
     isExiting,
     handleInputChange,
     handleSubmit,
     handleBack,
-    handleFinish
+    handleFinish,
+    handleLanguageChange
   };
 };

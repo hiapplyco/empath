@@ -4,6 +4,7 @@ import { ChatMessageList } from "./chat/ChatMessageList";
 import { ChatInput } from "./chat/ChatInput";
 import { useChat } from "@/hooks/useChat";
 import { Check } from "lucide-react";
+import { LanguageSelector } from "@/components/care-seeker/onboarding/chat/LanguageSelector";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,16 +23,37 @@ export const QuestionnaireChat = () => {
     messages,
     input,
     isAnalyzing,
+    language,
     handleInputChange,
     handleSubmit,
     handleBack,
-    handleFinish
+    handleFinish,
+    handleLanguageChange
   } = useChat();
   const [showEndConfirmation, setShowEndConfirmation] = useState(false);
 
   return (
     <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col chat-container animate-fade-in">
+      <div className="border-b p-4 flex items-center justify-between">
+        <Button variant="ghost" onClick={handleBack} className="gap-2">Back</Button>
+        <div className="flex items-center gap-4">
+          <LanguageSelector 
+            language={language}
+            onLanguageChange={handleLanguageChange}
+          />
+          <Button 
+            className="bg-green-600 hover:bg-green-700"
+            onClick={() => setShowEndConfirmation(true)}
+            disabled={isAnalyzing}
+          >
+            <Check className="h-4 w-4 mr-2" />
+            End Interview
+          </Button>
+        </div>
+      </div>
+
       <ChatMessageList messages={messages} />
+      
       <div className="p-4 border-t space-y-4">
         <ChatInput
           input={input}
@@ -40,19 +62,6 @@ export const QuestionnaireChat = () => {
           onSubmit={handleSubmit}
           onBack={handleBack}
         />
-        <div className="space-y-1">
-          <Button 
-            className="w-full bg-green-600 hover:bg-green-700"
-            onClick={() => setShowEndConfirmation(true)}
-            disabled={isAnalyzing}
-          >
-            <Check className="h-4 w-4 mr-2" />
-            End Interview
-          </Button>
-          <p className="text-sm text-center text-gray-500">
-            End the interview at anytime by clicking here
-          </p>
-        </div>
       </div>
 
       <AlertDialog open={showEndConfirmation} onOpenChange={setShowEndConfirmation}>
