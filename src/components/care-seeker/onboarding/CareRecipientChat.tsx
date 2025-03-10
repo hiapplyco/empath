@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase";
@@ -6,6 +5,8 @@ import { ChatHeader } from "./chat/ChatHeader";
 import { ChatMessages } from "./chat/ChatMessages";
 import { ChatInput } from "./chat/ChatInput";
 import { SUPPORTED_LANGUAGES } from "./chat/LanguageSelector";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   role: 'assistant' | 'user';
@@ -22,6 +23,9 @@ export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [language, setLanguage] = React.useState('en');
   const [progress, setProgress] = React.useState(0);
+  const [isEndingInterview, setIsEndingInterview] = React.useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     startConversation();
@@ -118,12 +122,59 @@ export const CareRecipientChat = ({ onBack }: CareRecipientChatProps) => {
     }
   };
 
+  const handleEndInterview = async () => {
+    setIsEndingInterview(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
+        body: { 
+          message: 'END_INTERVIEW',
+          history: messages.map(m => ({ role: m.role, text: m.content })),
+          language,
+          action: 'finish'
+        }
+      });
+
+      if (error) throw error;
+
+      const { error: insertError } = await supabase
+        .from('care_seeker_interviews')
+        .insert({
+          user_id: user.id,
+          raw_interview_data: { messages, language },
+          processed_profile: data.data
+        });
+
+      if (insertError) throw insertError;
+
+      toast({
+        title: "Interview Completed",
+        description: "Thank you for sharing your care needs. Our team will review your information shortly.",
+      });
+
+      navigate('/care-seeker/onboarding/documents');
+    } catch (error: any) {
+      console.error('Error ending interview:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to process interview. Please try again.",
+      });
+    } finally {
+      setIsEndingInterview(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-200px)]">
       <ChatHeader 
         onBack={onBack}
         language={language}
         onLanguageChange={handleLanguageChange}
+        onEndInterview={handleEndInterview}
+        isEndingInterview={isEndingInterview}
       />
       <Progress value={progress} className="h-1" />
       <ChatMessages 

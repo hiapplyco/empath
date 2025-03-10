@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_notifications: {
+        Row: {
+          content: Json
+          created_at: string | null
+          id: string
+          read: boolean | null
+          type: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string | null
+          id?: string
+          read?: boolean | null
+          type: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          read?: boolean | null
+          type?: string
+        }
+        Relationships: []
+      }
       care_needs: {
         Row: {
           care_duration: string | null
@@ -182,6 +206,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      care_seeker_interviews: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          id: string
+          matching_tags: string[] | null
+          processed_profile: Json
+          raw_interview_data: Json
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          matching_tags?: string[] | null
+          processed_profile: Json
+          raw_interview_data: Json
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          matching_tags?: string[] | null
+          processed_profile?: Json
+          raw_interview_data?: Json
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       care_seeker_profiles: {
         Row: {
