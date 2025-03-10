@@ -64,8 +64,8 @@ const CareProfile = () => {
       return recipientData;
     },
     retry: 1,
-    onSettled: (data, error) => {
-      if (error) {
+    meta: {
+      errorHandler: (error: Error) => {
         console.error('Profile fetch error:', error);
         toast({
           variant: "destructive",
