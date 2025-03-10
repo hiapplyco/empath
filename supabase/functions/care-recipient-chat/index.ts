@@ -31,7 +31,7 @@ serve(async (req) => {
   try {
     const { message, history = [], language = 'en', action } = await req.json();
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-2.0" });
 
     const chat = model.startChat({
       history: [
