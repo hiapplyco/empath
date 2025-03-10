@@ -13,7 +13,7 @@ import NotFound from "./pages/NotFound";
 import ProfileReview from "./pages/onboarding/ProfileReview";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import CareRecipientDashboard from "./components/care-seeker/dashboard/CareRecipientDashboard";
-import CareProfile from "./pages/care-seeker/profile/CareProfile";
+import CareProfile from "./pages/care-seeker/CareProfile";
 
 const queryClient = new QueryClient();
 
