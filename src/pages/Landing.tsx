@@ -7,6 +7,7 @@ import LandingHowItWorks from "@/components/landing/LandingHowItWorks";
 import LandingCaregivers from "@/components/landing/LandingCaregivers";
 import LandingTestimonials from "@/components/landing/LandingTestimonials";
 import LandingFooter from "@/components/landing/LandingFooter";
+import DashboardShowcase from "@/components/landing/showcase/DashboardShowcase";
 
 export default function Landing() {
   return (
@@ -14,6 +15,7 @@ export default function Landing() {
       <LandingNavigation />
       <LandingHero />
       <LandingFeatures />
+      <DashboardShowcase />
       <LandingHowItWorks />
       <LandingCaregivers />
       <LandingTestimonials />
