@@ -16,6 +16,7 @@ interface ChatContainerProps {
   onSendMessage: () => void;
   onLanguageChange: (value: string) => void;
   onEndInterview: () => void;
+  onComplete?: (data: any) => void;  // Added this optional prop
 }
 
 export const ChatContainer = ({
