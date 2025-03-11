@@ -26,6 +26,7 @@ export const ChatMessageList = ({ messages }: ChatMessageListProps) => {
   return (
     <div className="space-y-4">
       {messages.map((message, index) => {
+        // Check if the message contains JSON data by looking for recipient_information
         const isJsonProfile = message.role === 'assistant' && message.content.includes('"recipient_information"');
         
         return (
