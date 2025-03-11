@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
@@ -12,6 +11,8 @@ export const useCareRecipientChat = () => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [progress, setProgress] = useState(10);
+  const [language, setLanguage] = useState('en');
+  const [isEndingInterview, setIsEndingInterview] = useState(false);
 
   useEffect(() => {
     startChat();
@@ -70,12 +71,45 @@ export const useCareRecipientChat = () => {
     }
   };
 
+  const handleEndInterview = async () => {
+    setIsEndingInterview(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        throw new Error('User not authenticated');
+      }
+
+      const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
+        body: { 
+          message: 'END_INTERVIEW',
+          history: messages,
+          language,
+          action: 'finish',
+          userId: session.user.id
+        }
+      });
+
+      if (error) throw error;
+
+      setIsEndingInterview(false);
+      return data;
+    } catch (error) {
+      console.error('Error ending interview:', error);
+      setIsEndingInterview(false);
+      throw error;
+    }
+  };
+
   return {
     messages,
     input,
     setInput,
     isTyping,
     progress,
-    sendMessage
+    sendMessage,
+    language,
+    setLanguage,
+    isEndingInterview,
+    handleEndInterview
   };
 };
