@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-interface DashboardContentProps {
+export interface DashboardContentProps {
   children: React.ReactNode;
 }
 
