@@ -31,6 +31,12 @@ export const CareRecipientChat = () => {
     navigate(-1);
   };
 
+  const handleSendMessage = () => {
+    if (input.trim()) {
+      sendMessage(input);
+    }
+  };
+
   if (showReview && profileData) {
     return (
       <ReviewProfile 
@@ -50,10 +56,11 @@ export const CareRecipientChat = () => {
       isEndingInterview={isEndingInterview}
       onBack={handleBack}
       onInputChange={setInput}
-      onSendMessage={sendMessage}
+      onSendMessage={handleSendMessage}
       onLanguageChange={setLanguage}
       onEndInterview={handleEndInterview}
       onComplete={handleChatComplete}
     />
   );
 };
+
