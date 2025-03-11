@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -158,10 +159,10 @@ export const useCareRecipientOnboarding = () => {
 
       toast({
         title: "Interview Completed",
-        description: "Thank you for sharing your care needs. We're taking you to your dashboard.",
+        description: "Let's customize your profile before proceeding.",
       });
 
-      navigate('/care-seeker/dashboard');
+      navigate('/onboarding/profile');
     } catch (error: any) {
       console.error('Error ending interview:', error);
       toast({
