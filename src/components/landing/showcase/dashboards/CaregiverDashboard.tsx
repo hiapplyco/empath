@@ -1,14 +1,14 @@
-
+import React from 'react';
 import { DashboardContent } from './DashboardContent';
 import { DashboardSidebar } from './DashboardSidebar';
 import { User, Calendar, MessageSquare, DollarSign, Shield } from 'lucide-react';
 
 const sidebarItems = [
-  { icon: User, label: 'Dashboard', active: true },
-  { icon: Calendar, label: 'Schedule' },
-  { icon: MessageSquare, label: 'Messages' },
-  { icon: DollarSign, label: 'Earnings' },
-  { icon: Shield, label: 'Benefits' }
+  { icon: <User className="w-3 h-3" />, label: 'Dashboard', isActive: true },
+  { icon: <Calendar className="w-3 h-3" />, label: 'Schedule' },
+  { icon: <MessageSquare className="w-3 h-3" />, label: 'Messages' },
+  { icon: <DollarSign className="w-3 h-3" />, label: 'Earnings' },
+  { icon: <Shield className="w-3 h-3" />, label: 'Benefits' }
 ];
 
 export const CaregiverDashboard = () => {
@@ -21,7 +21,9 @@ export const CaregiverDashboard = () => {
           userName="Sarah"
           userType="caregiver"
         />
-        <DashboardContent type="caregiver" />
+        <DashboardContent>
+          
+        </DashboardContent>
       </div>
     </div>
   );
