@@ -1,9 +1,9 @@
-
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import LandingNavigation from "@/components/landing/LandingNavigation";
 import { HandHeart, ArrowRight, Wallet, Calendar, GraduationCap, Users, ClipboardList, Shield } from "lucide-react";
 import LandingFooter from "@/components/landing/LandingFooter";
+import DashboardShowcase from "@/components/landing/showcase/DashboardShowcase";
 
 export default function CaregiverLanding() {
   const navigate = useNavigate();
@@ -98,6 +98,21 @@ export default function CaregiverLanding() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Dashboard Showcase Section */}
+      <section className="bg-white py-20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-purple-900 mb-4">
+              Your Professional Dashboard: Everything You Need in One Place
+            </h2>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+              Access your schedule, track earnings, manage client profiles, and grow your career—all from a single, intuitive platform.
+            </p>
+          </div>
+          <DashboardShowcase />
         </div>
       </section>
 
