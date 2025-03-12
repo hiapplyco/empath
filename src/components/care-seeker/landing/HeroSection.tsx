@@ -51,8 +51,8 @@ export default function HeroSection() {
           <div className="md:w-1/2">
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
               <img 
-                src="https://upbnysrcdcpumjyjhysy.supabase.co/storage/v1/object/public/assets//image_fx_%20(20).jpg" 
-                alt="Caring moment between caregiver and senior"
+                src="/lovable-uploads/80ea613b-fa4e-49f1-a3f0-6f375e25eeac.png" 
+                alt="Family meeting with caregiver"
                 className="w-full h-[500px] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
