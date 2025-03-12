@@ -16,7 +16,7 @@ interface ChatContainerProps {
   onSendMessage: () => void;
   onLanguageChange: (value: string) => void;
   onEndInterview: () => void;
-  onComplete?: (data: any) => void;  // Added this optional prop
+  onComplete?: (data: any) => void;
 }
 
 export const ChatContainer = ({
@@ -33,7 +33,7 @@ export const ChatContainer = ({
   onEndInterview
 }: ChatContainerProps) => {
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)]">
+    <div className="flex flex-col h-screen bg-white">
       <ChatHeader 
         onBack={onBack}
         language={language}
@@ -42,16 +42,18 @@ export const ChatContainer = ({
         isEndingInterview={isEndingInterview}
       />
       <Progress value={progress} className="h-1" />
-      <ChatMessages 
-        messages={messages}
-        isLoading={isLoading}
-      />
-      <ChatInput
-        input={input}
-        isLoading={isLoading}
-        onInputChange={onInputChange}
-        onSendMessage={onSendMessage}
-      />
+      <div className="flex-1 overflow-hidden flex flex-col">
+        <ChatMessages 
+          messages={messages}
+          isLoading={isLoading}
+        />
+        <ChatInput
+          input={input}
+          isLoading={isLoading}
+          onInputChange={onInputChange}
+          onSendMessage={onSendMessage}
+        />
+      </div>
     </div>
   );
 };
