@@ -1,69 +1,164 @@
-# Welcome to your Lovable project
 
-## Project info
+<div align="center">
+  <img src="public/empath-simple-logo.svg" alt="em.path logo" width="200"/>
+  <h1>em.path</h1>
+  <p><em>Connecting Hearts, Empowering Care</em></p>
+</div>
 
-**URL**: https://lovable.dev/projects/257433cf-fcbf-4432-8aa3-cb187c3643ef
+---
 
-## How can I edit this code?
+## 🌟 Project Overview
 
-There are several ways of editing your application.
+**em.path** is a revolutionary caregiving platform that leverages AI to create meaningful connections between caregivers and care recipients. Our platform streamlines the care matching process while ensuring the highest quality of care delivery.
 
-**Use Lovable**
+### 🎯 Core Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/257433cf-fcbf-4432-8aa3-cb187c3643ef) and start prompting.
+#### For Care Recipients
+- 🤖 AI-powered care needs assessment
+- 👥 Smart caregiver matching
+- 📅 Integrated care scheduling
+- ⭐ Quality monitoring and feedback
+- 👨‍👩‍👦 Family coordination tools
 
-Changes made via Lovable will be committed automatically to this repo.
+#### For Caregivers
+- 📝 Intelligent onboarding process
+- 🎓 Skills verification
+- 📊 Dynamic scheduling
+- 💰 Automated payments
+- 📈 Professional development
 
-**Use your preferred IDE**
+## 🛠️ Technical Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Frontend
+- ⚛️ **React** with TypeScript
+- 🏃‍♂️ **Vite** for blazing fast development
+- 🎨 **Tailwind CSS** for styling
+- 🎭 **shadcn/ui** for component library
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Backend
+- 🔥 **Supabase** for:
+  - 🔐 Authentication
+  - 📦 Database
+  - 📁 File storage
+  - ⚡ Edge Functions
 
-Follow these steps:
+### AI Integration
+- 🧠 **Google Gemini** for intelligent processing
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+## 🏗️ Architecture
+
+The application follows a modern, component-based architecture with:
+
+- 📱 Responsive design
+- 🔄 State management using React Query
+- 🔒 Role-based access control
+- 🌐 Real-time capabilities
+
+## 🔐 Security Features
+
+- 🛡️ JWT-based authentication
+- 🔒 Row Level Security (RLS)
+- 📜 Audit logging
+- 🔐 Secure file handling
+
+## 🚀 Getting Started
+
+### Prerequisites
+```bash
+# Install Node.js & npm - using nvm (recommended)
+nvm install node
+nvm use node
+
+# Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navigate to project directory
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Environment Setup
+Create a `.env` file in the root directory:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 👩‍💻 Development Guidelines
 
-**Use GitHub Codespaces**
+### Code Structure
+```
+src/
+├── components/     # Reusable UI components
+├── pages/         # Route components
+├── hooks/         # Custom React hooks
+├── lib/           # Utilities and helpers
+└── types/         # TypeScript definitions
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Best Practices
+- ✅ Follow component-based architecture
+- ✅ Use TypeScript for type safety
+- ✅ Implement responsive design
+- ✅ Write meaningful comments
+- ✅ Follow accessibility guidelines
 
-## What technologies are used for this project?
+## 🧪 Testing
 
-This project is built with .
+```bash
+# Run tests
+npm run test
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Run tests with coverage
+npm run test:coverage
+```
 
-## How can I deploy this project?
+## 📦 Deployment
 
-Simply open [Lovable](https://lovable.dev/projects/257433cf-fcbf-4432-8aa3-cb187c3643ef) and click on Share -> Publish.
+The application can be deployed using various platforms:
 
-## I want to use a custom domain - is that possible?
+1. Vercel (recommended)
+2. Netlify
+3. Custom hosting
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## 🔮 Future Enhancements
+
+- [ ] Enhanced AI matching algorithms
+- [ ] Mobile application
+- [ ] Advanced analytics dashboard
+- [ ] Multi-language support
+- [ ] Integration with health devices
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the `/docs` directory, covering:
+- API References
+- Component Library
+- Database Schema
+- Deployment Guides
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our contributing guidelines before submitting pull requests.
+
+## 🆘 Support
+
+For support, please:
+1. Check the documentation
+2. Search existing issues
+3. Open a new issue if needed
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+<div align="center">
+  <p>Built with ❤️ by the em.path team</p>
+</div>
