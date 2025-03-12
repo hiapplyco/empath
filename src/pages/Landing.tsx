@@ -1,7 +1,7 @@
 
-import { Calendar, Award, Shield, MessageCircle, ArrowRight } from "lucide-react";
 import LandingNavigation from "@/components/landing/LandingNavigation";
 import LandingHero from "@/components/landing/LandingHero";
+import LandingEmmaVideo from "@/components/landing/LandingEmmaVideo";
 import LandingFeatures from "@/components/landing/LandingFeatures";
 import LandingHowItWorks from "@/components/landing/LandingHowItWorks";
 import LandingCaregivers from "@/components/landing/LandingCaregivers";
@@ -14,6 +14,7 @@ export default function Landing() {
     <div className="min-h-screen w-full bg-gradient-to-b from-purple-50 to-white font-sans">
       <LandingNavigation />
       <LandingHero />
+      <LandingEmmaVideo />
       <LandingFeatures />
       <DashboardShowcase />
       <LandingHowItWorks />
