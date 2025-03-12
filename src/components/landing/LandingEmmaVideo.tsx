@@ -34,7 +34,7 @@ export default function LandingEmmaVideo() {
             className="w-full rounded-2xl aspect-video object-cover"
             src="https://upbnysrcdcpumjyjhysy.supabase.co/storage/v1/object/public/assets//ff8f693ff5.mp4"
             controls={isPlaying}
-            poster="https://upbnysrcdcpumjyjhysy.supabase.co/storage/v1/object/public/assets/emma.png"
+            poster="/lovable-uploads/ec9ba971-3fb5-478c-a19a-c58acc2eb329.png"
           >
             Your browser does not support the video tag.
           </video>
