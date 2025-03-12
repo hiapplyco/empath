@@ -14,36 +14,43 @@ export default function LandingHero() {
   };
 
   return (
-    <section className="container mx-auto px-6 py-16 md:py-24 flex flex-col md:flex-row items-center gap-10">
-      <div className="md:w-1/2 space-y-6">
-        <h1 className="text-4xl md:text-5xl font-bold text-purple-900 leading-tight">
-          Care that <span className="text-purple-600">connects</span> on a human level
-        </h1>
-        <p className="text-lg text-gray-700">
-          em.path brings caregivers and care recipients together through empathy, understanding, and support—creating relationships that truly matter.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 pt-4">
-          <Button 
-            className="bg-purple-600 hover:bg-purple-700 text-white py-6 px-8 rounded-xl"
-            onClick={() => handleAuthNavigation('care-seeker')}
-          >
-            I need a caregiver
-          </Button>
-          <Button 
-            variant="outline" 
-            className="border-purple-600 text-purple-700 hover:bg-purple-50 py-6 px-8 rounded-xl"
-            onClick={() => handleAuthNavigation('caregiver')}
-          >
-            I'm a caregiver
-          </Button>
+    <section className="relative overflow-hidden bg-gradient-subtle py-24 md:py-32">
+      <div className="container mx-auto px-6 max-w-7xl">
+        <div className="flex flex-col md:flex-row items-center gap-16">
+          <div className="md:w-1/2 space-y-8">
+            <h1 className="text-heading-1 text-gray-900 leading-tight max-w-xl">
+              Care that <span className="text-brand-purple-600">connects</span> on a human level
+            </h1>
+            <p className="text-body-large text-gray-700 max-w-lg">
+              em.path brings caregivers and care recipients together through empathy, understanding, and support—creating relationships that truly matter.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 pt-6">
+              <Button 
+                className="h-12 px-8 text-[16px] font-medium bg-brand-purple-600 hover:bg-brand-purple-700 text-white rounded-xl shadow-soft transition-all hover:shadow-medium"
+                onClick={() => handleAuthNavigation('care-seeker')}
+              >
+                I need a caregiver
+              </Button>
+              <Button 
+                variant="outline" 
+                className="h-12 px-8 text-[16px] font-medium border-2 border-brand-purple-600 text-brand-purple-700 hover:bg-brand-purple-50 rounded-xl"
+                onClick={() => handleAuthNavigation('caregiver')}
+              >
+                I'm a caregiver
+              </Button>
+            </div>
+          </div>
+          <div className="md:w-1/2">
+            <div className="relative rounded-2xl overflow-hidden shadow-card transform hover:scale-[1.01] transition-transform duration-300">
+              <img 
+                src="https://upbnysrcdcpumjyjhysy.supabase.co/storage/v1/object/public/assets//image_fx_%20(20).jpg"
+                alt="Caregiver and client sharing a moment"
+                className="w-full h-[500px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="md:w-1/2 rounded-2xl overflow-hidden shadow-lg h-80">
-        <img 
-          src="https://upbnysrcdcpumjyjhysy.supabase.co/storage/v1/object/public/assets//image_fx_%20(20).jpg"
-          alt="Caregiver and client sharing a moment"
-          className="w-full h-full object-cover"
-        />
       </div>
     </section>
   );

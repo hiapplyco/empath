@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -48,6 +47,47 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        brand: {
+          purple: {
+            50: "#f3f0ff",
+            100: "#e5dbff",
+            200: "#d0bfff",
+            300: "#b197fc",
+            400: "#9775fa",
+            500: "#845ef7",
+            600: "#7950f2",
+            700: "#7048e8",
+            800: "#6741d9",
+            900: "#5f3dc4"
+          },
+        },
+      },
+      spacing: {
+        '18': '4.5rem',
+        '68': '17rem',
+        '100': '25rem',
+        '120': '30rem',
+      },
+      fontSize: {
+        'heading-1': ['2.5rem', { lineHeight: '1.2', fontWeight: '700' }],
+        'heading-2': ['2rem', { lineHeight: '1.3', fontWeight: '600' }],
+        'heading-3': ['1.5rem', { lineHeight: '1.3', fontWeight: '600' }],
+        'body-large': ['1.125rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'body': ['1rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'small': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }],
+      },
+      borderRadius: {
+        'xl': '12px',
+        '2xl': '16px',
+      },
+      boxShadow: {
+        'soft': '0 2px 4px rgba(0, 0, 0, 0.05)',
+        'medium': '0 4px 6px rgba(0, 0, 0, 0.07)',
+        'card': '0 4px 8px rgba(0, 0, 0, 0.08)',
+      },
+      backgroundImage: {
+        'gradient-brand': 'linear-gradient(135deg, #7950f2 0%, #9775fa 100%)',
+        'gradient-subtle': 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
       },
       keyframes: {
         fadeIn: {
