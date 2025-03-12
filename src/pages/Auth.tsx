@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,8 @@ const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isCaregiver = location.pathname === '/auth/caregiver';
 
   const checkProfileAndRedirect = async (userId: string) => {
     try {
@@ -62,7 +64,7 @@ const Auth = () => {
         });
         
         if (user) {
-          await checkProfileAndRedirect(user.id);
+          navigate(isCaregiver ? '/onboarding' : '/care-seeker/onboarding');
         }
       } else {
         const { data: { user }, error } = await supabase.auth.signInWithPassword({
@@ -72,7 +74,7 @@ const Auth = () => {
         if (error) throw error;
         
         if (user) {
-          await checkProfileAndRedirect(user.id);
+          navigate(isCaregiver ? '/onboarding' : '/care-seeker/onboarding');
         }
       }
     } catch (error: any) {

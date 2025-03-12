@@ -1,17 +1,8 @@
-
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 export default function LandingHero() {
   const navigate = useNavigate();
-
-  const handleAuthNavigation = (type: 'caregiver' | 'care-seeker') => {
-    if (type === 'care-seeker') {
-      navigate('/care-seeker/onboarding');
-    } else {
-      navigate('/auth');
-    }
-  };
 
   return (
     <section className="relative overflow-hidden bg-gradient-subtle py-24 md:py-32">
@@ -27,14 +18,14 @@ export default function LandingHero() {
             <div className="flex flex-col sm:flex-row gap-4 pt-6">
               <Button 
                 className="h-12 px-8 text-[16px] font-medium bg-brand-purple-600 hover:bg-brand-purple-700 text-white rounded-xl shadow-soft transition-all hover:shadow-medium"
-                onClick={() => handleAuthNavigation('care-seeker')}
+                onClick={() => navigate('/for-care-seekers')}
               >
                 I need a caregiver
               </Button>
               <Button 
                 variant="outline" 
                 className="h-12 px-8 text-[16px] font-medium border-2 border-brand-purple-600 text-brand-purple-700 hover:bg-brand-purple-50 rounded-xl"
-                onClick={() => handleAuthNavigation('caregiver')}
+                onClick={() => navigate('/for-caregivers')}
               >
                 I'm a caregiver
               </Button>

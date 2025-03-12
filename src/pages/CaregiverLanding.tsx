@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import LandingNavigation from "@/components/landing/LandingNavigation";
@@ -34,7 +33,6 @@ export default function CaregiverLanding() {
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
       <LandingNavigation />
       
-      {/* Hero Section */}
       <section className="container mx-auto px-6 pt-24 pb-16">
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2 space-y-6">
@@ -47,7 +45,7 @@ export default function CaregiverLanding() {
             <Button 
               size="lg"
               className="bg-purple-600 hover:bg-purple-700 text-white"
-              onClick={() => navigate('/auth?type=caregiver')}
+              onClick={() => navigate('/auth/caregiver')}
             >
               <HandHeart className="mr-2 h-5 w-5" />
               Join as a Caregiver
