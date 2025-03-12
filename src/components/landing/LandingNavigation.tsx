@@ -16,10 +16,34 @@ export default function LandingNavigation() {
         <span className="text-2xl font-bold text-purple-800">em.path</span>
       </div>
       <div className="hidden md:flex space-x-6 text-purple-800">
-        <a href="/for-caregivers" className="hover:text-purple-600 transition-colors">For Caregivers</a>
-        <a href="/for-care-seekers" className="hover:text-purple-600 transition-colors">For Care Seekers</a>
-        <a href="#testimonials" className="hover:text-purple-600 transition-colors">Stories</a>
-        <a href="#about" className="hover:text-purple-600 transition-colors">About Us</a>
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/for-caregivers')} 
+          className="hover:text-purple-600 transition-colors"
+        >
+          For Caregivers
+        </Button>
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/for-care-seekers')} 
+          className="hover:text-purple-600 transition-colors"
+        >
+          For Care Seekers
+        </Button>
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/#testimonials')} 
+          className="hover:text-purple-600 transition-colors"
+        >
+          Stories
+        </Button>
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/#about')} 
+          className="hover:text-purple-600 transition-colors"
+        >
+          About Us
+        </Button>
       </div>
       <div className="flex space-x-3">
         <Button 
