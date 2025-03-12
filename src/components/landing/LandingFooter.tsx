@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
@@ -12,22 +11,6 @@ export default function LandingFooter() {
           <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-8">
             Join our community where caregivers are valued and care recipients find perfect matches. Emma is ready to welcome you.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              className="bg-purple-600 hover:bg-purple-700 text-white py-6 px-8 rounded-xl shadow-md text-lg"
-              onClick={() => window.location.href = '/auth'}
-            >
-              Get started
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-            <Button 
-              variant="outline" 
-              className="border-purple-600 text-purple-700 hover:bg-purple-200 py-6 px-8 rounded-xl text-lg"
-              onClick={() => window.location.href = '/auth'}
-            >
-              Learn more
-            </Button>
-          </div>
         </div>
       </section>
 
