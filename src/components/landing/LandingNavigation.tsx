@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -15,8 +16,8 @@ export default function LandingNavigation() {
         <span className="text-2xl font-bold text-purple-800">em.path</span>
       </div>
       <div className="hidden md:flex space-x-6 text-purple-800">
-        <a href="#how-it-works" className="hover:text-purple-600 transition-colors">How It Works</a>
-        <a href="#for-caregivers" className="hover:text-purple-600 transition-colors">For Caregivers</a>
+        <a href="/for-caregivers" className="hover:text-purple-600 transition-colors">For Caregivers</a>
+        <a href="/for-care-seekers" className="hover:text-purple-600 transition-colors">For Care Seekers</a>
         <a href="#testimonials" className="hover:text-purple-600 transition-colors">Stories</a>
         <a href="#about" className="hover:text-purple-600 transition-colors">About Us</a>
       </div>

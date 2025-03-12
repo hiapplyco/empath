@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
+import CaregiverLanding from "./pages/CaregiverLanding";
+import CareSeekerLanding from "./pages/CareSeekerLanding";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import DocumentCapture from "./pages/onboarding/DocumentVerification";
@@ -25,6 +27,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/for-caregivers" element={<CaregiverLanding />} />
+          <Route path="/for-care-seekers" element={<CareSeekerLanding />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/onboarding/documents" element={<DocumentCapture />} />
