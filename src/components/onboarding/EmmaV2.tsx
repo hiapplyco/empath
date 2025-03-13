@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,11 +6,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { AudioRecorder } from './audio/AudioRecorder';
 import { AudioVisualizer } from './audio/AudioVisualizer';
-import { Controls } from './controls/Controls';
+import { Controls from './controls/Controls';
 import { ConversationInterface } from './conversation/ConversationInterface';
 import { supabase } from "@/lib/supabase";
 
-export const EmmaV2 = () => {
+interface EmmaV2Props {
+  onComplete: () => void;
+}
+
+export const EmmaV2 = ({ onComplete }: EmmaV2Props) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isVideoEnabled, setIsVideoEnabled] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
@@ -67,6 +70,10 @@ export const EmmaV2 = () => {
     } catch (error) {
       console.error('Session cleanup error:', error);
     }
+  };
+
+  const handleSkipOrComplete = () => {
+    onComplete();
   };
 
   return (
