@@ -1,10 +1,18 @@
 
 import { Button } from "@/components/ui/button";
 import { PlayCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function LandingEmmaVideo() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handlePlayClick = () => {
+    if (videoRef.current) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
 
   return (
     <section className="relative bg-gradient-to-b from-purple-50/50 to-white py-20">
@@ -21,7 +29,7 @@ export default function LandingEmmaVideo() {
           {!isPlaying && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-10">
               <Button
-                onClick={() => setIsPlaying(true)}
+                onClick={handlePlayClick}
                 variant="ghost"
                 size="lg"
                 className="text-white hover:bg-white/20"
@@ -31,6 +39,7 @@ export default function LandingEmmaVideo() {
             </div>
           )}
           <video
+            ref={videoRef}
             className="w-full rounded-2xl aspect-video object-cover"
             src="https://upbnysrcdcpumjyjhysy.supabase.co/storage/v1/object/public/assets//ff8f693ff5.mp4"
             controls={isPlaying}
