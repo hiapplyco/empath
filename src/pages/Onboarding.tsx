@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { FileUpload } from "@/components/onboarding/FileUpload";
 import { AudioRecorder } from "@/components/onboarding/AudioRecorder";
-import { VideoRecorder } from "@/components/onboarding/VideoRecorder";
+import { EmmaV2 } from "@/components/onboarding/EmmaV2";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 import { QuestionnaireChat } from "@/components/onboarding/QuestionnaireChat";
 import { AudioExperienceRecorder } from "@/components/onboarding/AudioExperienceRecorder";
@@ -110,7 +110,7 @@ const OnboardingPage = () => {
             <CardContent className="pt-6">
               {inputMethod === "resume" && <FileUpload onComplete={() => setStep(3)} />}
               {inputMethod === "audio" && <AudioExperienceRecorder />}
-              {inputMethod === "video" && <VideoRecorder onComplete={() => setStep(3)} />}
+              {inputMethod === "video" && <EmmaV2 onComplete={() => setStep(3)} />}
               {inputMethod === "text" && <QuestionnaireChat />}
             </CardContent>
           </Card>}
