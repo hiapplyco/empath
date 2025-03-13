@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { AudioRecorder } from './audio/AudioRecorder';
 import { AudioVisualizer } from './audio/AudioVisualizer';
-import { Controls from './controls/Controls';
+import { Controls } from './controls/Controls';
 import { ConversationInterface } from './conversation/ConversationInterface';
 import { supabase } from "@/lib/supabase";
 
