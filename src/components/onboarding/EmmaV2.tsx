@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,10 +26,8 @@ export const EmmaV2 = ({ onComplete }: EmmaV2Props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Initialize WebSocket connection when component mounts
     initializeSession();
     return () => {
-      // Cleanup WebSocket connection when component unmounts
       cleanupSession();
     };
   }, []);
@@ -45,6 +44,7 @@ export const EmmaV2 = ({ onComplete }: EmmaV2Props) => {
   };
 
   const initializeSession = async () => {
+    setIsLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -60,6 +60,7 @@ export const EmmaV2 = ({ onComplete }: EmmaV2Props) => {
       });
 
       if (error) throw error;
+      if (!data?.message) throw new Error('No response from Emma');
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
       
@@ -72,13 +73,16 @@ export const EmmaV2 = ({ onComplete }: EmmaV2Props) => {
       toast({
         variant: "destructive",
         title: "Connection Error",
-        description: "Failed to connect to Emma. Please try again.",
+        description: error.message || "Failed to connect to Emma. Please try again.",
       });
+      navigate('/onboarding');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
     
     setIsLoading(true);
     setMessages(prev => [...prev, { role: 'user', content: input }]);
@@ -92,14 +96,15 @@ export const EmmaV2 = ({ onComplete }: EmmaV2Props) => {
       });
 
       if (error) throw error;
+      if (!data?.message) throw new Error('No response from Emma');
       
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: error.message || "Failed to send message. Please try again.",
       });
     } finally {
       setInput('');
@@ -110,13 +115,11 @@ export const EmmaV2 = ({ onComplete }: EmmaV2Props) => {
   const handleRecordingChange = (recording: boolean) => {
     setIsRecording(recording);
     if (recording) {
-      // Start recording logic will be implemented here
       toast({
         title: "Recording Started",
         description: "Speak clearly into your microphone",
       });
     } else {
-      // Stop recording logic will be implemented here
       toast({
         title: "Recording Stopped",
         description: "Processing your audio...",
@@ -129,7 +132,7 @@ export const EmmaV2 = ({ onComplete }: EmmaV2Props) => {
       <Card className="h-full flex flex-col overflow-hidden">
         <div className="flex-1 overflow-hidden flex flex-col">
           {/* Main conversation area */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto p-4">
             <ConversationInterface messages={messages} />
           </div>
 
