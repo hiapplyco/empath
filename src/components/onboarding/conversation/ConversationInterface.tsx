@@ -1,17 +1,34 @@
 
 import React from 'react';
 
-export const ConversationInterface: React.FC = () => {
+interface Message {
+  role: 'assistant' | 'user';
+  content: string;
+}
+
+interface ConversationInterfaceProps {
+  messages: Message[];
+}
+
+export const ConversationInterface: React.FC<ConversationInterfaceProps> = ({ messages }) => {
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      <div className="flex flex-col gap-4">
-        <div className="bg-purple-50 p-4 rounded-lg">
-          <p className="text-purple-800">
-            Hi! I'm Emma, your onboarding assistant. I'll help you create your caregiver profile. 
-            You can speak to me or type your responses. What would you like to tell me about your caregiving experience?
-          </p>
+    <div className="flex flex-col gap-4 p-4">
+      {messages.map((message, index) => (
+        <div
+          key={index}
+          className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+        >
+          <div
+            className={`max-w-[80%] p-4 rounded-lg ${
+              message.role === 'user'
+                ? 'bg-purple-100 text-purple-900'
+                : 'bg-gray-100 text-gray-900'
+            }`}
+          >
+            {message.content}
+          </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 };
