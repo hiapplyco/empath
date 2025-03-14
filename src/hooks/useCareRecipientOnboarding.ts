@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 export const useCareRecipientOnboarding = () => {
   const [messages, setMessages] = useState<{ role: 'assistant' | 'user'; content: string }[]>([]);
@@ -12,6 +12,7 @@ export const useCareRecipientOnboarding = () => {
   const [progress, setProgress] = useState(0);
   const [isEndingInterview, setIsEndingInterview] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const sendMessage = async (content: string) => {
     if (!content.trim()) return;
@@ -44,24 +45,27 @@ export const useCareRecipientOnboarding = () => {
   const handleEndInterview = async () => {
     setIsEndingInterview(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        throw new Error('User not authenticated');
+      }
+
       const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
-        body: { message: 'END_INTERVIEW', language }
+        body: { 
+          message: 'END_INTERVIEW',
+          history: messages,
+          language,
+          action: 'finish',
+          userId: session.user.id
+        }
       });
 
       if (error) throw error;
 
-      const { error: dbError } = await supabase
-        .from('care_seeker_interviews')
-        .insert({
-          raw_interview_data: { messages },
-          processed_profile: data.profile,
-          needs_review: true
-        });
-
-      if (dbError) throw dbError;
-
+      // Navigate to profile review page
       navigate('/care-seeker/profile-review');
     } catch (error) {
+      console.error('Error ending interview:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -77,11 +81,11 @@ export const useCareRecipientOnboarding = () => {
     input,
     setInput,
     isLoading,
-    language,
     progress,
-    isEndingInterview,
     sendMessage,
+    language,
     setLanguage,
+    isEndingInterview,
     handleEndInterview
   };
 };

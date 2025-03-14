@@ -5,7 +5,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { handleStartChat, handleRegularMessage } from "./messageHandlers.ts";
 import { handleFinishChat } from "./profileGenerator.ts";
 import { Message, ChatResponse } from "./types.ts";
-import { systemPrompt } from "./prompts.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
