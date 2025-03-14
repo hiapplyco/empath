@@ -19,14 +19,14 @@ export const ChatInput = ({ input, isLoading, onInputChange, onSendMessage }: Ch
   };
 
   return (
-    <div className="border-t p-4">
-      <div className="flex items-center gap-2">
+    <div className="border-t bg-white">
+      <div className="flex items-center gap-2 p-2">
         <Textarea
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your message here..."
-          className="resize-none min-h-[40px] max-h-[120px] py-2"
+          className="resize-none min-h-[40px] max-h-[80px] py-1.5"
           rows={1}
         />
         <Button 
