@@ -32,17 +32,18 @@ serve(async (req) => {
     
     console.log('Starting chat with action:', action);
     console.log('Message history length:', history.length);
-    
-    // Initialize chat with system prompt only if there's no history
-    const chatHistory = history.length > 0 
-      ? history 
-      : [{
-          role: 'user',
-          parts: [{ text: systemPrompt }]
-        }];
+    console.log('Current message:', message);
+
+    // Initialize chat with history, including system prompt if it's a new chat
+    let chatHistory = history;
+    if (history.length === 0) {
+      chatHistory = [{
+        role: 'user',
+        parts: [{ text: systemPrompt }]
+      }];
+    }
     
     const chat = model.startChat({ history: chatHistory });
-
     let response: ChatResponse;
 
     switch (action) {

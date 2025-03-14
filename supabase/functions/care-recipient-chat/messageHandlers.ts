@@ -4,7 +4,8 @@ import { ChatResponse } from "./types.ts";
 export const handleStartChat = async (chat: any, language: string): Promise<ChatResponse> => {
   try {
     // Only send initial prompt if there's no history
-    const result = await chat.sendMessage("Please start by asking about their relationship to the care recipient.");
+    const result = await chat.sendMessage("Hi! I'm Emma. Could you tell me about your relationship to the person who needs care?");
+    console.log('Start chat response:', result.response.text());
     return {
       type: 'message',
       text: result.response.text()
@@ -27,7 +28,6 @@ export const handleRegularMessage = async (chat: any, message: string): Promise<
       throw new Error('END_INTERVIEW should be handled by handleFinishChat');
     }
     
-    // Send the user's message and get Emma's response
     const result = await chat.sendMessage(message);
     const response = result.response.text();
     
