@@ -18,7 +18,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, history = [], language = 'en', action } = await req.json();
+    const { message, history = [], language = 'en', action, userId } = await req.json();
     
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
     const model = genAI.getGenerativeModel({ 
@@ -52,7 +52,7 @@ serve(async (req) => {
         break;
         
       case 'finish':
-        response = await handleFinishChat(chat, message.userId, language, null, corsHeaders);
+        response = await handleFinishChat(chat, userId, language, null, corsHeaders);
         break;
         
       default:
