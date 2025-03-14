@@ -1,11 +1,11 @@
-
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Message } from "./types.ts";
+import { systemPrompt } from "./prompts.ts";
 
 export const createAIClient = () => {
   const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
   return genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemini-1.0-pro",
     generationConfig: {
       temperature: 0.7,
       topP: 0.95,
