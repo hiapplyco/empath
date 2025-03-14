@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai"
@@ -26,7 +25,7 @@ serve(async (req) => {
   try {
     const { mode, message } = await req.json()
     const genAI = initializeGemini()
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
     
     console.log(`Processing ${mode} request...`)
 
@@ -106,4 +105,3 @@ serve(async (req) => {
     )
   }
 })
-
