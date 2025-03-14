@@ -23,15 +23,32 @@ export const useCareRecipientOnboarding = () => {
     setInput('');
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Not authenticated');
+      }
+
       const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
-        body: { message: content, language }
+        body: { 
+          message: content, 
+          language,
+          userId: session.user.id 
+        }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      if (!data?.text) {
+        throw new Error('Invalid response from chat function');
+      }
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.text }]);
       setProgress(prev => Math.min(prev + 10, 90));
     } catch (error) {
+      console.error('Error sending message:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -46,8 +63,8 @@ export const useCareRecipientOnboarding = () => {
     setIsEndingInterview(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        throw new Error('User not authenticated');
+      if (!session) {
+        throw new Error('Not authenticated');
       }
 
       const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
@@ -60,7 +77,10 @@ export const useCareRecipientOnboarding = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
 
       // Navigate to profile review page
       navigate('/care-seeker/profile-review');
