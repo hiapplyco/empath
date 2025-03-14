@@ -32,15 +32,14 @@ serve(async (req) => {
     });
     
     console.log('Starting chat with action:', action);
-    console.log('History length:', history.length);
+    console.log('Message history length:', history.length);
     
     const chat = model.startChat({
       history: [
-        { role: 'user', parts: [{ text: systemPrompt }] },
-        ...history.map((msg: Message) => ({
-          role: msg.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: msg.content }]
-        })),
+        {
+          role: 'user',
+          parts: [{ text: systemPrompt }]
+        }
       ],
     });
 
@@ -50,11 +49,9 @@ serve(async (req) => {
       case 'start':
         response = await handleStartChat(chat, language);
         break;
-        
       case 'finish':
-        response = await handleFinishChat(chat, userId, language, null, corsHeaders);
+        response = await handleFinishChat(chat, userId, language, history, corsHeaders);
         break;
-        
       default:
         response = await handleRegularMessage(chat, message);
     }
