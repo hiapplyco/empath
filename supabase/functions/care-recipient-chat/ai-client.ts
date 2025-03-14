@@ -1,3 +1,4 @@
+
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Message } from "./types.ts";
 import { systemPrompt } from "./prompts.ts";
@@ -16,18 +17,20 @@ export const createAIClient = () => {
 };
 
 export const startChat = (model: any, history: Message[]) => {
-  return model.startChat({
+  console.log('Starting chat with history length:', history.length);
+  const chat = model.startChat({
     history: [
       {
         role: 'user',
         parts: [{ text: systemPrompt }]
-      },
-      ...history.map(({ role, content }) => ({
-        role: role === 'user' ? 'user' : 'model',
-        parts: [{ text: content }]
-      }))
-    ]
+      }
+    ].concat(history.map(({ role, content }) => ({
+      role: role === 'user' ? 'user' : 'model',
+      parts: [{ text: content }]
+    })))
   });
+  console.log('Chat started successfully');
+  return chat;
 };
 
 export const processResponse = (response: string) => {
