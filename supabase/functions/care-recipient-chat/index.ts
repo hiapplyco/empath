@@ -27,7 +27,7 @@ serve(async (req) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-2.0" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
 
     // Start a chat with the provided history
     const chat = model.startChat({
