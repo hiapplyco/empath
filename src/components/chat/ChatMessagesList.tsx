@@ -16,19 +16,28 @@ interface ChatMessagesListProps {
 export const ChatMessagesList = ({ messages }: ChatMessagesListProps) => {
   const isJsonProfile = (content: string) => {
     try {
-      // First clean up the string - remove markdown code block indicators and extra backticks
-      const cleanContent = content.replace(/```json\s*|\s*```/g, '').trim();
-      const data = JSON.parse(cleanContent);
-      return data.recipient_information && data.care_requirements && data.schedule_preferences;
+      // Check if the message contains a code block
+      const codeBlockMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+      if (!codeBlockMatch) return false;
+      
+      // Parse the JSON from within the code block
+      const jsonContent = JSON.parse(codeBlockMatch[1].trim());
+      return (
+        jsonContent.recipient_information &&
+        jsonContent.care_requirements &&
+        jsonContent.schedule_preferences
+      );
     } catch {
       return false;
     }
   };
 
   const parseJsonProfile = (content: string) => {
-    const cleanContent = content.replace(/```json\s*|\s*```/g, '').trim();
     try {
-      return JSON.parse(cleanContent);
+      const codeBlockMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+      if (!codeBlockMatch) return null;
+      
+      return JSON.parse(codeBlockMatch[1].trim());
     } catch (e) {
       console.error('Error parsing JSON profile:', e);
       return null;
@@ -44,7 +53,22 @@ export const ChatMessagesList = ({ messages }: ChatMessagesListProps) => {
           if (message.role === 'assistant' && isJsonProfile(content)) {
             const profileData = parseJsonProfile(content);
             if (profileData) {
-              return <CareProfileCard key={index} profile={profileData} />;
+              const introText = content.split('```')[0].trim();
+              return (
+                <div key={index} className="flex flex-col gap-4">
+                  {introText && (
+                    <div className="flex items-start gap-2">
+                      <Avatar className="h-8 w-8 mt-1">
+                        <AvatarFallback className="bg-purple-100 text-purple-800">EM</AvatarFallback>
+                      </Avatar>
+                      <div className="rounded-lg px-4 py-2 max-w-[80%] bg-white border border-gray-200 text-gray-800">
+                        {introText}
+                      </div>
+                    </div>
+                  )}
+                  <CareProfileCard profile={profileData} />
+                </div>
+              );
             }
           }
 
