@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai"
@@ -83,7 +82,10 @@ serve(async (req) => {
     const { prompt, type = 'default', history = [] } = await req.json()
     console.log(`Processing ${type} request with input:`, prompt)
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.0-flash",
+    })
+
     const chat = model.startChat({
       history: history.map(({ role, text }: { role: string, text: string }) => ({
         role: role === 'user' ? 'user' : 'model',
@@ -128,4 +130,3 @@ serve(async (req) => {
     )
   }
 })
-
