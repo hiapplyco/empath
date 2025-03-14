@@ -19,9 +19,11 @@ serve(async (req) => {
   try {
     const { message, history = [], language = 'en', action, userId } = await req.json();
     
+    console.log('Request details:', { action, historyLength: history.length, message });
+    
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.0-flash",
+      model: "gemini-pro",
       generationConfig: {
         temperature: 0.7,
         topK: 1,
@@ -29,21 +31,12 @@ serve(async (req) => {
         maxOutputTokens: 2048,
       },
     });
-    
-    console.log('Starting chat with action:', action);
-    console.log('Message history length:', history.length);
-    console.log('Current message:', message);
 
-    // Initialize chat with history, including system prompt if it's a new chat
-    let chatHistory = history;
-    if (history.length === 0) {
-      chatHistory = [{
-        role: 'user',
-        parts: [{ text: systemPrompt }]
-      }];
-    }
-    
-    const chat = model.startChat({ history: chatHistory });
+    // Initialize chat with provided history or empty history for new chats
+    const chat = model.startChat({
+      history: history.length > 0 ? history : []
+    });
+
     let response: ChatResponse;
 
     switch (action) {

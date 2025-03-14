@@ -1,11 +1,16 @@
 
 import { ChatResponse } from "./types.ts";
+import { systemPrompt } from "./prompts.ts";
 
 export const handleStartChat = async (chat: any, language: string): Promise<ChatResponse> => {
   try {
-    // Only send initial prompt if there's no history
+    // Initialize with system prompt first
+    await chat.sendMessage(systemPrompt);
+    
+    // Then send the initial greeting
     const result = await chat.sendMessage("Hi! I'm Emma. Could you tell me about your relationship to the person who needs care?");
     console.log('Start chat response:', result.response.text());
+    
     return {
       type: 'message',
       text: result.response.text()
