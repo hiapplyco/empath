@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { handleStartChat, handleRegularMessage } from "./messageHandlers.ts";
 import { handleFinishChat } from "./profileGenerator.ts";
 import { Message, ChatResponse } from "./types.ts";
+import { systemPrompt } from "./prompts.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,11 +31,17 @@ serve(async (req) => {
       },
     });
     
+    console.log('Starting chat with action:', action);
+    console.log('History length:', history.length);
+    
     const chat = model.startChat({
-      history: history.map((msg: Message) => ({
-        role: msg.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: msg.content }]
-      })),
+      history: [
+        { role: 'user', parts: [{ text: systemPrompt }] },
+        ...history.map((msg: Message) => ({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }]
+        })),
+      ],
     });
 
     let response: ChatResponse;
@@ -42,6 +49,10 @@ serve(async (req) => {
     switch (action) {
       case 'start':
         response = await handleStartChat(chat, language);
+        break;
+        
+      case 'finish':
+        response = await handleFinishChat(chat, message.userId, language, null, corsHeaders);
         break;
         
       default:
