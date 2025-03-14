@@ -4,7 +4,6 @@ import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { handleStartChat, handleRegularMessage } from "./messageHandlers.ts";
 import { handleFinishChat } from "./profileGenerator.ts";
 import { Message, ChatResponse } from "./types.ts";
-import { systemPrompt } from "./prompts.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,29 +20,16 @@ serve(async (req) => {
     
     console.log('Request details:', { action, historyLength: history.length, message });
     
-    const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-pro",
-      safetySettings: [
-        {
-          category: "HARM_CATEGORY_HARASSMENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_HATE_SPEECH",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        }
-      ]
-    });
+    // Initialize the Gemini API client
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY is not configured');
+    }
 
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    // Start a chat with the provided history
     const chat = model.startChat({
       history: history.map((msg: Message) => ({
         role: msg.role === 'user' ? 'user' : 'model',
