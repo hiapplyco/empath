@@ -1,7 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { handleStartChat, handleRegularMessage } from "./messageHandlers.ts";
 import { handleFinishChat } from "./profileGenerator.ts";
 import { Message, ChatResponse } from "./types.ts";
@@ -34,20 +33,25 @@ serve(async (req) => {
     console.log('Starting chat with action:', action);
     console.log('Message history length:', history.length);
     
-    const chat = model.startChat({
-      history: history.length > 0 ? history : [
-        {
+    // Initialize chat with system prompt only if there's no history
+    const chatHistory = history.length > 0 
+      ? history 
+      : [{
           role: 'user',
           parts: [{ text: systemPrompt }]
-        }
-      ],
-    });
+        }];
+    
+    const chat = model.startChat({ history: chatHistory });
 
     let response: ChatResponse;
 
     switch (action) {
       case 'start':
-        response = await handleStartChat(chat, language);
+        if (history.length === 0) {
+          response = await handleStartChat(chat, language);
+        } else {
+          throw new Error('Start action called with existing history');
+        }
         break;
       case 'finish':
         response = await handleFinishChat(chat, userId, language, history, corsHeaders);

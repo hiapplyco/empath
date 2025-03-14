@@ -3,8 +3,8 @@ import { ChatResponse } from "./types.ts";
 
 export const handleStartChat = async (chat: any, language: string): Promise<ChatResponse> => {
   try {
-    // Send the initial message from Emma
-    const result = await chat.sendMessage("");
+    // Only send initial prompt if there's no history
+    const result = await chat.sendMessage("Please start by asking about their relationship to the care recipient.");
     return {
       type: 'message',
       text: result.response.text()
