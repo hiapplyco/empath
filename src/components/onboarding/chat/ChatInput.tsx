@@ -19,13 +19,14 @@ export const ChatInput = ({ input, isLoading, onInputChange, onSendMessage }: Ch
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 p-3">
       <Textarea
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Type your message here..."
-        className="resize-none min-h-[50px]"
+        className="resize-none min-h-[40px] max-h-[120px] py-2"
+        rows={1}
       />
       <Button onClick={onSendMessage} disabled={isLoading}>
         <Send className="h-5 w-5" />
@@ -33,3 +34,4 @@ export const ChatInput = ({ input, isLoading, onInputChange, onSendMessage }: Ch
     </div>
   );
 };
+
