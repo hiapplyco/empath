@@ -20,21 +20,21 @@ serve(async (req) => {
     const { message, history = [], language = 'en', action } = await req.json();
     
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    
-    const chatHistory = history.map((msg: Message) => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }]
-    }));
-
-    const chat = model.startChat({
-      history: chatHistory,
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.0-pro",
       generationConfig: {
         temperature: 0.7,
         topK: 1,
         topP: 1,
         maxOutputTokens: 2048,
       },
+    });
+    
+    const chat = model.startChat({
+      history: history.map((msg: Message) => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }]
+      })),
     });
 
     let response: ChatResponse;
