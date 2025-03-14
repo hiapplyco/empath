@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -40,7 +39,7 @@ const CareOnboarding = () => {
         )}
         
         {onboardingType === "chat" && (
-          <CareRecipientChat onBack={() => setOnboardingType("selection")} />
+          <CareRecipientChat />
         )}
         
         {onboardingType === "manual" && (
