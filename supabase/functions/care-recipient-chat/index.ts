@@ -24,16 +24,31 @@ serve(async (req) => {
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
     const model = genAI.getGenerativeModel({ 
       model: "gemini-pro",
-      generationConfig: {
-        temperature: 0.7,
-        topK: 1,
-        topP: 1,
-        maxOutputTokens: 2048,
-      },
+      safetySettings: [
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        }
+      ]
     });
 
     const chat = model.startChat({
-      history: []  // Start with empty history, we'll handle the system prompt separately
+      history: history.map((msg: Message) => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: msg.content
+      }))
     });
 
     let response: ChatResponse;

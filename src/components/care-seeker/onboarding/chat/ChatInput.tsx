@@ -26,7 +26,7 @@ export const ChatInput = ({ input, isLoading, onInputChange, onSendMessage }: Ch
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your message here..."
-          className="resize-none min-h-[40px] max-h-[80px] py-1.5"
+          className="resize-none min-h-[20px] max-h-[80px] py-1"
           rows={1}
         />
         <Button 
