@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -147,22 +146,13 @@ export const useCareRecipientOnboarding = () => {
 
       if (error) throw error;
 
-      const { error: insertError } = await supabase
-        .from('care_seeker_interviews')
-        .insert({
-          user_id: session.user.id,
-          raw_interview_data: { messages, language },
-          processed_profile: data.data
-        });
-
-      if (insertError) throw insertError;
-
       toast({
-        title: "Interview Completed",
-        description: "Let's customize your profile before proceeding.",
+        title: "Profile Created",
+        description: "Let's review and customize your profile.",
       });
 
-      navigate('/onboarding/profile');
+      // Navigate to the profile review page
+      navigate('/care-seeker/onboarding/profile');
     } catch (error: any) {
       console.error('Error ending interview:', error);
       toast({

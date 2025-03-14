@@ -213,8 +213,10 @@ export type Database = {
           created_at: string | null
           id: string
           matching_tags: string[] | null
+          needs_review: boolean | null
           processed_profile: Json
           raw_interview_data: Json
+          review_completed: boolean | null
           status: string | null
           updated_at: string | null
           user_id: string
@@ -224,8 +226,10 @@ export type Database = {
           created_at?: string | null
           id?: string
           matching_tags?: string[] | null
+          needs_review?: boolean | null
           processed_profile: Json
           raw_interview_data: Json
+          review_completed?: boolean | null
           status?: string | null
           updated_at?: string | null
           user_id: string
@@ -235,8 +239,10 @@ export type Database = {
           created_at?: string | null
           id?: string
           matching_tags?: string[] | null
+          needs_review?: boolean | null
           processed_profile?: Json
           raw_interview_data?: Json
+          review_completed?: boolean | null
           status?: string | null
           updated_at?: string | null
           user_id?: string
@@ -247,8 +253,10 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          interview_completed: boolean | null
           onboarding_completed: boolean | null
           onboarding_step: number | null
+          profile_sections: Json | null
           relationship_to_recipient: Database["public"]["Enums"]["care_recipient_relation"]
           updated_at: string | null
           user_id: string
@@ -256,8 +264,10 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
+          interview_completed?: boolean | null
           onboarding_completed?: boolean | null
           onboarding_step?: number | null
+          profile_sections?: Json | null
           relationship_to_recipient: Database["public"]["Enums"]["care_recipient_relation"]
           updated_at?: string | null
           user_id: string
@@ -265,8 +275,10 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
+          interview_completed?: boolean | null
           onboarding_completed?: boolean | null
           onboarding_step?: number | null
+          profile_sections?: Json | null
           relationship_to_recipient?: Database["public"]["Enums"]["care_recipient_relation"]
           updated_at?: string | null
           user_id?: string

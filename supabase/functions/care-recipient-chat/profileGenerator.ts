@@ -37,16 +37,46 @@ export async function handleFinishChat(
       // Save to database if user ID is provided
       if (userId && supabase) {
         console.log(`Saving profile for user: ${userId}`);
-        const { error: profileError } = await supabase
-          .from('care_recipient_profiles')
+        
+        // Update the interview record
+        const { error: interviewError } = await supabase
+          .from('care_seeker_interviews')
           .upsert({
             user_id: userId,
-            raw_profile: profileWithMetadata,
+            raw_interview_data: { messages: chat.getHistory(), language },
             processed_profile: profileWithMetadata,
-            language: language,
+            needs_review: true,
+            review_completed: false,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
+          
+        if (interviewError) throw interviewError;
+
+        // Update the user's profile status
+        const { error: profileError } = await supabase
+          .from('care_seeker_profiles')
+          .update({
+            interview_completed: true,
+            profile_sections: [
+              {
+                title: "Basic Information",
+                items: Object.entries(profileWithMetadata.recipient_information)
+                  .map(([key, value]) => ({ label: key, value }))
+              },
+              {
+                title: "Care Requirements",
+                items: Object.entries(profileWithMetadata.care_requirements)
+                  .map(([key, value]) => ({ label: key, value }))
+              },
+              {
+                title: "Schedule Preferences",
+                items: Object.entries(profileWithMetadata.schedule_preferences)
+                  .map(([key, value]) => ({ label: key, value }))
+              }
+            ]
+          })
+          .eq('user_id', userId);
           
         if (profileError) throw profileError;
       }
@@ -57,7 +87,7 @@ export async function handleFinishChat(
           raw_profile: profileWithMetadata,
           processed_profile: profileWithMetadata
         },
-        message: "Your care profile has been successfully created!"
+        message: "Your care profile has been successfully created! You'll be redirected to review and edit your profile."
       };
     } catch (jsonError) {
       console.error('JSON parsing error:', jsonError);
