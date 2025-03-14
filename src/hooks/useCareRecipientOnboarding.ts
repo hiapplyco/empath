@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +12,49 @@ export const useCareRecipientOnboarding = () => {
   const [isEndingInterview, setIsEndingInterview] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Initialize chat when component mounts
+  useEffect(() => {
+    const initializeChat = async () => {
+      setIsLoading(true);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          throw new Error('Not authenticated');
+        }
+
+        const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
+          body: { 
+            message: 'START_CHAT',
+            language,
+            userId: session.user.id,
+            action: 'start'
+          }
+        });
+
+        if (error) {
+          console.error('Edge function error:', error);
+          throw error;
+        }
+
+        if (data?.text) {
+          setMessages([{ role: 'assistant', content: data.text }]);
+          setProgress(10);
+        }
+      } catch (error) {
+        console.error('Error initializing chat:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to start chat. Please try refreshing the page."
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeChat();
+  }, [language, toast]);
 
   const sendMessage = async (content: string) => {
     if (!content.trim()) return;

@@ -20,30 +20,22 @@ serve(async (req) => {
     const { message, history = [], language = 'en', action, userId } = await req.json();
     
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     
     const supabase = userId ? createClient(
       Deno.env.get('SUPABASE_URL') || '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
     ) : null;
 
-    const chatHistory = [
-      { role: "user", parts: [{ text: systemPrompt }] }
-    ];
-    
-    if (history && history.length > 0) {
-      history.forEach((msg: Message) => {
-        chatHistory.push({
-          role: msg.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: msg.text || msg.content }]
-        });
-      });
-    }
+    const chatHistory = history.map((msg: Message) => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }]
+    }));
 
     const chat = model.startChat({
       history: chatHistory,
       generationConfig: {
-        temperature: 0.9,
+        temperature: 0.7,
         topK: 1,
         topP: 1,
         maxOutputTokens: 2048,
@@ -72,11 +64,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in care recipient chat function:', error);
     return new Response(
-      JSON.stringify({ 
-        error: error.message,
-        type: 'error',
-        details: error.stack || 'No stack trace available'
-      }),
+      JSON.stringify({ error: error.message }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
