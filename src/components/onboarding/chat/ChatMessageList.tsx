@@ -1,7 +1,7 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ProfileSummary } from "./ProfileSummary";
 import { useEffect, useRef } from "react";
+import { CareProfileSummary } from "@/components/care-seeker/onboarding/chat/CareProfileSummary";
 
 interface Message {
   role: 'assistant' | 'user';
@@ -26,14 +26,15 @@ export const ChatMessageList = ({ messages }: ChatMessageListProps) => {
   return (
     <div className="space-y-4">
       {messages.map((message, index) => {
-        // Check if the message contains JSON data by looking for recipient_information
-        const isJsonProfile = message.role === 'assistant' && message.content.includes('"recipient_information"');
+        // Check if the message contains JSON data by looking for specific profile structure
+        const isJsonProfile = message.role === 'assistant' && 
+          (message.content.includes('"recipient_information"') || message.content.includes('"care_requirements"'));
         
         return (
           <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {isJsonProfile ? (
               <div className="w-full">
-                <ProfileSummary data={message.content} />
+                <CareProfileSummary data={message.content} />
               </div>
             ) : (
               <div className={`rounded-xl px-4 py-2 max-w-2xl ${
