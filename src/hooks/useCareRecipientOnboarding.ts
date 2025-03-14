@@ -18,24 +18,15 @@ export const useCareRecipientOnboarding = () => {
     const initializeChat = async () => {
       setIsLoading(true);
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          throw new Error('Not authenticated');
-        }
-
         const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
           body: { 
-            message: 'START_CHAT',
+            action: 'start',
             language,
-            userId: session.user.id,
-            action: 'start'
+            history: []
           }
         });
 
-        if (error) {
-          console.error('Edge function error:', error);
-          throw error;
-        }
+        if (error) throw error;
 
         if (data?.text) {
           setMessages([{ role: 'assistant', content: data.text }]);

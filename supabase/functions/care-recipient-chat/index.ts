@@ -17,16 +17,11 @@ serve(async (req) => {
   }
 
   try {
-    const { message, history = [], language = 'en', action, userId } = await req.json();
+    const { message, history = [], language = 'en', action } = await req.json();
     
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     
-    const supabase = userId ? createClient(
-      Deno.env.get('SUPABASE_URL') || '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
-    ) : null;
-
     const chatHistory = history.map((msg: Message) => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: msg.content }]
@@ -47,10 +42,6 @@ serve(async (req) => {
     switch (action) {
       case 'start':
         response = await handleStartChat(chat, language);
-        break;
-        
-      case 'finish':
-        response = await handleFinishChat(chat, userId, language, supabase, corsHeaders);
         break;
         
       default:

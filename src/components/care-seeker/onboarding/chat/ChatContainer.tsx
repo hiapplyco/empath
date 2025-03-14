@@ -16,7 +16,6 @@ interface ChatContainerProps {
   onSendMessage: () => void;
   onLanguageChange: (value: string) => void;
   onEndInterview: () => void;
-  onComplete?: (data: any) => void;
 }
 
 export const ChatContainer = ({
@@ -33,7 +32,7 @@ export const ChatContainer = ({
   onEndInterview
 }: ChatContainerProps) => {
   return (
-    <div className="w-[90%] mx-auto min-h-[60px] max-h-[80vh] flex flex-col bg-white rounded-lg shadow-lg border border-gray-200">
+    <div className="w-full max-w-4xl mx-auto h-[calc(100vh-12rem)] flex flex-col bg-white rounded-lg shadow-lg border border-gray-200">
       <ChatHeader 
         onBack={onBack}
         language={language}
