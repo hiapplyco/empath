@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { handleStartChat, handleRegularMessage } from "./messageHandlers.ts";
 import { handleFinishChat } from "./profileGenerator.ts";
 import { Message, ChatResponse } from "./types.ts";
+import { systemPrompt } from "./prompts.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +13,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -20,17 +20,14 @@ serve(async (req) => {
   try {
     const { message, history = [], language = 'en', action, userId } = await req.json();
     
-    // Initialize Gemini API
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     
-    // Initialize Supabase client if needed
     const supabase = userId ? createClient(
       Deno.env.get('SUPABASE_URL') || '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
     ) : null;
 
-    // Prepare chat history
     const chatHistory = [
       { role: "user", parts: [{ text: systemPrompt }] }
     ];
@@ -44,7 +41,6 @@ serve(async (req) => {
       });
     }
 
-    // Create chat session
     const chat = model.startChat({
       history: chatHistory,
       generationConfig: {
@@ -57,7 +53,6 @@ serve(async (req) => {
 
     let response: ChatResponse;
 
-    // Handle different action types
     switch (action) {
       case 'start':
         response = await handleStartChat(chat, language);

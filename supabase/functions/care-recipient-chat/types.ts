@@ -1,4 +1,3 @@
-
 export interface Message {
   role: 'assistant' | 'user';
   text: string;
@@ -38,4 +37,10 @@ export interface ProfileData {
     duration: string;
     start_date: string;
   };
+}
+
+// Add any missing interfaces if needed
+export interface SystemConfig {
+  language: string;
+  initialPrompt: string;
 }

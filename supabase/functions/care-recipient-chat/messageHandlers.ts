@@ -1,14 +1,12 @@
-
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Message, ChatResponse } from "./types.ts";
-
-const systemPrompt = `// ... keep existing code (system prompt content)`;
+import { systemPrompt } from "./prompts.ts";
 
 export async function handleStartChat(chat: any, language: string): Promise<ChatResponse> {
   try {
     const langPrompt = language === 'en' 
-      ? "Start a conversation with a warm greeting in English and ask about language preference."
-      : `Start a conversation with a warm greeting in ${language} and ask about language preference.`;
+      ? "Start a conversation with a warm greeting in English and ask about the care recipient."
+      : `Start a conversation with a warm greeting in ${language} and ask about the care recipient.`;
     
     const result = await chat.sendMessage(langPrompt);
     
