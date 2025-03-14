@@ -1,126 +1,41 @@
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { useToast } from '@/hooks/use-toast';
-import { SUPPORTED_LANGUAGES } from '@/components/care-seeker/onboarding/chat/LanguageSelector';
-
-interface Message {
-  role: 'assistant' | 'user';
-  content: string;
-}
+import { toast } from '@/hooks/use-toast';
 
 export const useCareRecipientOnboarding = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<{ role: 'assistant' | 'user'; content: string }[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState('en');
   const [progress, setProgress] = useState(0);
   const [isEndingInterview, setIsEndingInterview] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          variant: "destructive",
-          title: "Authentication required",
-          description: "Please sign in to continue."
-        });
-        navigate('/auth');
-        return;
-      }
-    };
-    
-    checkAuth();
-    startConversation();
-  }, []);
+  const sendMessage = async (content: string) => {
+    if (!content.trim()) return;
 
-  const startConversation = async () => {
     setIsLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
-        body: { 
-          message: '', 
-          history: [], 
-          language,
-          action: 'start'
-        }
-      });
-
-      if (error) throw error;
-      
-      setMessages([{ role: 'assistant', content: data.text }]);
-      setProgress(10);
-    } catch (error) {
-      console.error('Failed to start conversation:', error);
-      setMessages([
-        { role: 'assistant', content: "Sorry, I'm having trouble starting the conversation. Please try again later." }
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
-
-    const userMessage: Message = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
+    const newMessage = { role: 'user' as const, content };
+    setMessages(prev => [...prev, newMessage]);
     setInput('');
-    setIsLoading(true);
 
     try {
       const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
-        body: { 
-          message: input,
-          history: messages.map(m => ({ role: m.role, text: m.content })),
-          language
-        }
+        body: { message: content, language }
       });
 
       if (error) throw error;
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.text }]);
-      setProgress(prev => Math.min(prev + 10, 100));
+      setProgress(prev => Math.min(prev + 10, 90));
     } catch (error) {
-      console.error('Failed to send message:', error);
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: "Sorry, I couldn't process your message. Please try again." }
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLanguageChange = async (newLanguage: string) => {
-    setLanguage(newLanguage);
-    const languageName = SUPPORTED_LANGUAGES[newLanguage as keyof typeof SUPPORTED_LANGUAGES];
-    const languageChangeMessage = `Please continue our conversation in ${languageName}.`;
-    
-    setMessages(prev => [...prev, { role: 'user', content: languageChangeMessage }]);
-    setIsLoading(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
-        body: { 
-          message: languageChangeMessage,
-          history: messages.map(m => ({ role: m.role, text: m.content })),
-          language: newLanguage
-        }
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to send message. Please try again."
       });
-
-      if (error) throw error;
-      
-      setMessages(prev => [...prev, { role: 'assistant', content: data.text }]);
-    } catch (error) {
-      console.error('Failed to change language:', error);
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: "Sorry, I couldn't change the language. Please try again." }
-      ]);
     } finally {
       setIsLoading(false);
     }
@@ -129,36 +44,28 @@ export const useCareRecipientOnboarding = () => {
   const handleEndInterview = async () => {
     setIsEndingInterview(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        throw new Error('User not authenticated');
-      }
-
       const { data, error } = await supabase.functions.invoke('care-recipient-chat', {
-        body: { 
-          message: 'END_INTERVIEW',
-          history: messages.map(m => ({ role: m.role, text: m.content })),
-          language,
-          action: 'finish',
-          userId: session.user.id
-        }
+        body: { message: 'END_INTERVIEW', language }
       });
 
       if (error) throw error;
 
-      toast({
-        title: "Profile Created",
-        description: "Let's review and customize your profile.",
-      });
+      const { error: dbError } = await supabase
+        .from('care_seeker_interviews')
+        .insert({
+          raw_interview_data: { messages },
+          processed_profile: data.profile,
+          needs_review: true
+        });
 
-      // Navigate to the profile review page
-      navigate('/care-seeker/onboarding/profile');
-    } catch (error: any) {
-      console.error('Error ending interview:', error);
+      if (dbError) throw dbError;
+
+      navigate('/care-seeker/profile-review');
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to process interview. Please try again.",
+        description: "Failed to save interview data. Please try again."
       });
     } finally {
       setIsEndingInterview(false);
@@ -174,7 +81,7 @@ export const useCareRecipientOnboarding = () => {
     progress,
     isEndingInterview,
     sendMessage,
-    handleLanguageChange,
+    setLanguage,
     handleEndInterview
   };
 };

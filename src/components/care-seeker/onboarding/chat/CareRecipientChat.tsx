@@ -1,31 +1,23 @@
 
-import { ReviewProfile } from "../ReviewProfile";
 import { useState } from "react";
-import { useCareRecipientChat } from "@/hooks/useCareRecipientChat";
 import { ChatContainer } from "./ChatContainer";
 import { useNavigate } from "react-router-dom";
+import { useCareRecipientOnboarding } from "@/hooks/useCareRecipientOnboarding";
 
 export const CareRecipientChat = () => {
-  const [showReview, setShowReview] = useState(false);
-  const [profileData, setProfileData] = useState<any>(null);
   const navigate = useNavigate();
   const {
     messages,
     input,
     setInput,
-    isTyping: isLoading,
+    isLoading,
     progress,
     sendMessage,
     language,
     setLanguage,
     isEndingInterview,
     handleEndInterview,
-  } = useCareRecipientChat();
-
-  const handleChatComplete = (data: any) => {
-    setProfileData(data);
-    setShowReview(true);
-  };
+  } = useCareRecipientOnboarding();
 
   const handleBack = () => {
     navigate(-1);
@@ -36,15 +28,6 @@ export const CareRecipientChat = () => {
       sendMessage(input);
     }
   };
-
-  if (showReview && profileData) {
-    return (
-      <ReviewProfile 
-        formData={profileData}
-        onBack={() => setShowReview(false)}
-      />
-    );
-  }
 
   return (
     <ChatContainer 
@@ -59,8 +42,6 @@ export const CareRecipientChat = () => {
       onSendMessage={handleSendMessage}
       onLanguageChange={setLanguage}
       onEndInterview={handleEndInterview}
-      onComplete={handleChatComplete}
     />
   );
 };
-
