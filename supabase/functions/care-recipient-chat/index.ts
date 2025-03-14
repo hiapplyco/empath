@@ -120,7 +120,7 @@ When generating the final profile, use this exact JSON format:
     "contact_info": {
       "primary_contact": string,
       "phone": string,
-      "email": string
+      "email: string
     },
     "languages": string[],
     "cultural_background": string
@@ -191,45 +191,25 @@ const createAIClient = () => {
 };
 
 const startChat = (model: any, history: Message[]) => {
-  console.log('Starting chat with history length:', history.length);
-  const chat = model.startChat({
+  console.log('Starting chat with history:', history);
+  return model.startChat({
     history: [
       {
         role: 'user',
         parts: [{ text: systemPrompt }]
       }
-    ].concat(history.map(({ role, content }) => ({
-      role: role === 'user' ? 'user' : 'model',
-      parts: [{ text: content }]
+    ].concat(history.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }]
     })))
   });
-  console.log('Chat started successfully');
-  return chat;
 };
-
-const processResponse = (response: string) => {
-  try {
-    // Extract JSON if present in markdown code blocks
-    const jsonMatch = response.match(/```json\n?([\s\S]*?)\n?```/);
-    const cleanJson = jsonMatch ? jsonMatch[1].trim() : response;
-    return JSON.parse(cleanJson);
-  } catch (error) {
-    console.error('Profile generation error:', error);
-    throw new Error('Failed to process AI response');
-  }
-};
-
-// ================= Message Handlers =================
 
 const handleStartChat = async (chat: any, language: string): Promise<ChatResponse> => {
   try {
     console.log('Starting new care recipient chat...');
     
     const initialMessage = "Hi! I'm Emma, and I'll be helping you find the right care for your loved one. Could you start by telling me about your relationship to the person who needs care?";
-    
-    // First send system prompt to set up the AI assistant's behavior
-    const systemResult = await chat.sendMessage(systemPrompt);
-    console.log('System prompt response:', systemResult.response.text());
     
     return {
       type: 'message',
@@ -249,22 +229,17 @@ const handleRegularMessage = async (chat: any, message: string): Promise<ChatRes
       throw new Error('Empty message received');
     }
 
-    if (message === 'END_INTERVIEW') {
-      throw new Error('END_INTERVIEW should be handled by handleFinishChat');
-    }
-    
-    // Send the user's message to continue the conversation
     const result = await chat.sendMessage(message);
     const response = result.response.text();
     
     console.log('Emma response:', response);
     
-    // Ensure we're not accidentally restarting the conversation
-    if (response.includes("Hi! I'm Emma") || response.includes("Could you start by telling me")) {
+    // Detect if the response contains the initial greeting
+    if (response.includes("Hi! I'm Emma") && response.includes("Could you start by telling me")) {
       console.log('Detected potential conversation restart, adjusting response...');
       return {
         type: 'message',
-        text: "I apologize, but I seem to have lost track of our conversation. Could you please confirm what you just told me about your loved one so I can better assist you?"
+        text: "I apologize, but I need to know more about your mother's care needs. Could you tell me more about her current health status and the type of care she requires?"
       };
     }
     
@@ -277,8 +252,6 @@ const handleRegularMessage = async (chat: any, message: string): Promise<ChatRes
     throw error;
   }
 };
-
-// ================= Profile Generator =================
 
 async function handleFinishChat(
   chat: any, 
@@ -407,8 +380,6 @@ async function retryProfileGeneration(chat: any): Promise<ChatResponse> {
   }
 }
 
-// ================= Main Server Handler =================
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -422,7 +393,13 @@ serve(async (req) => {
   try {
     const { message, history = [], language = 'en', action, userId } = await req.json();
     
-    console.log('Request details:', { action, historyLength: history.length, message });
+    console.log('Request details:', { 
+      action, 
+      messageLength: message?.length, 
+      historyLength: history.length,
+      language,
+      userId: userId ? 'present' : 'absent'
+    });
     
     const model = createAIClient();
     const chat = startChat(model, history);
@@ -443,7 +420,7 @@ serve(async (req) => {
         response = await handleRegularMessage(chat, message);
     }
 
-    console.log('Response:', response);
+    console.log('Sending response:', response);
 
     return new Response(
       JSON.stringify(response),
