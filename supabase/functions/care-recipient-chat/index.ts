@@ -1,7 +1,7 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createAIClient, startChat, processResponse } from "./ai-client.ts";
+import { createAIClient, startChat } from "./ai-client.ts";
 import { handleStartChat, handleRegularMessage } from "./messageHandlers.ts";
 import { handleFinishChat } from "./profileGenerator.ts";
 
@@ -38,6 +38,8 @@ serve(async (req) => {
         }
         response = await handleRegularMessage(chat, message);
     }
+
+    console.log('Response:', response);
 
     return new Response(
       JSON.stringify(response),
