@@ -6,7 +6,7 @@ export async function handleFinishChat(
   chat: any, 
   userId: string | null, 
   language: string, 
-  supabase: any,
+  history: Message[],
   corsHeaders: Record<string, string>
 ): Promise<ChatResponse> {
   try {
@@ -35,15 +35,20 @@ export async function handleFinishChat(
       };
       
       // Save to database if user ID is provided
-      if (userId && supabase) {
+      if (userId) {
         console.log(`Saving profile for user: ${userId}`);
+        
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') as string;
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string;
+        
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
         
         // Update the interview record
         const { error: interviewError } = await supabase
           .from('care_seeker_interviews')
           .upsert({
             user_id: userId,
-            raw_interview_data: { messages: chat.getHistory(), language },
+            raw_interview_data: { messages: history, language },
             processed_profile: profileWithMetadata,
             needs_review: true,
             review_completed: false,
@@ -56,11 +61,12 @@ export async function handleFinishChat(
         // Update the user's profile status
         const { error: profileError } = await supabase
           .from('care_seeker_profiles')
-          .update({
+          .upsert({
+            user_id: userId,
             interview_completed: true,
             profile_sections: [
               {
-                title: "Basic Information",
+                title: "Care Recipient Information",
                 items: Object.entries(profileWithMetadata.recipient_information)
                   .map(([key, value]) => ({ label: key, value }))
               },
@@ -70,30 +76,28 @@ export async function handleFinishChat(
                   .map(([key, value]) => ({ label: key, value }))
               },
               {
-                title: "Schedule Preferences",
-                items: Object.entries(profileWithMetadata.schedule_preferences)
-                  .map(([key, value]) => ({ label: key, value }))
+                title: "Schedule & Preferences",
+                items: [
+                  ...Object.entries(profileWithMetadata.schedule_preferences)
+                    .map(([key, value]) => ({ label: key, value })),
+                  ...Object.entries(profileWithMetadata.preferences)
+                    .map(([key, value]) => ({ label: key, value }))
+                ]
               }
             ]
-          })
-          .eq('user_id', userId);
+          });
           
         if (profileError) throw profileError;
       }
       
       return {
         type: 'profile',
-        data: {
-          raw_profile: profileWithMetadata,
-          processed_profile: profileWithMetadata
-        },
-        message: "Your care profile has been successfully created! You'll be redirected to review and edit your profile."
+        data: profileWithMetadata,
+        message: "Your care profile has been successfully created! You'll be redirected to review your profile."
       };
     } catch (jsonError) {
       console.error('JSON parsing error:', jsonError);
       console.log('Response text that failed parsing:', responseText);
-      
-      // Try again with a more explicit prompt
       return await retryProfileGeneration(chat);
     }
   } catch (error) {

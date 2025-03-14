@@ -8,7 +8,7 @@ export const handleStartChat = async (chat: any, language: string): Promise<Chat
     await chat.sendMessage(systemPrompt);
     
     // Then send the initial greeting
-    const result = await chat.sendMessage("Hi! I'm Emma. Could you tell me about your relationship to the person who needs care?");
+    const result = await chat.sendMessage("Hi! I'm Emma, and I'll be helping you find the right care for your loved one. Could you start by telling me about your relationship to the person who needs care?");
     console.log('Start chat response:', result.response.text());
     
     return {
