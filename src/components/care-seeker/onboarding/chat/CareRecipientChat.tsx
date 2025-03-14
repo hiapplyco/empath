@@ -23,6 +23,12 @@ export const CareRecipientChat = () => {
     navigate(-1);
   };
 
+  const handleSendMessage = () => {
+    if (input.trim()) {
+      sendMessage(input);
+    }
+  };
+
   return (
     <ChatContainer 
       messages={messages}
@@ -33,7 +39,7 @@ export const CareRecipientChat = () => {
       isEndingInterview={isEndingInterview}
       onBack={handleBack}
       onInputChange={setInput}
-      onSendMessage={() => input.trim() && sendMessage(input)}
+      onSendMessage={handleSendMessage}
       onLanguageChange={setLanguage}
       onEndInterview={handleEndInterview}
     />
