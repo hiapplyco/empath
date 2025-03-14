@@ -3,7 +3,7 @@ import { ChatResponse } from "./types.ts";
 
 export const handleStartChat = async (chat: any, language: string): Promise<ChatResponse> => {
   try {
-    // No need to send an initial prompt - let the system prompt handle Emma's introduction
+    // Send the initial message from Emma
     const result = await chat.sendMessage("");
     return {
       type: 'message',
@@ -19,10 +19,15 @@ export const handleRegularMessage = async (chat: any, message: string): Promise<
   try {
     console.log('Processing user message:', message);
     
+    if (!message.trim()) {
+      throw new Error('Empty message received');
+    }
+
     if (message === 'END_INTERVIEW') {
       throw new Error('END_INTERVIEW should be handled by handleFinishChat');
     }
     
+    // Send the user's message and get Emma's response
     const result = await chat.sendMessage(message);
     const response = result.response.text();
     

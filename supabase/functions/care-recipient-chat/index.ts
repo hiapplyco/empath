@@ -35,7 +35,7 @@ serve(async (req) => {
     console.log('Message history length:', history.length);
     
     const chat = model.startChat({
-      history: [
+      history: history.length > 0 ? history : [
         {
           role: 'user',
           parts: [{ text: systemPrompt }]
@@ -53,6 +53,9 @@ serve(async (req) => {
         response = await handleFinishChat(chat, userId, language, history, corsHeaders);
         break;
       default:
+        if (!message) {
+          throw new Error('No message provided for regular chat');
+        }
         response = await handleRegularMessage(chat, message);
     }
 
