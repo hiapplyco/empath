@@ -32,20 +32,15 @@ serve(async (req) => {
       },
     });
 
-    // Initialize chat with provided history or empty history for new chats
     const chat = model.startChat({
-      history: history.length > 0 ? history : []
+      history: []  // Start with empty history, we'll handle the system prompt separately
     });
 
     let response: ChatResponse;
 
     switch (action) {
       case 'start':
-        if (history.length === 0) {
-          response = await handleStartChat(chat, language);
-        } else {
-          throw new Error('Start action called with existing history');
-        }
+        response = await handleStartChat(chat, language);
         break;
       case 'finish':
         response = await handleFinishChat(chat, userId, language, history, corsHeaders);

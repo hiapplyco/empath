@@ -22,15 +22,20 @@ export const ChatInput = ({ input, isLoading, onInputChange, onSendMessage }: Ch
     <div className="border-t p-4">
       <div className="flex items-center gap-2">
         <Textarea
-          rows={1}
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type your message here..."
-          className="resize-none border-none focus-visible:ring-0"
+          className="resize-none min-h-[40px] max-h-[120px] py-2"
+          rows={1}
         />
-        <Button onClick={onSendMessage} disabled={isLoading}>
-          <Send className="h-5 w-5" />
+        <Button 
+          onClick={onSendMessage} 
+          disabled={isLoading}
+          size="icon"
+          className="shrink-0"
+        >
+          <Send className="h-4 w-4" />
         </Button>
       </div>
     </div>
