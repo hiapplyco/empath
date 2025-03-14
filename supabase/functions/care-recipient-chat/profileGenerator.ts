@@ -18,11 +18,8 @@ export async function handleFinishChat(
     
     const responseText = result.response.text();
     
-    // Extract and parse the JSON
     try {
-      const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, responseText];
-      const jsonString = jsonMatch[1].trim();
-      const profileData = JSON.parse(jsonString) as ProfileData;
+      const profileData = processResponse(responseText) as ProfileData;
       
       // Add metadata
       const profileWithMetadata = {
@@ -113,9 +110,7 @@ async function retryProfileGeneration(chat: any): Promise<ChatResponse> {
     );
     
     const retryText = retryResult.response.text();
-    const jsonMatch = retryText.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, retryText];
-    const jsonString = jsonMatch[1].trim();
-    const profileData = JSON.parse(jsonString);
+    const profileData = processResponse(retryText);
     
     return {
       type: 'profile',

@@ -4,6 +4,8 @@ import { systemPrompt } from "./prompts.ts";
 
 export const handleStartChat = async (chat: any, language: string): Promise<ChatResponse> => {
   try {
+    console.log('Starting new care recipient chat...');
+    
     // Initialize with system prompt first
     await chat.sendMessage(systemPrompt);
     

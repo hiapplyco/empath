@@ -1,9 +1,9 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createAIClient, startChat, processResponse } from "./ai-client.ts";
 import { handleStartChat, handleRegularMessage } from "./messageHandlers.ts";
 import { handleFinishChat } from "./profileGenerator.ts";
-import { Message, ChatResponse } from "./types.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +12,7 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -20,24 +20,10 @@ serve(async (req) => {
     
     console.log('Request details:', { action, historyLength: history.length, message });
     
-    // Initialize the Gemini API client
-    const apiKey = Deno.env.get('GEMINI_API_KEY');
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not configured');
-    }
+    const model = createAIClient();
+    const chat = startChat(model, history);
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-    // Start a chat with the provided history
-    const chat = model.startChat({
-      history: history.map((msg: Message) => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: msg.content
-      }))
-    });
-
-    let response: ChatResponse;
+    let response;
 
     switch (action) {
       case 'start':
