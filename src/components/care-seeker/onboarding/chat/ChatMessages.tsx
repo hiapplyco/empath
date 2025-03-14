@@ -24,7 +24,6 @@ export const ChatMessages = ({ messages, isLoading }: ChatMessagesProps) => {
     <div 
       ref={chatContainerRef} 
       className="flex-1 overflow-y-auto p-4 space-y-4"
-      style={{ maxHeight: messages.length > 0 ? '400px' : '0px', transition: 'max-height 0.3s ease-in-out' }}
     >
       {messages.map((message, index) => (
         <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
