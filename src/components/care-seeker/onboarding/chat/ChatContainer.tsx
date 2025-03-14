@@ -33,7 +33,7 @@ export const ChatContainer = ({
   onEndInterview
 }: ChatContainerProps) => {
   return (
-    <div className="w-[90%] mx-auto h-[90vh] flex flex-col bg-white rounded-lg shadow-lg border border-gray-200">
+    <div className="w-[90%] mx-auto min-h-[60px] max-h-[80vh] flex flex-col bg-white rounded-lg shadow-lg border border-gray-200">
       <ChatHeader 
         onBack={onBack}
         language={language}
@@ -57,4 +57,3 @@ export const ChatContainer = ({
     </div>
   );
 };
-
