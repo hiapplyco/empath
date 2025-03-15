@@ -12,14 +12,12 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
   return useQuery({
     queryKey: ['pias', searchTerm, sortField, sortOrder],
     queryFn: async () => {
-      console.log('Fetching PIAs with params:', { searchTerm, sortField, sortOrder });
-      
       let query = supabase
         .from('professional_independent_aides')
         .select('*');
 
       if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,locations_serviced::text.ilike.%${searchTerm}%,services_provided::text.ilike.%${searchTerm}%`);
+        query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
       }
 
       if (sortField && ['created_at', 'hourly_rate', 'years_experience', 'name'].includes(sortField)) {
@@ -28,11 +26,7 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
 
       const { data, error } = await query;
 
-      if (error) {
-        console.error('Error fetching PIAs:', error);
-        throw error;
-      }
-
+      if (error) throw error;
       return data;
     },
   });

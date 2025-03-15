@@ -46,12 +46,12 @@ const App = () => (
           <Route path="/care-seeker/dashboard" element={<CareRecipientDashboard />} />
           <Route path="/care-seeker/profile" element={<CareProfile />} />
           <Route path="/dashboard/*" element={<Dashboard />} />
+          <Route path="/pia-table" element={<PIATable />} />
           
           {/* Admin routes */}
           <Route path="/admin/*" element={<AdminDashboard />}>
             <Route index element={<AdminDashboardContent />} />
             <Route path="dashboard" element={<AdminDashboardContent />} />
-            <Route path="pia-table" element={<PIATable />} />
             <Route path="pia/:id" element={<PIAProfile />} />
           </Route>
           
