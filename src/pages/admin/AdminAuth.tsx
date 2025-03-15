@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,49 +16,32 @@ const AdminAuth = () => {
   const navigate = useNavigate();
   const { isAdmin, isChecking } = useAdminAuth();
 
-  // Only redirect if we've confirmed the user is an admin
+  // Only redirect if we've explicitly confirmed admin status
   if (!isChecking && isAdmin) {
-    navigate('/admin/dashboard');
+    navigate('/admin/dashboard', { replace: true }); // Use replace to prevent back navigation
     return null;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     setIsLoading(true);
 
     try {
-      const { data: { session }, error } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
-      if (error) throw error;
+      if (signInError) throw signInError;
 
-      if (!session) {
-        throw new Error('No session after login');
-      }
-
-      // Check if user is admin using our RPC function
-      const { data: adminCheck, error: adminError } = await supabase.rpc('is_admin', {
-        user_id: session.user.id
-      });
-
-      if (adminError) {
-        console.error('Admin check error:', adminError);
-        throw new Error('Error checking admin status');
-      }
-
-      if (!adminCheck) {
-        await supabase.auth.signOut();
-        throw new Error('Not authorized as admin');
-      }
-
-      toast.success('Welcome back, admin!');
-      navigate('/admin/dashboard');
+      // Don't check admin status here - useAdminAuth will handle that
+      // Just show a loading message
+      toast.success('Checking credentials...');
+      
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error(error.message);
-    } finally {
       setIsLoading(false);
     }
   };

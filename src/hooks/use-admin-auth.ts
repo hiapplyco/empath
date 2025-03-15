@@ -13,9 +13,13 @@ export const useAdminAuth = () => {
     const checkAdminStatus = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        
+        // If no session, early return but don't throw error
         if (!session) {
-          setIsAdmin(false);
-          setError('No active session');
+          if (isMounted) {
+            setIsAdmin(false);
+            setIsChecking(false);
+          }
           return;
         }
 
@@ -23,7 +27,10 @@ export const useAdminAuth = () => {
           user_id: session.user.id
         });
 
-        if (adminError) throw adminError;
+        if (adminError) {
+          console.error('Admin check error:', adminError);
+          throw adminError;
+        }
 
         if (isMounted) {
           setIsAdmin(!!adminStatus);
@@ -47,7 +54,7 @@ export const useAdminAuth = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, []); // Only run once on mount
 
   return { isAdmin, isChecking, error };
 };
