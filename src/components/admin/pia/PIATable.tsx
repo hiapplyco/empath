@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -7,6 +6,7 @@ import { PIATableFilters } from './PIATableFilters';
 import { PIATableHeader } from './PIATableHeader';
 import { PIATableRow } from './PIATableRow';
 import { usePIAData } from '@/hooks/use-pia-data';
+import { toast } from 'sonner';
 
 export const PIATable = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,11 +15,25 @@ export const PIATable = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const navigate = useNavigate();
 
-  const { data: pias, isLoading } = usePIAData({
+  const { data: pias, isLoading, error } = usePIAData({
     searchTerm: debouncedSearch,
     sortField,
     sortOrder,
   });
+
+  if (error) {
+    // If unauthorized, redirect to admin auth
+    if (error.message?.includes('JWTClaimsError') || error.message?.includes('not authorized')) {
+      toast.error('Please sign in to access this page');
+      navigate('/admin/auth');
+      return null;
+    }
+    return (
+      <div className="p-8 text-center text-red-600">
+        Error loading data: {error.message}
+      </div>
+    );
+  }
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -60,6 +74,13 @@ export const PIATable = () => {
                 onViewProfile={handleViewProfile}
               />
             ))}
+            {(!pias || pias.length === 0) && (
+              <tr>
+                <td colSpan={9} className="p-4 text-center text-gray-500">
+                  No professional aides found
+                </td>
+              </tr>
+            )}
           </TableBody>
         </Table>
       </div>
