@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { DynamicProfileSection } from "@/components/profile/DynamicProfileSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileSection } from "@/components/profile/types";
+import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
 
 const DashboardProfile = () => {
   const { data: profile, isLoading, error } = useAuthenticatedPIAProfile();
@@ -82,7 +84,20 @@ const DashboardProfile = () => {
       variant: "grid",
       items: [
         { label: "Available Shifts", value: profile.available_shifts || "Not provided" },
-        { label: "Locations", value: profile.locations_serviced?.join(", ") || "Not provided" },
+        { 
+          label: "Locations", 
+          value: profile.locations_serviced?.map(location => (
+            <Button
+              key={location}
+              variant="outline"
+              size="sm"
+              className="mr-2 mb-2"
+            >
+              <MapPin className="mr-1 h-4 w-4" />
+              {location}
+            </Button>
+          )) || "Not provided"
+        },
         { label: "Pet Preferences", value: profile.pet_preferences?.join(", ") || "Not provided" }
       ]
     },
