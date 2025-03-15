@@ -899,6 +899,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_role: {
+        Args: {
+          user_id: string
+        }
+        Returns: string
+      }
       migrate_pia_to_caregiver_profiles: {
         Args: Record<PropertyKey, never>
         Returns: undefined

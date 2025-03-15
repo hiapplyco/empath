@@ -1,6 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface UsePIADataProps {
   searchTerm: string;
@@ -14,6 +15,13 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
     queryFn: async () => {
       console.log('Fetching PIAs with params:', { searchTerm, sortField, sortOrder });
       
+      const session = await supabase.auth.getSession();
+      if (!session.data.session) {
+        console.error('No authenticated session found');
+        toast.error('Please sign in to view this data');
+        throw new Error('Authentication required');
+      }
+
       let query = supabase
         .from('professional_independent_aides')
         .select('*');
@@ -31,6 +39,7 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
 
       if (error) {
         console.error('Error fetching PIAs:', error);
+        toast.error('Failed to load data: ' + error.message);
         throw error;
       }
 
