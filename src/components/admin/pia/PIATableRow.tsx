@@ -99,7 +99,7 @@ export const PIATableRow = ({ pia, onViewProfile }: PIATableRowProps) => {
       </TableRow>
 
       <Dialog open={showProfile} onOpenChange={setShowProfile}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold">PIA Profile</DialogTitle>
           </DialogHeader>
