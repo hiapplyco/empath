@@ -1,13 +1,12 @@
 
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Table, TableBody } from "@/components/ui/table";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '@/hooks/use-debounce';
+import { Table, TableBody } from "@/components/ui/table";
 import { PIATableFilters } from './PIATableFilters';
 import { PIATableHeader } from './PIATableHeader';
 import { PIATableRow } from './PIATableRow';
+import { usePIAData } from '@/hooks/use-pia-data';
 
 export const PIATable = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,27 +15,10 @@ export const PIATable = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const navigate = useNavigate();
 
-  const { data: pias, isLoading } = useQuery({
-    queryKey: ['pias', debouncedSearch, sortField, sortOrder],
-    queryFn: async () => {
-      let query = supabase
-        .from('professional_independent_aides')
-        .select('*');
-
-      if (debouncedSearch) {
-        query = query.or(
-          `name.ilike.%${debouncedSearch}%,` +
-          `email.ilike.%${debouncedSearch}%,` +
-          `locations_serviced.cs.{${debouncedSearch}},` +
-          `services_provided.cs.{${debouncedSearch}}`
-        );
-      }
-
-      const { data, error } = await query.order(sortField, { ascending: sortOrder === 'asc' });
-
-      if (error) throw error;
-      return data;
-    },
+  const { data: pias, isLoading } = usePIAData({
+    searchTerm: debouncedSearch,
+    sortField,
+    sortOrder,
   });
 
   const handleSort = (field: string) => {
