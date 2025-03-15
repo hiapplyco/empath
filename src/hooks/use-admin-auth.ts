@@ -23,9 +23,7 @@ export const useAdminAuth = () => {
           return;
         }
 
-        const { data: adminStatus, error: adminError } = await supabase.rpc('is_admin', {
-          user_id: session.user.id
-        });
+        const { data: adminStatus, error: adminError } = await supabase.rpc('check_admin_access');
 
         if (adminError) {
           console.error('Admin check error:', adminError);
