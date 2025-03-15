@@ -57,7 +57,8 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         languages: pia['Languages']?.split(',') || [],
         verification_status: 'pending',
         email: pia['Email'],
-        phone_number: pia['Phone Number']
+        phone_number: pia['Phone Number'],
+        bio: pia['Bio']  // Added this line to map the Bio field
       }));
     },
   });
