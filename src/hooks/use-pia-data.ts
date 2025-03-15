@@ -37,7 +37,8 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
 
       if (error) throw error;
       return data?.map(pia => ({
-        id: pia.id || Math.random().toString(), // Fallback ID since pia table might not have UUID
+        // Create a deterministic ID using email (or name + phone if email is not available)
+        id: pia['Email'] || `${pia['Name']}-${pia['Phone Number']}` || Math.random().toString(),
         name: pia['Name'],
         status: 'active',
         years_experience: pia['Experience'],
