@@ -11,6 +11,29 @@ export default function LandingFooter() {
           <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-8">
             Join our community where caregivers are valued and care recipients find perfect matches. Emma is ready to welcome you.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              variant="default"
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+              onClick={() => window.location.href = '/auth/care-seeker'}
+            >
+              I Need Care
+            </Button>
+            <Button
+              variant="outline"
+              className="border-purple-600 text-purple-700 hover:bg-purple-50"
+              onClick={() => window.location.href = '/auth/caregiver'}
+            >
+              I'm a Caregiver
+            </Button>
+            <Button
+              variant="ghost"
+              className="text-purple-700 hover:bg-purple-50"
+              onClick={() => window.location.href = '/admin'}
+            >
+              For Admins
+            </Button>
+          </div>
         </div>
       </section>
 

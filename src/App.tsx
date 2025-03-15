@@ -1,12 +1,15 @@
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "./pages/Landing";
+import AdminLanding from "./pages/AdminLanding";
 import CaregiverLanding from "./pages/CaregiverLanding";
 import CareSeekerLanding from "./pages/CareSeekerLanding";
 import Auth from "./pages/Auth";
+import AdminAuth from "./pages/admin/AdminAuth";
 import Onboarding from "./pages/Onboarding";
 import DocumentCapture from "./pages/onboarding/DocumentVerification";
 import CareOnboarding from "./pages/care-seeker/Onboarding";
@@ -19,7 +22,6 @@ import PIAProfile from "./pages/admin/PIAProfile";
 import CareRecipientDashboard from "./components/care-seeker/dashboard/CareRecipientDashboard";
 import CareProfile from "./pages/care-seeker/CareProfile";
 import { AdminDashboardContent } from "./components/admin/dashboard/AdminDashboardContent";
-import AdminAuth from "./pages/admin/AdminAuth";
 
 const queryClient = new QueryClient();
 
@@ -31,10 +33,12 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/admin" element={<AdminLanding />} />
           <Route path="/for-caregivers" element={<CaregiverLanding />} />
           <Route path="/for-care-seekers" element={<CareSeekerLanding />} />
           <Route path="/auth/caregiver" element={<Auth />} />
           <Route path="/auth/care-seeker" element={<Auth />} />
+          <Route path="/admin/auth" element={<AdminAuth />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/onboarding/documents" element={<DocumentCapture />} />
           <Route path="/onboarding/profile" element={<ProfileReview />} />
@@ -44,7 +48,6 @@ const App = () => (
           <Route path="/dashboard/*" element={<Dashboard />} />
           
           {/* Admin routes */}
-          <Route path="/admin/auth" element={<AdminAuth />} />
           <Route path="/admin/*" element={<AdminDashboard />}>
             <Route index element={<AdminDashboardContent />} />
             <Route path="dashboard" element={<AdminDashboardContent />} />
