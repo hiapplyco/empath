@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   Calendar, DollarSign, Award, BookOpen, 
-  MessageSquare, Star, Settings, Briefcase, User 
+  MessageSquare, Star, Settings, Briefcase, User, Users 
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from 'react-router-dom';
@@ -18,6 +18,7 @@ const navItems = [
   { icon: Award, label: 'Growth & Learning', href: '/dashboard/growth' },
   { icon: MessageSquare, label: 'Community', href: '/dashboard/community' },
   { icon: Star, label: 'Reviews', href: '/dashboard/reviews' },
+  { icon: Users, label: 'PIA Table', href: '/dashboard/admin/pia-table' },
   { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
 ];
 
