@@ -21,7 +21,14 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
           `"Name".ilike.%${searchTerm}%,` +
           `"Email".ilike.%${searchTerm}%,` +
           `"Locations Serviced".ilike.%${searchTerm}%,` +
-          `"Services Provided".ilike.%${searchTerm}%`
+          `"Services Provided".ilike.%${searchTerm}%,` +
+          `"Bio".ilike.%${searchTerm}%,` +
+          `"License Type".ilike.%${searchTerm}%,` +
+          `"Languages".ilike.%${searchTerm}%,` +
+          `"Education".ilike.%${searchTerm}%,` +
+          `"Experience".ilike.%${searchTerm}%,` +
+          `"Available Shifts".ilike.%${searchTerm}%,` +
+          `"Pet Preferences".ilike.%${searchTerm}%`
         );
       }
 
