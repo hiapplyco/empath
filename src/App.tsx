@@ -1,9 +1,9 @@
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import CaregiverLanding from "./pages/CaregiverLanding";
 import CareSeekerLanding from "./pages/CareSeekerLanding";
@@ -15,6 +15,8 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import ProfileReview from "./pages/onboarding/ProfileReview";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import { PIATable } from "./components/admin/pia/PIATable";
+import PIAProfile from "./pages/admin/PIAProfile";
 import CareRecipientDashboard from "./components/care-seeker/dashboard/CareRecipientDashboard";
 import CareProfile from "./pages/care-seeker/CareProfile";
 
@@ -39,7 +41,15 @@ const App = () => (
           <Route path="/care-seeker/dashboard" element={<CareRecipientDashboard />} />
           <Route path="/care-seeker/profile" element={<CareProfile />} />
           <Route path="/dashboard/*" element={<Dashboard />} />
-          <Route path="/admin/*" element={<AdminDashboard />} />
+          
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminDashboard />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="pia-table" element={<PIATable />} />
+            <Route path="pia/:id" element={<PIAProfile />} />
+          </Route>
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

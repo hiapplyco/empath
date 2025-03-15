@@ -1,8 +1,8 @@
-
 import React from 'react';
-import { Heart, LineChart, MessageSquare, Settings, User, Users } from 'lucide-react';
+import { Heart, LineChart, MessageSquare, Settings, User, Users, Table } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Link, useLocation } from 'react-router-dom';
 
 interface AdminSidebarProps {
   activeTab: string;
@@ -10,6 +10,8 @@ interface AdminSidebarProps {
 }
 
 export const AdminSidebar = ({ activeTab, setActiveTab }: AdminSidebarProps) => {
+  const location = useLocation();
+
   return (
     <div className="w-64 bg-white border-r border-gray-200 p-4 flex flex-col">
       <div className="flex items-center mb-8">
@@ -21,44 +23,59 @@ export const AdminSidebar = ({ activeTab, setActiveTab }: AdminSidebarProps) => 
       </div>
       
       <nav className="space-y-1 flex-1">
-        <button
+        <Link
+          to="/admin/dashboard"
           className={`flex items-center space-x-3 p-2 w-full text-left ${activeTab === 'dashboard' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg font-medium`}
           onClick={() => setActiveTab('dashboard')}>
           <LineChart className="w-5 h-5" />
           <span>Dashboard</span>
-        </button>
-        <button
+        </Link>
+        
+        <Link
+          to="/admin/pia-table"
+          className={`flex items-center space-x-3 p-2 w-full text-left ${activeTab === 'pia-table' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg font-medium`}
+          onClick={() => setActiveTab('pia-table')}>
+          <Table className="w-5 h-5" />
+          <span>PIA Table</span>
+        </Link>
+        
+        <Link
+          to="/admin/matches"
           className={`flex items-center space-x-3 p-2 w-full text-left ${activeTab === 'matches' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg font-medium`}
           onClick={() => setActiveTab('matches')}>
           <Heart className="w-5 h-5" />
           <span>Matches</span>
           <Badge className="ml-auto bg-purple-600 text-white">12</Badge>
-        </button>
-        <button
+        </Link>
+        <Link
+          to="/admin/caregivers"
           className={`flex items-center space-x-3 p-2 w-full text-left ${activeTab === 'caregivers' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg font-medium`}
           onClick={() => setActiveTab('caregivers')}>
           <Users className="w-5 h-5" />
           <span>Caregivers</span>
-        </button>
-        <button
+        </Link>
+        <Link
+          to="/admin/recipients"
           className={`flex items-center space-x-3 p-2 w-full text-left ${activeTab === 'recipients' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg font-medium`}
           onClick={() => setActiveTab('recipients')}>
           <User className="w-5 h-5" />
           <span>Care Recipients</span>
-        </button>
-        <button
+        </Link>
+        <Link
+          to="/admin/messages"
           className={`flex items-center space-x-3 p-2 w-full text-left ${activeTab === 'messages' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg font-medium`}
           onClick={() => setActiveTab('messages')}>
           <MessageSquare className="w-5 h-5" />
           <span>Messages</span>
           <Badge className="ml-auto bg-red-600 text-white">3</Badge>
-        </button>
-        <button
+        </Link>
+        <Link
+          to="/admin/settings"
           className={`flex items-center space-x-3 p-2 w-full text-left ${activeTab === 'settings' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg font-medium`}
           onClick={() => setActiveTab('settings')}>
           <Settings className="w-5 h-5" />
           <span>Settings</span>
-        </button>
+        </Link>
       </nav>
       
       <div className="mt-auto pt-4 border-t border-gray-200">
