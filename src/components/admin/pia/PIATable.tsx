@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowUpDown, Filter, MoreHorizontal } from "lucide-react";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,26 +20,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from 'react-router-dom';
+import { useDebounce } from '@/hooks/use-debounce';
 
 export const PIATable = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300); // Debounce search input
   const [sortField, setSortField] = useState('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const navigate = useNavigate();
 
   const { data: pias, isLoading } = useQuery({
-    queryKey: ['pias', searchTerm, sortField, sortOrder],
+    queryKey: ['pias', debouncedSearch, sortField, sortOrder],
     queryFn: async () => {
       let query = supabase
         .from('professional_independent_aides')
         .select('*');
 
-      if (searchTerm) {
+      if (debouncedSearch) {
         query = query.or(
-          `name.ilike.%${searchTerm}%,` +
-          `email.ilike.%${searchTerm}%,` +
-          `locations_serviced.cs.{${searchTerm}},` +
-          `services_provided.cs.{${searchTerm}}`
+          `name.ilike.%${debouncedSearch}%,` +
+          `email.ilike.%${debouncedSearch}%,` +
+          `locations_serviced.cs.{${debouncedSearch}},` +
+          `services_provided.cs.{${debouncedSearch}}`
         );
       }
 
@@ -210,4 +212,3 @@ export const PIATable = () => {
     </div>
   );
 };
-

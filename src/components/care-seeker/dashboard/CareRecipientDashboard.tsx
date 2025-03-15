@@ -43,7 +43,12 @@ const CareRecipientDashboard = () => {
             { id: 'schedule', icon: Calendar, label: 'Schedule' },
             { id: 'payments', icon: CreditCard, label: 'Payments' },
             { id: 'careplan', icon: BookOpen, label: 'Care Plan' },
-            { id: 'pia-search', icon: Users, label: 'Search PIAs', onClick: () => navigate('/dashboard/admin/pia-table') }
+            { 
+              id: 'pia-search', 
+              icon: Users, 
+              label: 'Search PIAs', 
+              onClick: () => navigate('/dashboard/admin/pia-table') 
+            }
           ].map((item) => {
             const Icon = item.icon;
             return (
