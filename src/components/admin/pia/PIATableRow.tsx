@@ -1,18 +1,11 @@
+
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { PIAProfileCard } from "./PIAProfileCard";
 
@@ -40,10 +33,13 @@ export const PIATableRow = ({ pia, onViewProfile }: PIATableRowProps) => {
 
   return (
     <>
-      <TableRow className="group hover:bg-gray-50 transition-colors">
+      <TableRow 
+        onClick={() => setShowProfile(true)}
+        className="group hover:bg-gray-50 transition-all duration-200 cursor-pointer hover:shadow-md"
+      >
         <TableCell className="font-medium">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center group-hover:scale-105 transition-transform">
               {pia.name?.charAt(0).toUpperCase()}
             </div>
             {pia.name}
@@ -63,7 +59,7 @@ export const PIATableRow = ({ pia, onViewProfile }: PIATableRowProps) => {
         <TableCell>
           <div className="flex flex-wrap gap-1">
             {pia.locations_serviced?.slice(0, 2).map((location, i) => (
-              <span key={i} className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">
+              <span key={i} className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded group-hover:bg-blue-100 transition-colors">
                 {location}
               </span>
             ))}
@@ -77,7 +73,7 @@ export const PIATableRow = ({ pia, onViewProfile }: PIATableRowProps) => {
         <TableCell>
           <div className="flex flex-wrap gap-1">
             {pia.services_provided?.slice(0, 2).map((service, i) => (
-              <span key={i} className="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded">
+              <span key={i} className="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded group-hover:bg-purple-100 transition-colors">
                 {service}
               </span>
             ))}
@@ -99,22 +95,6 @@ export const PIATableRow = ({ pia, onViewProfile }: PIATableRowProps) => {
           }`}>
             {pia.verification_status}
           </span>
-        </TableCell>
-        <TableCell>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setShowProfile(true)}>
-                View Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem>Edit Details</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">Deactivate</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </TableCell>
       </TableRow>
 
