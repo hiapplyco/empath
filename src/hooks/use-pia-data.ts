@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -16,7 +17,7 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         .select('*');
 
       if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,"Locations Serviced".ilike.%${searchTerm}%`);
+        query = query.or(`"Name".ilike.%${searchTerm}%,"Email".ilike.%${searchTerm}%,"Locations Serviced".ilike.%${searchTerm}%`);
       }
 
       // Map the frontend sort fields to actual column names
