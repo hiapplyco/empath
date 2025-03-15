@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,6 +18,7 @@ import { PIATable } from "./components/admin/pia/PIATable";
 import PIAProfile from "./pages/admin/PIAProfile";
 import CareRecipientDashboard from "./components/care-seeker/dashboard/CareRecipientDashboard";
 import CareProfile from "./pages/care-seeker/CareProfile";
+import { AdminDashboardContent } from "./components/admin/dashboard/AdminDashboardContent";
 
 const queryClient = new QueryClient();
 
@@ -44,8 +44,8 @@ const App = () => (
           
           {/* Admin routes */}
           <Route path="/admin" element={<AdminDashboard />}>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route index element={<AdminDashboardContent />} />
+            <Route path="dashboard" element={<AdminDashboardContent />} />
             <Route path="pia-table" element={<PIATable />} />
             <Route path="pia/:id" element={<PIAProfile />} />
           </Route>
