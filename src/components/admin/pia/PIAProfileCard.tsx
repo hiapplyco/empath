@@ -1,7 +1,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { MapPin, Phone, Mail, Languages, Award, Clock, DollarSign } from "lucide-react";
+import { MapPin, Phone, Mail, Languages, Clock, DollarSign } from "lucide-react";
+import { LocationsDisplay } from "@/components/profile/variants/LocationsDisplay";
 
 interface PIAProfileCardProps {
   pia: {
@@ -21,75 +22,105 @@ interface PIAProfileCardProps {
 }
 
 export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
+  // Format hourly rate to ensure consistent display
+  const formattedRate = pia.hourly_rate 
+    ? `$${parseFloat(pia.hourly_rate).toFixed(2)}/hr`
+    : 'Rate not specified';
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="text-lg font-semibold">{pia.name}</h3>
-            <div className="flex gap-2 mt-1">
+            <h3 className="text-2xl font-bold mb-3">{pia.name}</h3>
+            <div className="flex flex-wrap gap-2 mb-3">
               {pia.license_type?.map((license) => (
-                <Badge key={license} variant="outline" className="text-xs">
+                <Badge key={license} variant="outline" className="text-sm font-medium">
                   {license}
                 </Badge>
               ))}
             </div>
           </div>
           <div className="flex gap-2">
-            <Badge 
-              variant={pia.status === 'active' ? 'default' : 'secondary'}
-            >
-              {pia.status}
-            </Badge>
-            <Badge 
-              variant={
-                pia.verification_status === 'verified' 
-                  ? 'default' 
-                  : pia.verification_status === 'pending' 
-                  ? 'secondary' 
-                  : 'destructive'
-              }
-            >
-              {pia.verification_status}
-            </Badge>
+            {pia.status && (
+              <Badge variant={pia.status === 'active' ? 'default' : 'secondary'}>
+                {pia.status}
+              </Badge>
+            )}
+            {pia.verification_status && (
+              <Badge 
+                variant={
+                  pia.verification_status === 'verified' 
+                    ? 'default' 
+                    : pia.verification_status === 'pending' 
+                    ? 'secondary' 
+                    : 'destructive'
+                }
+              >
+                {pia.verification_status}
+              </Badge>
+            )}
           </div>
         </div>
       </CardHeader>
       <CardContent>
         {pia.bio && (
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-            <p className="text-gray-700 text-sm italic">{pia.bio}</p>
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{pia.bio}</p>
           </div>
         )}
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div className="flex items-center gap-2 text-gray-600">
-            <Languages className="w-4 h-4" />
-            <span>{pia.languages?.join(', ') || 'Not specified'}</span>
-          </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <MapPin className="w-4 h-4" />
-            <span>{pia.locations_serviced?.join(', ') || 'Not specified'}</span>
-          </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <DollarSign className="w-4 h-4" />
-            <span>{pia.hourly_rate || 'Not specified'}</span>
-          </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <Clock className="w-4 h-4" />
-            <span>{pia.years_experience} years experience</span>
-          </div>
-          {pia.phone_number && (
-            <div className="flex items-center gap-2 text-gray-600">
-              <Phone className="w-4 h-4" />
-              <span>{pia.phone_number}</span>
+        
+        <div className="grid gap-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-gray-700">
+                <DollarSign className="w-5 h-5 text-primary/70" />
+                <span className="font-medium">{formattedRate}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-700">
+                <Clock className="w-5 h-5 text-primary/70" />
+                <span className="font-medium">
+                  {pia.years_experience 
+                    ? `${pia.years_experience} years experience`
+                    : 'Experience not specified'}
+                </span>
+              </div>
             </div>
-          )}
-          {pia.email && (
-            <div className="flex items-center gap-2 text-gray-600">
-              <Mail className="w-4 h-4" />
-              <span>{pia.email}</span>
+            <div className="space-y-4">
+              {pia.phone_number && (
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Phone className="w-5 h-5 text-primary/70" />
+                  <span className="font-medium">{pia.phone_number}</span>
+                </div>
+              )}
+              {pia.email && (
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Mail className="w-5 h-5 text-primary/70" />
+                  <span className="font-medium">{pia.email}</span>
+                </div>
+              )}
             </div>
-          )}
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-start gap-2">
+              <Languages className="w-5 h-5 text-primary/70 mt-1" />
+              <div className="flex flex-wrap gap-2">
+                {pia.languages?.map(language => (
+                  <Badge key={language} variant="secondary" className="text-sm">
+                    {language}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <MapPin className="w-5 h-5 text-primary/70 mt-1" />
+              <div className="flex-1">
+                {pia.locations_serviced && <LocationsDisplay locations={pia.locations_serviced} />}
+              </div>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

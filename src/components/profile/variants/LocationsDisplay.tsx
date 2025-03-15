@@ -16,8 +16,9 @@ export const LocationsDisplay = ({ locations }: LocationsDisplayProps) => {
           key={location}
           variant="outline"
           size="sm"
+          className="bg-white hover:bg-gray-50"
         >
-          <MapPin className="mr-1 h-4 w-4" />
+          <MapPin className="mr-1 h-4 w-4 text-primary/70" />
           {location}
         </Button>
       ))}
