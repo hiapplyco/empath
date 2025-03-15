@@ -1,23 +1,21 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDebounce } from '@/hooks/use-debounce';
 import { Table, TableBody } from "@/components/ui/table";
 import { PIATableFilters } from './PIATableFilters';
 import { PIATableHeader } from './PIATableHeader';
 import { PIATableRow } from './PIATableRow';
 import { usePIAData } from '@/hooks/use-pia-data';
 import { toast } from 'sonner';
+import { Loader2 } from "lucide-react";
 
 export const PIATable = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearch = useDebounce(searchTerm, 300);
   const [sortField, setSortField] = useState('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const navigate = useNavigate();
 
   const { data: pias, isLoading, error } = usePIAData({
-    searchTerm: debouncedSearch,
+    searchTerm,
     sortField,
     sortOrder,
   });
@@ -36,63 +34,49 @@ export const PIATable = () => {
     );
   }
 
-  const handleSort = (field: string) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
-
   const handleViewProfile = (piaId: string) => {
     navigate(`/dashboard/admin/pia/${piaId}`);
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-gray-500">Loading caregivers...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="p-8 max-w-[1400px] mx-auto space-y-6">
       <PIATableFilters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
+        isLoading={isLoading}
       />
 
       <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
         <Table>
-          <PIATableHeader onSort={handleSort} />
+          <PIATableHeader onSort={setSortField} />
           <TableBody>
             {isLoading ? (
               <tr>
-                <td colSpan={9} className="p-4">
-                  <div className="flex items-center justify-center">
-                    <div className="animate-pulse text-gray-500">Loading caregivers...</div>
+                <td colSpan={8} className="py-8">
+                  <div className="flex items-center justify-center text-gray-500 gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Loading caregivers...</span>
                   </div>
                 </td>
               </tr>
+            ) : pias && pias.length > 0 ? (
+              pias.map((pia) => (
+                <PIATableRow
+                  key={pia.id}
+                  pia={pia}
+                  onViewProfile={handleViewProfile}
+                />
+              ))
             ) : (
-              <>
-                {pias?.map((pia) => (
-                  <PIATableRow
-                    key={pia.id}
-                    pia={pia}
-                    onViewProfile={handleViewProfile}
-                  />
-                ))}
-                {(!pias || pias.length === 0) && (
-                  <tr>
-                    <td colSpan={9} className="p-4 text-center text-gray-500">
-                      No professional aides found
-                    </td>
-                  </tr>
-                )}
-              </>
+              <tr>
+                <td colSpan={8} className="py-8 text-center text-gray-500">
+                  {searchTerm ? (
+                    <>No caregivers found matching "{searchTerm}"</>
+                  ) : (
+                    <>No caregivers found</>
+                  )}
+                </td>
+              </tr>
             )}
           </TableBody>
         </Table>

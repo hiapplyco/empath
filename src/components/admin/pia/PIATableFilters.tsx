@@ -1,14 +1,28 @@
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Loader2 } from "lucide-react";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useState, useEffect } from "react";
 
 interface PIATableFiltersProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
+  isLoading?: boolean;
 }
 
-export const PIATableFilters = ({ searchTerm, onSearchChange }: PIATableFiltersProps) => {
+export const PIATableFilters = ({ 
+  searchTerm, 
+  onSearchChange,
+  isLoading 
+}: PIATableFiltersProps) => {
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+  const debouncedSearch = useDebounce(localSearch, 300);
+
+  useEffect(() => {
+    onSearchChange(debouncedSearch);
+  }, [debouncedSearch, onSearchChange]);
+
   return (
     <div className="flex justify-between items-center mb-6">
       <div>
@@ -18,11 +32,14 @@ export const PIATableFilters = ({ searchTerm, onSearchChange }: PIATableFiltersP
       <div className="flex gap-4">
         <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          {isLoading && (
+            <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 animate-spin" />
+          )}
           <Input
             placeholder="Search by name, email, location..."
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-white border-gray-200"
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
+            className="pl-10 pr-10 bg-white border-gray-200"
           />
         </div>
         <Button variant="outline" className="flex items-center gap-2">

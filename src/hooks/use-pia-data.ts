@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -17,27 +16,24 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         .select('*');
 
       if (searchTerm) {
-        query = query.or(`"Name".ilike.%${searchTerm}%,"Email".ilike.%${searchTerm}%`);
+        query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,"Locations Serviced".ilike.%${searchTerm}%`);
       }
 
-      if (sortField) {
-        // Map the frontend sort fields to actual column names
-        const columnMap: Record<string, string> = {
-          'name': 'Name',
-          'created_at': 'Name', // Using Name as fallback since pia table doesn't have created_at
-          'hourly_rate': 'Hourly Rate',
-          'years_experience': 'Experience'
-        };
+      // Map the frontend sort fields to actual column names
+      const columnMap: Record<string, string> = {
+        'name': 'Name',
+        'created_at': 'Name', // Using Name as fallback since pia table doesn't have created_at
+        'hourly_rate': 'Hourly Rate',
+        'years_experience': 'Experience'
+      };
 
-        const actualField = columnMap[sortField] || sortField;
-        query = query.order(actualField, { ascending: sortOrder === 'asc' });
-      }
+      const actualField = columnMap[sortField] || sortField;
+      query = query.order(actualField, { ascending: sortOrder === 'asc' });
 
       const { data, error } = await query;
 
       if (error) throw error;
       return data?.map(pia => ({
-        // Create a deterministic ID using email (or name + phone if email is not available)
         id: pia['Email'] || `${pia['Name']}-${pia['Phone Number']}` || Math.random().toString(),
         name: pia['Name'],
         status: 'active',
