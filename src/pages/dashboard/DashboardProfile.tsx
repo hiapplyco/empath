@@ -1,3 +1,4 @@
+
 import { useAuthenticatedPIAProfile } from "@/hooks/use-pia-data";
 import { Card } from "@/components/ui/card";
 import { DynamicProfileSection } from "@/components/profile/DynamicProfileSection";
@@ -97,16 +98,18 @@ const DashboardProfile = () => {
       </div>
 
       <div className="grid gap-6">
-        {sections.map((section, index) => (
-          <div key={index}>
-            {section.title === "Availability & Preferences" && profile.locations_serviced ? (
-              <div className="mb-4">
-                <LocationsDisplay locations={profile.locations_serviced} />
-              </div>
-            )}
-            <DynamicProfileSection section={section} />
-          </div>
-        ))}
+        {sections.map((section, index) => {
+          return (
+            <div key={index}>
+              {section.title === "Availability & Preferences" && profile.locations_serviced ? (
+                <div className="mb-4">
+                  <LocationsDisplay locations={profile.locations_serviced} />
+                </div>
+              ) : null}
+              <DynamicProfileSection section={section} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
