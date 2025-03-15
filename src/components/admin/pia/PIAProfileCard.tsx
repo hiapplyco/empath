@@ -16,6 +16,7 @@ interface PIAProfileCardProps {
     years_experience?: string;
     phone_number?: string;
     email?: string;
+    bio?: string;
   };
 }
 
@@ -55,6 +56,11 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
         </div>
       </CardHeader>
       <CardContent>
+        {pia.bio && (
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+            <p className="text-gray-700 text-sm italic">{pia.bio}</p>
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center gap-2 text-gray-600">
             <Languages className="w-4 h-4" />
