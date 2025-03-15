@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,12 +15,29 @@ const AdminAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check if user is already logged in and is admin
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin', {
+          user_id: session.user.id
+        });
+
+        if (!adminError && isAdmin) {
+          navigate('/admin/dashboard');
+        }
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // First sign in the user
       const { data: { session }, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -43,6 +60,7 @@ const AdminAuth = () => {
       }
 
       if (!isAdmin) {
+        // Don't sign out, just show error
         throw new Error('Not authorized as admin');
       }
 
@@ -51,6 +69,7 @@ const AdminAuth = () => {
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error(error.message);
+    } finally {
       setIsLoading(false);
     }
   };
