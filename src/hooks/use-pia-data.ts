@@ -17,19 +17,17 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
       // First check if we have an active session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !session) {
-        throw new Error('JWTClaimsError: User not authenticated');
+        throw new Error('User not authenticated');
       }
 
-      // Check if user is admin
-      const { data: adminData, error: adminError } = await supabase
-        .from('admin_users')
-        .select('id, role')
-        .eq('id', session.user.id)
-        .single();
+      // Check if user is admin using our security definer function
+      const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin', {
+        user_id: session.user.id
+      });
 
-      console.log('Admin check result:', { adminData, adminError });
+      console.log('Admin check result:', { isAdmin, adminError });
 
-      if (adminError || !adminData) {
+      if (adminError || !isAdmin) {
         throw new Error('not authorized');
       }
 
