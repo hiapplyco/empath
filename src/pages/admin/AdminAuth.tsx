@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,30 +7,20 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Heart } from "lucide-react";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 
 const AdminAuth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { isAdmin } = useAdminAuth();
 
-  useEffect(() => {
-    // Check if user is already logged in and is admin
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin', {
-          user_id: session.user.id
-        });
-
-        if (!adminError && isAdmin) {
-          navigate('/admin/dashboard');
-        }
-      }
-    };
-
-    checkSession();
-  }, [navigate]);
+  // If user is already authenticated as admin, redirect to dashboard
+  if (isAdmin) {
+    navigate('/admin/dashboard');
+    return null;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +49,6 @@ const AdminAuth = () => {
       }
 
       if (!isAdmin) {
-        // Don't sign out, just show error
         throw new Error('Not authorized as admin');
       }
 
@@ -75,55 +63,4 @@ const AdminAuth = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-50 to-white py-12 px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-2 mb-8">
-        <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
-          <Heart className="text-white w-5 h-5" />
-        </div>
-        <span className="text-2xl font-bold text-purple-800">em.path admin</span>
-      </div>
-
-      <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-purple-900">
-            Admin Login
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? "Logging in..." : "Login"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export default AdminAuth;
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple
