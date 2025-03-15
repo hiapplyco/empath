@@ -1,37 +1,12 @@
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { useAuthenticatedPIAProfile } from "@/hooks/use-pia-data";
 import { Card } from "@/components/ui/card";
 import { DynamicProfileSection } from "@/components/profile/DynamicProfileSection";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProfileSection } from "@/components/profile/types";
 
 const DashboardProfile = () => {
-  const { data: profile, isLoading, error } = useQuery({
-    queryKey: ['caregiver-profile'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log('No authenticated user found');
-        throw new Error('No authenticated user found');
-      }
-
-      console.log('Fetching profile for user:', user.id);
-      
-      const { data: profileData, error: profileError } = await supabase
-        .from('caregiver_profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (profileError) {
-        console.error('Error fetching profile:', profileError);
-        throw profileError;
-      }
-
-      console.log('Retrieved profile data:', profileData);
-      return profileData;
-    },
-  });
+  const { data: profile, isLoading, error } = useAuthenticatedPIAProfile();
 
   if (error) {
     return (
@@ -62,13 +37,63 @@ const DashboardProfile = () => {
     );
   }
 
-  if (!profile?.processed_profile?.sections) {
+  if (!profile) {
     return (
       <Card className="p-4">
-        <p className="text-center text-gray-500">No profile data available. Please complete the onboarding process.</p>
+        <p className="text-center text-gray-500">No profile data found. Please contact support.</p>
       </Card>
     );
   }
+
+  const sections: ProfileSection[] = [
+    {
+      title: "Personal Information",
+      variant: "grid",
+      items: [
+        { label: "Name", value: profile.name || "Not provided" },
+        { label: "Email", value: profile.email || "Not provided" },
+        { label: "Phone", value: profile.phone_number || "Not provided" },
+        { label: "Years of Experience", value: profile.years_experience || "Not provided" },
+        { label: "Hourly Rate", value: profile.hourly_rate || "Not provided" },
+      ]
+    },
+    {
+      title: "Professional Details",
+      variant: "badges",
+      items: [
+        { label: "License Type", value: profile.license_type?.join(", ") || "Not provided" },
+        { label: "HCA Registry ID", value: profile.hca_registry_id || "Not provided" },
+        { label: "HCA Expiration", value: profile.hca_expiration_date || "Not provided" },
+        { label: "Background Check", value: profile.background_check || "Not provided" }
+      ]
+    },
+    {
+      title: "Skills & Qualifications",
+      variant: "badges",
+      items: [
+        { label: "Services", value: profile.services_provided?.join(", ") || "Not provided" },
+        { label: "Languages", value: profile.languages?.join(", ") || "Not provided" },
+        { label: "Education", value: profile.education?.join(", ") || "Not provided" },
+        { label: "Vaccinations", value: profile.vaccinations?.join(", ") || "Not provided" }
+      ]
+    },
+    {
+      title: "Availability & Preferences",
+      variant: "grid",
+      items: [
+        { label: "Available Shifts", value: profile.available_shifts || "Not provided" },
+        { label: "Locations", value: profile.locations_serviced?.join(", ") || "Not provided" },
+        { label: "Pet Preferences", value: profile.pet_preferences?.join(", ") || "Not provided" }
+      ]
+    },
+    {
+      title: "About Me",
+      variant: "list",
+      items: [
+        { label: "Bio", value: profile.bio || "No bio provided" }
+      ]
+    }
+  ];
 
   return (
     <div className="space-y-6">
@@ -77,7 +102,7 @@ const DashboardProfile = () => {
       </div>
 
       <div className="grid gap-6">
-        {profile.processed_profile.sections.map((section, index) => (
+        {sections.map((section, index) => (
           <DynamicProfileSection key={index} section={section} />
         ))}
       </div>

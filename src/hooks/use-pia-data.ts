@@ -3,12 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 interface UsePIADataProps {
-  searchTerm: string;
-  sortField: string;
-  sortOrder: 'asc' | 'desc';
+  searchTerm?: string;
+  sortField?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
-export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps) => {
+export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps = {}) => {
   return useQuery({
     queryKey: ['pias', searchTerm, sortField, sortOrder],
     queryFn: async () => {
@@ -32,16 +32,17 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         );
       }
 
-      // Map the frontend sort fields to actual column names
-      const columnMap: Record<string, string> = {
-        'name': 'Name',
-        'created_at': 'Name', // Using Name as fallback since pia table doesn't have created_at
-        'hourly_rate': 'Hourly Rate',
-        'years_experience': 'Experience'
-      };
+      if (sortField && sortOrder) {
+        const columnMap: Record<string, string> = {
+          'name': 'Name',
+          'created_at': 'Name',
+          'hourly_rate': 'Hourly Rate',
+          'years_experience': 'Experience'
+        };
 
-      const actualField = columnMap[sortField] || sortField;
-      query = query.order(actualField, { ascending: sortOrder === 'asc' });
+        const actualField = columnMap[sortField] || sortField;
+        query = query.order(actualField, { ascending: sortOrder === 'asc' });
+      }
 
       const { data, error } = await query;
 
@@ -58,8 +59,58 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         verification_status: 'pending',
         email: pia['Email'],
         phone_number: pia['Phone Number'],
-        bio: pia['Bio']  // Added this line to map the Bio field
+        bio: pia['Bio'],
+        license_type: pia['License Type']?.split(',') || [],
+        education: pia['Education']?.split(',') || [],
+        available_shifts: pia['Available Shifts'],
+        pet_preferences: pia['Pet Preferences']?.split(',') || [],
+        hca_registry_id: pia['HCA Registry ID'],
+        hca_expiration_date: pia['HCA Expiration Date'],
+        background_check: pia['Type of Background Check'],
+        vaccinations: pia['Vaccinations']?.split(',') || []
       }));
     },
+  });
+};
+
+export const useAuthenticatedPIAProfile = () => {
+  return useQuery({
+    queryKey: ['authenticated-pia-profile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('pia')
+        .select('*')
+        .eq('Email', user.email)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) return null;
+
+      return {
+        id: data['Email'] || `${data['Name']}-${data['Phone Number']}`,
+        name: data['Name'],
+        status: 'active',
+        years_experience: data['Experience'],
+        hourly_rate: data['Hourly Rate'],
+        locations_serviced: data['Locations Serviced']?.split(',') || [],
+        services_provided: data['Services Provided']?.split(',') || [],
+        languages: data['Languages']?.split(',') || [],
+        verification_status: 'pending',
+        email: data['Email'],
+        phone_number: data['Phone Number'],
+        bio: data['Bio'],
+        license_type: data['License Type']?.split(',') || [],
+        education: data['Education']?.split(',') || [],
+        available_shifts: data['Available Shifts'],
+        pet_preferences: data['Pet Preferences']?.split(',') || [],
+        hca_registry_id: data['HCA Registry ID'],
+        hca_expiration_date: data['HCA Expiration Date'],
+        background_check: data['Type of Background Check'],
+        vaccinations: data['Vaccinations']?.split(',') || []
+      };
+    }
   });
 };
