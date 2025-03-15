@@ -43,7 +43,7 @@ const App = () => (
           <Route path="/dashboard/*" element={<Dashboard />} />
           
           {/* Admin routes */}
-          <Route path="/admin" element={<AdminDashboard />}>
+          <Route path="/admin/*" element={<AdminDashboard />}>
             <Route index element={<AdminDashboardContent />} />
             <Route path="dashboard" element={<AdminDashboardContent />} />
             <Route path="pia-table" element={<PIATable />} />
