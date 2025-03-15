@@ -63,9 +63,9 @@ export const PIADataTable = () => {
                 <Badge 
                   variant={
                     pia.verification_status === 'verified' 
-                      ? 'success' 
+                      ? 'default' 
                       : pia.verification_status === 'pending' 
-                      ? 'warning' 
+                      ? 'secondary' 
                       : 'destructive'
                   }
                 >
