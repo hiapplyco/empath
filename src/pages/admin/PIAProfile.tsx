@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Mail, Phone, MapPin, Languages, Award, Clock } from 'lucide-react';
+import { LocationsDisplay } from '@/components/profile/variants/LocationsDisplay';
 
 const PIAProfile = () => {
   const { id } = useParams();
@@ -54,7 +55,9 @@ const PIAProfile = () => {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-gray-500" />
-                <span>{pia.locations_serviced?.join(", ")}</span>
+                <div className="mt-2">
+                  {pia.locations_serviced && <LocationsDisplay locations={pia.locations_serviced} />}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Languages className="w-5 h-5 text-gray-500" />
