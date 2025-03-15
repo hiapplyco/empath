@@ -1,10 +1,11 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { PIAProfileCard } from './PIAProfileCard';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const PIADataTable = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [status, setStatus] = useState('all');
   const [verificationStatus, setVerificationStatus] = useState('all');
@@ -41,6 +42,10 @@ export const PIADataTable = () => {
     },
   });
 
+  const handlePIAClick = (piaId: string) => {
+    navigate(`/admin/pia/${piaId}`);
+  };
+
   if (isLoading) {
     return <div className="flex justify-center p-8">Loading...</div>;
   }
@@ -48,7 +53,13 @@ export const PIADataTable = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {pias?.map((pia) => (
-        <PIAProfileCard key={pia.id} pia={pia} />
+        <div 
+          key={pia.id} 
+          onClick={() => handlePIAClick(pia.id)}
+          className="cursor-pointer transition-transform hover:scale-[1.02]"
+        >
+          <PIAProfileCard pia={pia} />
+        </div>
       ))}
       {pias?.length === 0 && (
         <div className="col-span-full text-center py-8 text-gray-500">

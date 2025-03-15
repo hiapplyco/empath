@@ -1,4 +1,3 @@
-
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { Routes, Route } from "react-router-dom";
 import DashboardOverview from "@/pages/dashboard/DashboardOverview";
@@ -11,6 +10,7 @@ import DashboardCommunity from "@/pages/dashboard/DashboardCommunity";
 import DashboardReviews from "@/pages/dashboard/DashboardReviews";
 import DashboardSettings from "@/pages/dashboard/DashboardSettings";
 import DashboardProfile from "@/pages/dashboard/DashboardProfile";
+import PIAProfile from "@/pages/admin/PIAProfile";
 
 const Dashboard = () => {
   return (
@@ -26,6 +26,7 @@ const Dashboard = () => {
         <Route path="community" element={<DashboardCommunity />} />
         <Route path="reviews" element={<DashboardReviews />} />
         <Route path="settings" element={<DashboardSettings />} />
+        <Route path="admin/pia/:id" element={<PIAProfile />} />
       </Routes>
     </DashboardShell>
   );
