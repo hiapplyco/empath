@@ -16,19 +16,7 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
       
       let query = supabase
         .from('professional_independent_aides')
-        .select(`
-          id,
-          name,
-          status,
-          years_experience,
-          hourly_rate,
-          locations_serviced,
-          services_provided,
-          languages,
-          verification_status,
-          created_at,
-          updated_at
-        `);
+        .select('*');
 
       if (searchTerm) {
         query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,locations_serviced::text.ilike.%${searchTerm}%,services_provided::text.ilike.%${searchTerm}%`);
@@ -45,7 +33,6 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         throw error;
       }
 
-      console.log('Successfully fetched PIAs:', data?.length || 0);
       return data;
     },
   });
