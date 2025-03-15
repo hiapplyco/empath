@@ -20,6 +20,19 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         throw new Error('JWTClaimsError: User not authenticated');
       }
 
+      // Check if user is admin
+      const { data: adminData, error: adminError } = await supabase
+        .from('admin_users')
+        .select('id, role')
+        .eq('id', session.user.id)
+        .single();
+
+      console.log('Admin check result:', { adminData, adminError });
+
+      if (adminError || !adminData) {
+        throw new Error('not authorized');
+      }
+
       let query = supabase
         .from('professional_independent_aides')
         .select('*');
