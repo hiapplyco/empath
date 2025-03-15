@@ -32,7 +32,7 @@ export const AdminSidebar = ({ activeTab, setActiveTab }: AdminSidebarProps) => 
         </Link>
         
         <Link
-          to="/admin/pia-table"
+          to="/pia-table"
           className={`flex items-center space-x-3 p-2 w-full text-left ${activeTab === 'pia-table' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'} rounded-lg font-medium`}
           onClick={() => setActiveTab('pia-table')}>
           <Table className="w-5 h-5" />
