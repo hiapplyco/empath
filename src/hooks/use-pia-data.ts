@@ -33,18 +33,34 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
 
       let query = supabase
         .from('professional_independent_aides')
-        .select('*');
+        .select(`
+          id,
+          name,
+          status,
+          years_experience,
+          hourly_rate,
+          locations_serviced,
+          services_provided,
+          languages,
+          verification_status,
+          created_at,
+          updated_at
+        `);
 
       if (searchTerm) {
         query = query.or(
           `name.ilike.%${searchTerm}%,` +
           `email.ilike.%${searchTerm}%,` +
-          `locations_serviced.cs.{${searchTerm}},` +
-          `services_provided.cs.{${searchTerm}}`
+          `locations_serviced::text.ilike.%${searchTerm}%,` +
+          `services_provided::text.ilike.%${searchTerm}%`
         );
       }
 
-      const { data, error } = await query.order(sortField, { ascending: sortOrder === 'asc' });
+      if (sortField === 'created_at' || sortField === 'hourly_rate' || sortField === 'years_experience' || sortField === 'name') {
+        query = query.order(sortField, { ascending: sortOrder === 'asc' });
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error fetching PIAs:', error);
