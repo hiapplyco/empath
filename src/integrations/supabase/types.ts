@@ -658,6 +658,174 @@ export type Database = {
           },
         ]
       }
+      pia: {
+        Row: {
+          "Available Shifts": string | null
+          "Background Check Date": string | null
+          Bio: string | null
+          Education: string | null
+          Email: string | null
+          Experience: string | null
+          "HCA Expiration Date": string | null
+          "HCA Registry ID": string | null
+          "Hourly Rate": string | null
+          Languages: string | null
+          "Locations Serviced": string | null
+          Name: string | null
+          "Name used for HCA": string | null
+          "Phone Number": string | null
+          "Please type other language(s).": string | null
+          "Please type other location(s).": string | null
+          Preferences: string | null
+          "Profile Photo": string | null
+          "Provide other education.": string | null
+          References: string | null
+          "Services Provided": string | null
+          "Type any other pet(s).": string | null
+          "Type of Background Check": string | null
+          Vaccinations: string | null
+          "Won't work in homes with pets": string | null
+        }
+        Insert: {
+          "Available Shifts"?: string | null
+          "Background Check Date"?: string | null
+          Bio?: string | null
+          Education?: string | null
+          Email?: string | null
+          Experience?: string | null
+          "HCA Expiration Date"?: string | null
+          "HCA Registry ID"?: string | null
+          "Hourly Rate"?: string | null
+          Languages?: string | null
+          "Locations Serviced"?: string | null
+          Name?: string | null
+          "Name used for HCA"?: string | null
+          "Phone Number"?: string | null
+          "Please type other language(s)."?: string | null
+          "Please type other location(s)."?: string | null
+          Preferences?: string | null
+          "Profile Photo"?: string | null
+          "Provide other education."?: string | null
+          References?: string | null
+          "Services Provided"?: string | null
+          "Type any other pet(s)."?: string | null
+          "Type of Background Check"?: string | null
+          Vaccinations?: string | null
+          "Won't work in homes with pets"?: string | null
+        }
+        Update: {
+          "Available Shifts"?: string | null
+          "Background Check Date"?: string | null
+          Bio?: string | null
+          Education?: string | null
+          Email?: string | null
+          Experience?: string | null
+          "HCA Expiration Date"?: string | null
+          "HCA Registry ID"?: string | null
+          "Hourly Rate"?: string | null
+          Languages?: string | null
+          "Locations Serviced"?: string | null
+          Name?: string | null
+          "Name used for HCA"?: string | null
+          "Phone Number"?: string | null
+          "Please type other language(s)."?: string | null
+          "Please type other location(s)."?: string | null
+          Preferences?: string | null
+          "Profile Photo"?: string | null
+          "Provide other education."?: string | null
+          References?: string | null
+          "Services Provided"?: string | null
+          "Type any other pet(s)."?: string | null
+          "Type of Background Check"?: string | null
+          Vaccinations?: string | null
+          "Won't work in homes with pets"?: string | null
+        }
+        Relationships: []
+      }
+      professional_independent_aides: {
+        Row: {
+          available_shifts: string | null
+          average_rating: number | null
+          background_check_type: string | null
+          bio: string | null
+          created_at: string | null
+          education: Database["public"]["Enums"]["education_level"][] | null
+          email: string | null
+          hca_expiration_date: string | null
+          hca_registry_id: string | null
+          hourly_rate: string | null
+          id: string
+          languages: string[] | null
+          license_type: string[] | null
+          locations_serviced: string[] | null
+          name: string
+          pet_preferences: string[] | null
+          phone_number: string | null
+          profile_image_url: string | null
+          services_provided: string[] | null
+          status: string | null
+          total_reviews: number | null
+          updated_at: string | null
+          vaccinations: string[] | null
+          verification_status: string | null
+          years_experience: string | null
+        }
+        Insert: {
+          available_shifts?: string | null
+          average_rating?: number | null
+          background_check_type?: string | null
+          bio?: string | null
+          created_at?: string | null
+          education?: Database["public"]["Enums"]["education_level"][] | null
+          email?: string | null
+          hca_expiration_date?: string | null
+          hca_registry_id?: string | null
+          hourly_rate?: string | null
+          id?: string
+          languages?: string[] | null
+          license_type?: string[] | null
+          locations_serviced?: string[] | null
+          name: string
+          pet_preferences?: string[] | null
+          phone_number?: string | null
+          profile_image_url?: string | null
+          services_provided?: string[] | null
+          status?: string | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          vaccinations?: string[] | null
+          verification_status?: string | null
+          years_experience?: string | null
+        }
+        Update: {
+          available_shifts?: string | null
+          average_rating?: number | null
+          background_check_type?: string | null
+          bio?: string | null
+          created_at?: string | null
+          education?: Database["public"]["Enums"]["education_level"][] | null
+          email?: string | null
+          hca_expiration_date?: string | null
+          hca_registry_id?: string | null
+          hourly_rate?: string | null
+          id?: string
+          languages?: string[] | null
+          license_type?: string[] | null
+          locations_serviced?: string[] | null
+          name?: string
+          pet_preferences?: string[] | null
+          phone_number?: string | null
+          profile_image_url?: string | null
+          services_provided?: string[] | null
+          status?: string | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          vaccinations?: string[] | null
+          verification_status?: string | null
+          years_experience?: string | null
+        }
+        Relationships: []
+      }
       shifts: {
         Row: {
           caregiver_id: string
@@ -729,6 +897,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -737,6 +926,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user"
       care_frequency: "one_time" | "recurring" | "full_time"
       care_level: "light" | "moderate" | "extensive"
       care_recipient_relation: "self" | "family_member" | "friend" | "client"
@@ -756,6 +946,14 @@ export type Database = {
         | "training"
         | "insurance"
         | "other"
+      education_level:
+        | "CNA"
+        | "Home Health Care Certified"
+        | "Undergrad"
+        | "Masters"
+        | "Registered Nurse"
+        | "LVN"
+        | "Other"
       gender_preference: "no_preference" | "male" | "female" | "other"
     }
     CompositeTypes: {
