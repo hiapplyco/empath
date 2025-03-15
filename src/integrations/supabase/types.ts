@@ -929,6 +929,12 @@ export type Database = {
         }
         Returns: string
       }
+      get_user_roles: {
+        Args: {
+          user_id: string
+        }
+        Returns: Database["public"]["Enums"]["app_role"][]
+      }
       is_admin: {
         Args: {
           user_id: string
