@@ -1,12 +1,57 @@
 
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function LandingNavigation() {
   const navigate = useNavigate();
 
-  const handleAuthNavigation = () => {
-    navigate('/auth/caregiver');  // Updated from '/auth' to '/auth/caregiver'
+  const handleAuthNavigation = async () => {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (session?.user) {
+      // First check if user is admin
+      const { data: adminData } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (adminData) {
+        navigate('/admin/dashboard');
+        return;
+      }
+
+      // Then check if user has a caregiver profile
+      const { data: caregiverData } = await supabase
+        .from('caregiver_profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (caregiverData) {
+        navigate('/dashboard');
+        return;
+      }
+
+      // Finally check if user is a care seeker
+      const { data: careSeekerData } = await supabase
+        .from('care_seeker_profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (careSeekerData) {
+        navigate('/care-seeker/dashboard');
+        return;
+      }
+
+      // If no role is found, default to caregiver auth
+      navigate('/auth/caregiver');
+    } else {
+      navigate('/auth/caregiver');
+    }
   };
 
   return (
