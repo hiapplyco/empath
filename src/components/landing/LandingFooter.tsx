@@ -1,7 +1,10 @@
+
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function LandingFooter() {
+  const navigate = useNavigate();
+
   return (
     <>
       {/* CTA Section */}
@@ -15,21 +18,21 @@ export default function LandingFooter() {
             <Button
               variant="default"
               className="bg-purple-600 hover:bg-purple-700 text-white"
-              onClick={() => window.location.href = '/auth/care-seeker'}
+              onClick={() => navigate('/auth/care-seeker')}
             >
               I Need Care
             </Button>
             <Button
               variant="outline"
               className="border-purple-600 text-purple-700 hover:bg-purple-50"
-              onClick={() => window.location.href = '/auth/caregiver'}
+              onClick={() => navigate('/auth/caregiver')}
             >
               I'm a Caregiver
             </Button>
             <Button
               variant="ghost"
               className="text-purple-700 hover:bg-purple-50"
-              onClick={() => window.location.href = '/admin'}
+              onClick={() => navigate('/admin')}
             >
               For Admins
             </Button>
