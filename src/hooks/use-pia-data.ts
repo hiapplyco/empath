@@ -21,12 +21,12 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         throw new Error('User not authenticated');
       }
 
-      // Check if user is admin using our security definer function
-      const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin', {
+      // Use our new security definer function to check admin status
+      const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin_user', {
         user_id: session.user.id
       });
 
-      console.log('Admin check result:', { isAdmin, adminError, userId: session.user.id });
+      console.log('Admin check result:', { isAdmin, adminError });
 
       if (adminError) {
         console.error('Admin check error:', adminError);

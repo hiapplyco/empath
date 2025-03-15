@@ -941,6 +941,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin_user: {
+        Args: {
+          user_id: string
+        }
+        Returns: boolean
+      }
       migrate_pia_to_caregiver_profiles: {
         Args: Record<PropertyKey, never>
         Returns: undefined
