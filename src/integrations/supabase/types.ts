@@ -923,6 +923,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_admin_access: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       get_user_role: {
         Args: {
           user_id: string
@@ -934,18 +938,6 @@ export type Database = {
           user_id: string
         }
         Returns: Database["public"]["Enums"]["app_role"][]
-      }
-      is_admin: {
-        Args: {
-          user_id: string
-        }
-        Returns: boolean
-      }
-      is_admin_user: {
-        Args: {
-          user_id: string
-        }
-        Returns: boolean
       }
       migrate_pia_to_caregiver_profiles: {
         Args: Record<PropertyKey, never>

@@ -14,30 +14,13 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
     queryFn: async () => {
       console.log('Fetching PIAs with params:', { searchTerm, sortField, sortOrder });
       
-      // First check if we have an active session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session) {
-        console.error('Authentication error:', sessionError);
-        throw new Error('User not authenticated');
+      // Check session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Authentication required');
       }
 
-      // Use our new security definer function to check admin status
-      const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin_user', {
-        user_id: session.user.id
-      });
-
-      console.log('Admin check result:', { isAdmin, adminError });
-
-      if (adminError) {
-        console.error('Admin check error:', adminError);
-        throw new Error('Error checking admin status');
-      }
-
-      if (!isAdmin) {
-        console.error('User is not an admin');
-        throw new Error('Not authorized - Admin access required');
-      }
-
+      // Query the PIA table - the RLS policies will handle authorization
       let query = supabase
         .from('professional_independent_aides')
         .select(`
@@ -55,13 +38,10 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         `);
 
       if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%`)
-                    .or(`email.ilike.%${searchTerm}%`)
-                    .or(`locations_serviced::text.ilike.%${searchTerm}%`)
-                    .or(`services_provided::text.ilike.%${searchTerm}%`);
+        query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,locations_serviced::text.ilike.%${searchTerm}%,services_provided::text.ilike.%${searchTerm}%`);
       }
 
-      if (sortField === 'created_at' || sortField === 'hourly_rate' || sortField === 'years_experience' || sortField === 'name') {
+      if (sortField && ['created_at', 'hourly_rate', 'years_experience', 'name'].includes(sortField)) {
         query = query.order(sortField, { ascending: sortOrder === 'asc' });
       }
 
@@ -69,10 +49,13 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
 
       if (error) {
         console.error('Error fetching PIAs:', error);
+        if (error.message?.includes('JWTClaimsError')) {
+          throw new Error('Session expired. Please sign in again.');
+        }
         throw error;
       }
 
-      console.log('Fetched PIAs:', data);
+      console.log('Successfully fetched PIAs:', data?.length || 0);
       return data;
     },
   });
