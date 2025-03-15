@@ -1,29 +1,39 @@
 
-import { useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import { PIAProfileCard } from './PIAProfileCard';
+import { useState } from 'react';
 
 export const PIADataTable = () => {
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [status, setStatus] = useState('all');
+  const [verificationStatus, setVerificationStatus] = useState('all');
 
   const { data: pias, isLoading } = useQuery({
-    queryKey: ['pias', page],
+    queryKey: ['pias', searchTerm, status, verificationStatus],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('professional_independent_aides')
-        .select('*')
-        .range((page - 1) * pageSize, page * pageSize - 1)
+        .select('*');
+
+      if (searchTerm) {
+        query = query.or(
+          `name.ilike.%${searchTerm}%,` +
+          `email.ilike.%${searchTerm}%,` +
+          `locations_serviced.cs.{${searchTerm}},` +
+          `services_provided.cs.{${searchTerm}}`
+        );
+      }
+
+      if (status !== 'all') {
+        query = query.eq('status', status);
+      }
+
+      if (verificationStatus !== 'all') {
+        query = query.eq('verification_status', verificationStatus);
+      }
+
+      const { data, error } = await query
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -36,49 +46,15 @@ export const PIADataTable = () => {
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>License Type</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Verification</TableHead>
-            <TableHead>Rating</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {pias?.map((pia) => (
-            <TableRow key={pia.id}>
-              <TableCell className="font-medium">{pia.name}</TableCell>
-              <TableCell>{pia.license_type?.join(', ')}</TableCell>
-              <TableCell>
-                <Badge variant={pia.status === 'active' ? 'default' : 'secondary'}>
-                  {pia.status}
-                </Badge>
-              </TableCell>
-              <TableCell>{format(new Date(pia.created_at), 'MMM d, yyyy')}</TableCell>
-              <TableCell>
-                <Badge 
-                  variant={
-                    pia.verification_status === 'verified' 
-                      ? 'default' 
-                      : pia.verification_status === 'pending' 
-                      ? 'secondary' 
-                      : 'destructive'
-                  }
-                >
-                  {pia.verification_status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {pia.average_rating ? `${pia.average_rating} (${pia.total_reviews})` : 'No ratings'}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {pias?.map((pia) => (
+        <PIAProfileCard key={pia.id} pia={pia} />
+      ))}
+      {pias?.length === 0 && (
+        <div className="col-span-full text-center py-8 text-gray-500">
+          No professional aides found matching your criteria
+        </div>
+      )}
     </div>
   );
 };

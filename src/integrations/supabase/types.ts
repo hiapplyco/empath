@@ -661,7 +661,6 @@ export type Database = {
       pia: {
         Row: {
           "Available Shifts": string | null
-          "Background Check Date": string | null
           Bio: string | null
           Education: string | null
           Email: string | null
@@ -670,25 +669,17 @@ export type Database = {
           "HCA Registry ID": string | null
           "Hourly Rate": string | null
           Languages: string | null
+          "License Type": string | null
           "Locations Serviced": string | null
           Name: string | null
-          "Name used for HCA": string | null
+          "Pet Preferences": string | null
           "Phone Number": string | null
-          "Please type other language(s).": string | null
-          "Please type other location(s).": string | null
-          Preferences: string | null
-          "Profile Photo": string | null
-          "Provide other education.": string | null
-          References: string | null
           "Services Provided": string | null
-          "Type any other pet(s).": string | null
           "Type of Background Check": string | null
           Vaccinations: string | null
-          "Won't work in homes with pets": string | null
         }
         Insert: {
           "Available Shifts"?: string | null
-          "Background Check Date"?: string | null
           Bio?: string | null
           Education?: string | null
           Email?: string | null
@@ -697,25 +688,17 @@ export type Database = {
           "HCA Registry ID"?: string | null
           "Hourly Rate"?: string | null
           Languages?: string | null
+          "License Type"?: string | null
           "Locations Serviced"?: string | null
           Name?: string | null
-          "Name used for HCA"?: string | null
+          "Pet Preferences"?: string | null
           "Phone Number"?: string | null
-          "Please type other language(s)."?: string | null
-          "Please type other location(s)."?: string | null
-          Preferences?: string | null
-          "Profile Photo"?: string | null
-          "Provide other education."?: string | null
-          References?: string | null
           "Services Provided"?: string | null
-          "Type any other pet(s)."?: string | null
           "Type of Background Check"?: string | null
           Vaccinations?: string | null
-          "Won't work in homes with pets"?: string | null
         }
         Update: {
           "Available Shifts"?: string | null
-          "Background Check Date"?: string | null
           Bio?: string | null
           Education?: string | null
           Email?: string | null
@@ -724,21 +707,14 @@ export type Database = {
           "HCA Registry ID"?: string | null
           "Hourly Rate"?: string | null
           Languages?: string | null
+          "License Type"?: string | null
           "Locations Serviced"?: string | null
           Name?: string | null
-          "Name used for HCA"?: string | null
+          "Pet Preferences"?: string | null
           "Phone Number"?: string | null
-          "Please type other language(s)."?: string | null
-          "Please type other location(s)."?: string | null
-          Preferences?: string | null
-          "Profile Photo"?: string | null
-          "Provide other education."?: string | null
-          References?: string | null
           "Services Provided"?: string | null
-          "Type any other pet(s)."?: string | null
           "Type of Background Check"?: string | null
           Vaccinations?: string | null
-          "Won't work in homes with pets"?: string | null
         }
         Relationships: []
       }
@@ -923,7 +899,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      migrate_pia_to_caregiver_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

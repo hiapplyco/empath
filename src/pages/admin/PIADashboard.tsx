@@ -7,6 +7,9 @@ import { AdminSidebar } from '@/components/admin/AdminSidebar';
 
 const PIADashboard = () => {
   const [activeTab, setActiveTab] = useState('pia');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [status, setStatus] = useState('all');
+  const [verificationStatus, setVerificationStatus] = useState('all');
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -18,7 +21,11 @@ const PIADashboard = () => {
         </div>
         
         <PIAStats />
-        <PIAFilters />
+        <PIAFilters 
+          onSearchChange={setSearchTerm}
+          onStatusChange={setStatus}
+          onVerificationChange={setVerificationStatus}
+        />
         <PIADataTable />
       </div>
     </div>
