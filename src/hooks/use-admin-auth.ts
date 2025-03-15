@@ -18,27 +18,24 @@ export const useAdminAuth = () => {
           if (isMounted) {
             setIsAdmin(false);
             setIsChecking(false);
-            setError('No active session');
           }
           return;
         }
 
-        const { data: adminStatus, error: adminError } = await supabase.rpc('check_admin_access');
-
-        if (adminError) {
-          console.error('Admin check error:', adminError);
-          throw adminError;
-        }
+        // Use the simplified check_admin_access function
+        const { data, error: funcError } = await supabase.rpc('check_admin_access');
+        
+        if (funcError) throw funcError;
 
         if (isMounted) {
-          setIsAdmin(!!adminStatus);
+          setIsAdmin(!!data);
           setError(null);
         }
       } catch (err: any) {
+        console.error('Admin check error:', err);
         if (isMounted) {
-          console.error('Admin check error:', err);
-          setError(err.message);
           setIsAdmin(false);
+          setError(err.message);
         }
       } finally {
         if (isMounted) {
@@ -47,10 +44,8 @@ export const useAdminAuth = () => {
       }
     };
 
-    // Run check immediately
     checkAdminStatus();
 
-    // Also listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
       checkAdminStatus();
     });
@@ -59,7 +54,7 @@ export const useAdminAuth = () => {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, []); // Only run effect on mount
+  }, []);
 
   return { isAdmin, isChecking, error };
 };
