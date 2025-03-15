@@ -26,6 +26,12 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
   const formattedRate = pia.hourly_rate 
     ? `$${parseFloat(pia.hourly_rate).toFixed(2)}/hr`
     : 'Rate not specified';
+    
+  // Format bio text by replacing \n with actual line breaks and trimming extra spaces
+  const formattedBio = pia.bio?.split('\\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+    .join('\n');
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -64,9 +70,11 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
         </div>
       </CardHeader>
       <CardContent>
-        {pia.bio && (
+        {formattedBio && (
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{pia.bio}</p>
+            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+              {formattedBio}
+            </p>
           </div>
         )}
         
@@ -126,3 +134,4 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
     </Card>
   );
 };
+
