@@ -6,7 +6,7 @@ export default function LandingNavigation() {
   const navigate = useNavigate();
 
   const handleAuthNavigation = () => {
-    navigate('/auth');
+    navigate('/auth/caregiver');  // Updated from '/auth' to '/auth/caregiver'
   };
 
   return (
