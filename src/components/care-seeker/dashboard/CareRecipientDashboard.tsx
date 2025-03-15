@@ -5,7 +5,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Star, Filter, Search, MessageSquare, Calendar, CreditCard, Settings, Phone, MapPin, Clock, ChevronRight, BookOpen, Shield } from 'lucide-react';
+import { Heart, Star, Filter, Search, MessageSquare, Calendar, CreditCard, Settings, Phone, MapPin, Clock, ChevronRight, BookOpen, Shield, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const CareRecipientDashboard = () => {
@@ -42,7 +42,8 @@ const CareRecipientDashboard = () => {
             { id: 'messages', icon: MessageSquare, label: 'Messages', badge: '3' },
             { id: 'schedule', icon: Calendar, label: 'Schedule' },
             { id: 'payments', icon: CreditCard, label: 'Payments' },
-            { id: 'careplan', icon: BookOpen, label: 'Care Plan' }
+            { id: 'careplan', icon: BookOpen, label: 'Care Plan' },
+            { id: 'pia-search', icon: Users, label: 'Search PIAs', onClick: () => navigate('/admin/PIADashboard') }
           ].map((item) => {
             const Icon = item.icon;
             return (
@@ -54,7 +55,14 @@ const CareRecipientDashboard = () => {
                     ? 'bg-purple-100 text-purple-700' 
                     : 'text-gray-600 hover:bg-gray-100'
                 } rounded-lg font-medium`}
-                onClick={() => setActiveTab(item.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (item.onClick) {
+                    item.onClick();
+                  } else {
+                    setActiveTab(item.id);
+                  }
+                }}
               >
                 <Icon className="w-5 h-5" />
                 <span>{item.label}</span>
