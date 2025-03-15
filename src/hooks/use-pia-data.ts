@@ -1,7 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
 interface UsePIADataProps {
   searchTerm: string;
@@ -15,6 +14,12 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
     queryFn: async () => {
       console.log('Fetching PIAs with params:', { searchTerm, sortField, sortOrder });
       
+      // First check if we have an active session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        throw new Error('JWTClaimsError: User not authenticated');
+      }
+
       let query = supabase
         .from('professional_independent_aides')
         .select('*');
