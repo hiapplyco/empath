@@ -17,6 +17,7 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
       // First check if we have an active session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !session) {
+        console.error('Authentication error:', sessionError);
         throw new Error('User not authenticated');
       }
 
@@ -25,10 +26,16 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         user_id: session.user.id
       });
 
-      console.log('Admin check result:', { isAdmin, adminError });
+      console.log('Admin check result:', { isAdmin, adminError, userId: session.user.id });
 
-      if (adminError || !isAdmin) {
-        throw new Error('not authorized');
+      if (adminError) {
+        console.error('Admin check error:', adminError);
+        throw new Error('Error checking admin status');
+      }
+
+      if (!isAdmin) {
+        console.error('User is not an admin');
+        throw new Error('Not authorized - Admin access required');
       }
 
       let query = supabase
