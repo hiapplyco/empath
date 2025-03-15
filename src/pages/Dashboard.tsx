@@ -11,6 +11,7 @@ import DashboardReviews from "@/pages/dashboard/DashboardReviews";
 import DashboardSettings from "@/pages/dashboard/DashboardSettings";
 import DashboardProfile from "@/pages/dashboard/DashboardProfile";
 import PIAProfile from "@/pages/admin/PIAProfile";
+import { PIATable } from "@/components/admin/pia/PIATable";
 
 const Dashboard = () => {
   return (
@@ -27,6 +28,7 @@ const Dashboard = () => {
         <Route path="reviews" element={<DashboardReviews />} />
         <Route path="settings" element={<DashboardSettings />} />
         <Route path="admin/pia/:id" element={<PIAProfile />} />
+        <Route path="admin/pia-table" element={<PIATable />} />
       </Routes>
     </DashboardShell>
   );
