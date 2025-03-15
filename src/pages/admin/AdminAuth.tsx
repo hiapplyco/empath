@@ -20,6 +20,7 @@ const AdminAuth = () => {
     setIsLoading(true);
 
     try {
+      // First sign in the user
       const { data: { session }, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -27,23 +28,29 @@ const AdminAuth = () => {
 
       if (error) throw error;
 
-      if (session) {
-        const { data: adminData, error: adminError } = await supabase
-          .from('admin_users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (adminError || !adminData) {
-          throw new Error('Not authorized as admin');
-        }
-
-        toast.success('Welcome back, admin!');
-        navigate('/admin/dashboard');
+      if (!session) {
+        throw new Error('No session after login');
       }
+
+      // Check if user is admin using our RPC function
+      const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin', {
+        user_id: session.user.id
+      });
+
+      if (adminError) {
+        console.error('Admin check error:', adminError);
+        throw new Error('Error checking admin status');
+      }
+
+      if (!isAdmin) {
+        throw new Error('Not authorized as admin');
+      }
+
+      toast.success('Welcome back, admin!');
+      navigate('/admin/dashboard');
     } catch (error: any) {
+      console.error('Login error:', error);
       toast.error(error.message);
-    } finally {
       setIsLoading(false);
     }
   };
