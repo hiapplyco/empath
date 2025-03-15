@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -48,12 +47,10 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
         `);
 
       if (searchTerm) {
-        query = query.or(
-          `name.ilike.%${searchTerm}%,` +
-          `email.ilike.%${searchTerm}%,` +
-          `locations_serviced::text.ilike.%${searchTerm}%,` +
-          `services_provided::text.ilike.%${searchTerm}%`
-        );
+        query = query.or(`name.ilike.%${searchTerm}%`)
+                    .or(`email.ilike.%${searchTerm}%`)
+                    .or(`locations_serviced::text.ilike.%${searchTerm}%`)
+                    .or(`services_provided::text.ilike.%${searchTerm}%`);
       }
 
       if (sortField === 'created_at' || sortField === 'hourly_rate' || sortField === 'years_experience' || sortField === 'name') {

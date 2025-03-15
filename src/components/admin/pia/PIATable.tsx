@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -67,19 +68,31 @@ export const PIATable = () => {
         <Table>
           <PIATableHeader onSort={handleSort} />
           <TableBody>
-            {pias?.map((pia) => (
-              <PIATableRow
-                key={pia.id}
-                pia={pia}
-                onViewProfile={handleViewProfile}
-              />
-            ))}
-            {(!pias || pias.length === 0) && (
+            {isLoading ? (
               <tr>
-                <td colSpan={9} className="p-4 text-center text-gray-500">
-                  No professional aides found
+                <td colSpan={9} className="p-4">
+                  <div className="flex items-center justify-center">
+                    <div className="animate-pulse text-gray-500">Loading caregivers...</div>
+                  </div>
                 </td>
               </tr>
+            ) : (
+              <>
+                {pias?.map((pia) => (
+                  <PIATableRow
+                    key={pia.id}
+                    pia={pia}
+                    onViewProfile={handleViewProfile}
+                  />
+                ))}
+                {(!pias || pias.length === 0) && (
+                  <tr>
+                    <td colSpan={9} className="p-4 text-center text-gray-500">
+                      No professional aides found
+                    </td>
+                  </tr>
+                )}
+              </>
             )}
           </TableBody>
         </Table>
