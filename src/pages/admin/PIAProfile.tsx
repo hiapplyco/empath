@@ -40,25 +40,25 @@ const PIAProfile = () => {
             <CardTitle>Personal Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <h2 className="text-2xl font-bold">{pia.Name}</h2>
+            <h2 className="text-2xl font-bold">{pia.name}</h2>
             <Badge className="mb-4">{pia.verification_status}</Badge>
-            <p className="text-gray-600">{pia.Bio}</p>
+            <p className="text-gray-600">{pia.bio}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
               <div className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-gray-500" />
-                <span>{pia.Email}</span>
+                <span>{pia.email}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-5 h-5 text-gray-500" />
-                <span>{pia["Phone Number"]}</span>
+                <span>{pia.phone_number}</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-gray-500" />
-                <span>{pia["Locations Serviced"]?.join(", ")}</span>
+                <span>{pia.locations_serviced?.join(", ")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Languages className="w-5 h-5 text-gray-500" />
-                <span>{pia.Languages?.join(", ")}</span>
+                <span>{pia.languages?.join(", ")}</span>
               </div>
             </div>
           </CardContent>
@@ -75,21 +75,21 @@ const PIAProfile = () => {
                 <Award className="w-5 h-5 text-gray-500" />
                 <div>
                   <p className="font-semibold">Experience</p>
-                  <p>{pia.Experience} years</p>
+                  <p>{pia.years_experience} years</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-gray-500" />
                 <div>
                   <p className="font-semibold">Available Shifts</p>
-                  <p>{pia["Available Shifts"]?.join(", ")}</p>
+                  <p>{pia.available_shifts}</p>
                 </div>
               </div>
             </div>
             <div>
               <h3 className="font-semibold mb-2">Services Provided</h3>
               <div className="flex flex-wrap gap-2">
-                {pia["Services Provided"]?.map((service: string) => (
+                {pia.services_provided?.map((service: string) => (
                   <Badge key={service} variant="secondary">
                     {service}
                   </Badge>
@@ -99,9 +99,9 @@ const PIAProfile = () => {
             <div>
               <h3 className="font-semibold mb-2">Certifications</h3>
               <div className="space-y-2">
-                <p>License Type: {pia["License Type"]}</p>
-                <p>HCA Registry ID: {pia["HCA Registry ID"]}</p>
-                <p>HCA Expiration: {pia["HCA Expiration Date"]}</p>
+                <p>License Type: {pia.license_type?.join(", ")}</p>
+                <p>HCA Registry ID: {pia.hca_registry_id}</p>
+                <p>HCA Expiration: {pia.hca_expiration_date}</p>
               </div>
             </div>
           </CardContent>
