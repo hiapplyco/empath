@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,10 +15,10 @@ const AdminAuth = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { isAdmin } = useAdminAuth();
+  const { isAdmin, isChecking } = useAdminAuth();
 
-  // If user is already authenticated as admin, redirect to dashboard
-  if (isAdmin) {
+  // Only redirect if we've confirmed the user is an admin
+  if (!isChecking && isAdmin) {
     navigate('/admin/dashboard');
     return null;
   }
@@ -39,7 +40,7 @@ const AdminAuth = () => {
       }
 
       // Check if user is admin using our RPC function
-      const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin', {
+      const { data: adminCheck, error: adminError } = await supabase.rpc('is_admin', {
         user_id: session.user.id
       });
 
@@ -48,7 +49,8 @@ const AdminAuth = () => {
         throw new Error('Error checking admin status');
       }
 
-      if (!isAdmin) {
+      if (!adminCheck) {
+        await supabase.auth.signOut();
         throw new Error('Not authorized as admin');
       }
 
@@ -63,4 +65,48 @@ const AdminAuth = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-50 to-white">
+      <Card className="w-[400px]">
+        <CardHeader className="space-y-1">
+          <div className="flex items-center justify-center mb-4">
+            <Heart className="text-purple-600 w-8 h-8" />
+          </div>
+          <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Login"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default AdminAuth;
