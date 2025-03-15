@@ -1,11 +1,12 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { BookOpen, Briefcase, Heart, Shield, Syringe } from "lucide-react";
+import { BookOpen, Briefcase, Heart, Shield } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { BasicInfoSection } from "./sections/BasicInfoSection";
 import { LanguagesLocationsSection } from "./sections/LanguagesLocationsSection";
 
-interface PIAProfileCardProps {
+export interface PIAProfileCardProps {
   id: string;
   name: string;
   license_type?: string[];
@@ -28,8 +29,8 @@ interface PIAProfileCardProps {
   vaccinations?: string[];
 }
 
-export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
-  const formattedBio = pia.bio?.split('\\n')
+export const PIAProfileCard = (props: PIAProfileCardProps) => {
+  const formattedBio = props.bio?.split('\\n')
     .map(line => line.trim())
     .filter(Boolean)
     .join('\n');
@@ -39,9 +40,9 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="text-2xl font-bold mb-3 text-purple-900">{pia.name}</h3>
+            <h3 className="text-2xl font-bold mb-3 text-purple-900">{props.name}</h3>
             <div className="flex flex-wrap gap-2 mb-3">
-              {pia.license_type?.map((license) => (
+              {props.license_type?.map((license) => (
                 <Badge key={license} variant="outline" className="text-sm font-medium bg-purple-50">
                   {license}
                 </Badge>
@@ -49,26 +50,26 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
             </div>
           </div>
           <div className="flex gap-2">
-            {pia.status && (
+            {props.status && (
               <Badge 
-                variant={pia.status === 'active' ? 'default' : 'secondary'}
+                variant={props.status === 'active' ? 'default' : 'secondary'}
                 className="animate-fade-in"
               >
-                {pia.status}
+                {props.status}
               </Badge>
             )}
-            {pia.verification_status && (
+            {props.verification_status && (
               <Badge 
                 variant={
-                  pia.verification_status === 'verified' 
+                  props.verification_status === 'verified' 
                     ? 'default' 
-                    : pia.verification_status === 'pending' 
+                    : props.verification_status === 'pending' 
                     ? 'secondary' 
                     : 'destructive'
                 }
                 className="animate-fade-in"
               >
-                {pia.verification_status}
+                {props.verification_status}
               </Badge>
             )}
           </div>
@@ -85,10 +86,18 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
         )}
 
         {/* Basic Information */}
-        <BasicInfoSection pia={pia} />
+        <BasicInfoSection 
+          hourly_rate={props.hourly_rate}
+          years_experience={props.years_experience}
+          phone_number={props.phone_number}
+          email={props.email}
+        />
 
         {/* Languages and Locations */}
-        <LanguagesLocationsSection pia={pia} />
+        <LanguagesLocationsSection 
+          languages={props.languages}
+          locations_serviced={props.locations_serviced}
+        />
 
         {/* Detailed Information Sections */}
         <div className="space-y-4">
@@ -99,11 +108,11 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
               <span className="font-semibold">Education & Certifications</span>
             </CollapsibleTrigger>
             <CollapsibleContent className="p-4 space-y-3">
-              {pia.education && (
+              {props.education && (
                 <div className="space-y-2">
                   <h4 className="font-medium">Education</h4>
                   <div className="flex flex-wrap gap-2">
-                    {pia.education.map((edu, i) => (
+                    {props.education.map((edu, i) => (
                       <Badge key={i} variant="outline">{edu}</Badge>
                     ))}
                   </div>
@@ -111,8 +120,8 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
               )}
               <div className="space-y-2">
                 <h4 className="font-medium">HCA Registry Information</h4>
-                <p className="text-sm">ID: {pia.hca_registry_id || 'Not provided'}</p>
-                <p className="text-sm">Expiration: {pia.hca_expiration_date || 'Not provided'}</p>
+                <p className="text-sm">ID: {props.hca_registry_id || 'Not provided'}</p>
+                <p className="text-sm">Expiration: {props.hca_expiration_date || 'Not provided'}</p>
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -124,20 +133,20 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
               <span className="font-semibold">Services & Availability</span>
             </CollapsibleTrigger>
             <CollapsibleContent className="p-4 space-y-3">
-              {pia.services_provided && (
+              {props.services_provided && (
                 <div className="space-y-2">
                   <h4 className="font-medium">Services Provided</h4>
                   <div className="flex flex-wrap gap-2">
-                    {pia.services_provided.map((service, i) => (
+                    {props.services_provided.map((service, i) => (
                       <Badge key={i} variant="secondary">{service}</Badge>
                     ))}
                   </div>
                 </div>
               )}
-              {pia.available_shifts && (
+              {props.available_shifts && (
                 <div className="space-y-2">
                   <h4 className="font-medium">Available Shifts</h4>
-                  <p className="text-sm">{pia.available_shifts}</p>
+                  <p className="text-sm">{props.available_shifts}</p>
                 </div>
               )}
             </CollapsibleContent>
@@ -150,11 +159,11 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
               <span className="font-semibold">Additional Information</span>
             </CollapsibleTrigger>
             <CollapsibleContent className="p-4 space-y-3">
-              {pia.pet_preferences && (
+              {props.pet_preferences && (
                 <div className="space-y-2">
                   <h4 className="font-medium">Pet Preferences</h4>
                   <div className="flex flex-wrap gap-2">
-                    {pia.pet_preferences.map((pref, i) => (
+                    {props.pet_preferences.map((pref, i) => (
                       <Badge key={i} variant="outline">{pref}</Badge>
                     ))}
                   </div>
@@ -170,17 +179,17 @@ export const PIAProfileCard = ({ pia }: PIAProfileCardProps) => {
               <span className="font-semibold">Verification & Safety</span>
             </CollapsibleTrigger>
             <CollapsibleContent className="p-4 space-y-3">
-              {pia.background_check && (
+              {props.background_check && (
                 <div className="space-y-2">
                   <h4 className="font-medium">Background Check</h4>
-                  <p className="text-sm">{pia.background_check}</p>
+                  <p className="text-sm">{props.background_check}</p>
                 </div>
               )}
-              {pia.vaccinations && (
+              {props.vaccinations && (
                 <div className="space-y-2">
                   <h4 className="font-medium">Vaccinations</h4>
                   <div className="flex flex-wrap gap-2">
-                    {pia.vaccinations.map((vax, i) => (
+                    {props.vaccinations.map((vax, i) => (
                       <Badge key={i} variant="outline">{vax}</Badge>
                     ))}
                   </div>

@@ -58,7 +58,7 @@ export const PIADataTable = () => {
           onClick={() => handlePIAClick(pia.id)}
           className="cursor-pointer transition-transform hover:scale-[1.02]"
         >
-          <PIAProfileCard pia={pia} />
+          <PIAProfileCard {...pia} />
         </div>
       ))}
       {pias?.length === 0 && (

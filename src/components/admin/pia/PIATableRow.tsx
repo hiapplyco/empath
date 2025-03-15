@@ -103,7 +103,7 @@ export const PIATableRow = ({ pia, onViewProfile }: PIATableRowProps) => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold">PIA Profile</DialogTitle>
           </DialogHeader>
-          <PIAProfileCard pia={pia} />
+          <PIAProfileCard {...pia} />
         </DialogContent>
       </Dialog>
     </>
