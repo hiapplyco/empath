@@ -1,37 +1,33 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
-import { supabase } from '@/integrations/supabase/client';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 import { toast } from 'sonner';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const navigate = useNavigate();
+  const { isAdmin, isChecking, error } = useAdminAuth();
 
-  useEffect(() => {
-    const checkAdminAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate('/admin/auth');
-        return;
-      }
+  // Only show content if we've confirmed admin status
+  if (isChecking) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <p className="text-gray-500">Checking credentials...</p>
+    </div>;
+  }
 
-      const { data: adminData, error } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
+  if (!isAdmin) {
+    // Use replace to prevent navigation loops
+    navigate('/admin/auth', { replace: true });
+    return null;
+  }
 
-      if (error || !adminData) {
-        toast.error('You do not have admin access');
-        navigate('/admin/auth');
-      }
-    };
-
-    checkAdminAuth();
-  }, [navigate]);
+  if (error) {
+    toast.error('Authentication error. Please try logging in again.');
+    navigate('/admin/auth', { replace: true });
+    return null;
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">

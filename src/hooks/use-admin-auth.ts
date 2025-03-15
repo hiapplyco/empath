@@ -14,11 +14,11 @@ export const useAdminAuth = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
-        // If no session, early return but don't throw error
         if (!session) {
           if (isMounted) {
             setIsAdmin(false);
             setIsChecking(false);
+            setError('No active session');
           }
           return;
         }
@@ -49,12 +49,19 @@ export const useAdminAuth = () => {
       }
     };
 
+    // Run check immediately
     checkAdminStatus();
+
+    // Also listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkAdminStatus();
+    });
 
     return () => {
       isMounted = false;
+      subscription.unsubscribe();
     };
-  }, []); // Only run once on mount
+  }, []); // Only run effect on mount
 
   return { isAdmin, isChecking, error };
 };
