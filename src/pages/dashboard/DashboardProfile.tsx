@@ -1,11 +1,9 @@
-
 import { useAuthenticatedPIAProfile } from "@/hooks/use-pia-data";
 import { Card } from "@/components/ui/card";
 import { DynamicProfileSection } from "@/components/profile/DynamicProfileSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileSection } from "@/components/profile/types";
-import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
+import { LocationsDisplay } from "@/components/profile/variants/LocationsDisplay";
 
 const DashboardProfile = () => {
   const { data: profile, isLoading, error } = useAuthenticatedPIAProfile();
@@ -70,33 +68,15 @@ const DashboardProfile = () => {
       ]
     },
     {
-      title: "Skills & Qualifications",
-      variant: "badges",
-      items: [
-        { label: "Services", value: profile.services_provided?.join(", ") || "Not provided" },
-        { label: "Languages", value: profile.languages?.join(", ") || "Not provided" },
-        { label: "Education", value: profile.education?.join(", ") || "Not provided" },
-        { label: "Vaccinations", value: profile.vaccinations?.join(", ") || "Not provided" }
-      ]
-    },
-    {
       title: "Availability & Preferences",
       variant: "grid",
       items: [
         { label: "Available Shifts", value: profile.available_shifts || "Not provided" },
         { 
           label: "Locations", 
-          value: profile.locations_serviced?.map(location => (
-            <Button
-              key={location}
-              variant="outline"
-              size="sm"
-              className="mr-2 mb-2"
-            >
-              <MapPin className="mr-1 h-4 w-4" />
-              {location}
-            </Button>
-          )) || "Not provided"
+          value: profile.locations_serviced?.length 
+            ? `Serving ${profile.locations_serviced.length} location${profile.locations_serviced.length === 1 ? '' : 's'}`
+            : "Not provided"
         },
         { label: "Pet Preferences", value: profile.pet_preferences?.join(", ") || "Not provided" }
       ]
@@ -118,7 +98,14 @@ const DashboardProfile = () => {
 
       <div className="grid gap-6">
         {sections.map((section, index) => (
-          <DynamicProfileSection key={index} section={section} />
+          <div key={index}>
+            {section.title === "Availability & Preferences" && profile.locations_serviced ? (
+              <div className="mb-4">
+                <LocationsDisplay locations={profile.locations_serviced} />
+              </div>
+            )}
+            <DynamicProfileSection section={section} />
+          </div>
         ))}
       </div>
     </div>
