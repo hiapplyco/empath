@@ -14,13 +14,6 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
     queryFn: async () => {
       console.log('Fetching PIAs with params:', { searchTerm, sortField, sortOrder });
       
-      // Check session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('Authentication required');
-      }
-
-      // Query the PIA table - the RLS policies will handle authorization
       let query = supabase
         .from('professional_independent_aides')
         .select(`
@@ -49,9 +42,6 @@ export const usePIAData = ({ searchTerm, sortField, sortOrder }: UsePIADataProps
 
       if (error) {
         console.error('Error fetching PIAs:', error);
-        if (error.message?.includes('JWTClaimsError')) {
-          throw new Error('Session expired. Please sign in again.');
-        }
         throw error;
       }
 
