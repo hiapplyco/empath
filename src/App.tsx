@@ -19,6 +19,7 @@ import PIAProfile from "./pages/admin/PIAProfile";
 import CareRecipientDashboard from "./components/care-seeker/dashboard/CareRecipientDashboard";
 import CareProfile from "./pages/care-seeker/CareProfile";
 import { AdminDashboardContent } from "./components/admin/dashboard/AdminDashboardContent";
+import AdminAuth from "./pages/admin/AdminAuth";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/dashboard/*" element={<Dashboard />} />
           
           {/* Admin routes */}
+          <Route path="/admin/auth" element={<AdminAuth />} />
           <Route path="/admin/*" element={<AdminDashboard />}>
             <Route index element={<AdminDashboardContent />} />
             <Route path="dashboard" element={<AdminDashboardContent />} />

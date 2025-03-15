@@ -33,6 +33,30 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_users: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          role: Database["public"]["Enums"]["admin_role"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       care_needs: {
         Row: {
           care_duration: string | null
@@ -905,12 +929,19 @@ export type Database = {
         }
         Returns: string
       }
+      is_admin: {
+        Args: {
+          user_id: string
+        }
+        Returns: boolean
+      }
       migrate_pia_to_caregiver_profiles: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
     }
     Enums: {
+      admin_role: "admin" | "moderator"
       app_role: "admin" | "moderator" | "user"
       care_frequency: "one_time" | "recurring" | "full_time"
       care_level: "light" | "moderate" | "extensive"
