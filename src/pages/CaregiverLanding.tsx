@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import LandingNavigation from "@/components/landing/LandingNavigation";
@@ -55,7 +56,7 @@ export default function CaregiverLanding() {
             <p className="text-xl text-gray-700">
               Join a platform that values your skills, connects you with compatible clients, and supports your professional growth—all while giving you control over your schedule and rates.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button 
                 size="lg"
                 className="bg-purple-600 hover:bg-purple-700 text-white"
