@@ -2,6 +2,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CareProfileCard } from "@/components/care-seeker/onboarding/chat/CareProfileCard";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useEffect, useRef } from "react";
 
 interface Message {
   role: 'assistant' | 'user';
@@ -14,6 +15,13 @@ interface ChatMessagesListProps {
 }
 
 export const ChatMessagesList = ({ messages }: ChatMessagesListProps) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const isJsonProfile = (content: string) => {
     try {
       // Check if the message contains a code block
@@ -101,6 +109,8 @@ export const ChatMessagesList = ({ messages }: ChatMessagesListProps) => {
             </div>
           );
         })}
+        {/* This div is used as an anchor to scroll to */}
+        <div ref={messagesEndRef} />
       </div>
     </ScrollArea>
   );
