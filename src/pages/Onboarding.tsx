@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,22 +15,18 @@ import { QuestionnaireChat } from "@/components/onboarding/QuestionnaireChat";
 import { AudioExperienceRecorder } from "@/components/onboarding/AudioExperienceRecorder";
 import { SkipForward } from "lucide-react";
 import { OnboardingNavigation } from "@/components/onboarding/OnboardingNavigation";
+
 const OnboardingPage = () => {
   const [step, setStep] = useState(1);
   const [inputMethod, setInputMethod] = useState<"resume" | "audio" | "video" | "text" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const navigate = useNavigate();
+
   useEffect(() => {
     const checkSession = async () => {
-      const {
-        data: {
-          session
-        }
-      } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         navigate('/auth');
         return;
@@ -38,6 +35,7 @@ const OnboardingPage = () => {
     };
     checkSession();
   }, [navigate]);
+
   const handleMethodSelection = async (method: "resume" | "audio" | "video" | "text") => {
     if (!userId) {
       toast({
@@ -47,14 +45,14 @@ const OnboardingPage = () => {
       });
       return;
     }
+
     setInputMethod(method);
     try {
-      const {
-        error
-      } = await supabase.from('caregiver_profiles').upsert({
+      const { error } = await supabase.from('caregiver_profiles').upsert({
         id: userId,
         input_method: method
       });
+      
       if (error) throw error;
       setStep(2);
     } catch (error: any) {
@@ -65,17 +63,21 @@ const OnboardingPage = () => {
       });
     }
   };
+
   const handleSkip = () => {
     navigate('/onboarding/documents');
   };
-  return <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="flex flex-col space-y-6">
           <OnboardingNavigation showSkip={true} />
           <OnboardingProgress currentStep={1} />
         </div>
 
-        {step === 1 && <Card className="shadow-lg border-gray-100">
+        {step === 1 && (
+          <Card className="shadow-lg border-gray-100">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl font-bold">
                 Welcome to em.path!
@@ -84,7 +86,11 @@ const OnboardingPage = () => {
             <CardContent>
               <div className="space-y-4">
                 <Label className="text-base">Choose how you'd like to start</Label>
-                <RadioGroup value={inputMethod || undefined} onValueChange={(value: "resume" | "audio" | "video" | "text") => handleMethodSelection(value)} className="grid gap-4">
+                <RadioGroup 
+                  value={inputMethod || undefined} 
+                  onValueChange={(value: "resume" | "audio" | "video" | "text") => handleMethodSelection(value)} 
+                  className="grid gap-4"
+                >
                   <div className="flex items-center space-x-2 border p-4 rounded-lg">
                     <RadioGroupItem value="resume" id="resume" />
                     <Label htmlFor="resume" className="flex-1">Upload Resume</Label>
@@ -104,17 +110,22 @@ const OnboardingPage = () => {
                 </RadioGroup>
               </div>
             </CardContent>
-          </Card>}
+          </Card>
+        )}
 
-        {step === 2 && <Card className="shadow-lg border-gray-100">
+        {step === 2 && (
+          <Card className="shadow-lg border-gray-100">
             <CardContent className="pt-6">
               {inputMethod === "resume" && <FileUpload onComplete={() => setStep(3)} />}
               {inputMethod === "audio" && <AudioExperienceRecorder />}
               {inputMethod === "video" && <EmmaV2 onComplete={() => setStep(3)} />}
               {inputMethod === "text" && <QuestionnaireChat />}
             </CardContent>
-          </Card>}
+          </Card>
+        )}
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default OnboardingPage;

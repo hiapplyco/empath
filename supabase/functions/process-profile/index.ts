@@ -40,7 +40,8 @@ Structure the data into clear sections following this format exactly:
     "Services Provided": string,
     "Type of Background Check": string,
     "Vaccinations": string,
-    "Available Shifts": string
+    "Available Shifts": string,
+    "input_method": string // Will be one of: "resume", "audio", "video", "text"
   }
 }
 
@@ -124,6 +125,11 @@ serve(async (req) => {
         throw new Error('Invalid profile structure: missing database_fields object')
       }
 
+      // Preserve input_method if it exists in the original data
+      if (dataToProcess.input_method && !processedData.database_fields.input_method) {
+        processedData.database_fields.input_method = dataToProcess.input_method;
+      }
+
       // Post-process the sections for display
       processedData.sections = processedData.sections.map(section => {
         if (section.variant === 'badges') {
@@ -159,4 +165,3 @@ serve(async (req) => {
     )
   }
 })
-

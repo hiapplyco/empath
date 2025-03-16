@@ -434,6 +434,7 @@ export type Database = {
           "HCA Registry ID": string | null
           "Hourly Rate": string | null
           id: string
+          input_method: string | null
           Languages: string | null
           "License Type": string | null
           "Locations Serviced": string | null
@@ -456,6 +457,7 @@ export type Database = {
           "HCA Registry ID"?: string | null
           "Hourly Rate"?: string | null
           id?: string
+          input_method?: string | null
           Languages?: string | null
           "License Type"?: string | null
           "Locations Serviced"?: string | null
@@ -478,6 +480,7 @@ export type Database = {
           "HCA Registry ID"?: string | null
           "Hourly Rate"?: string | null
           id?: string
+          input_method?: string | null
           Languages?: string | null
           "License Type"?: string | null
           "Locations Serviced"?: string | null
