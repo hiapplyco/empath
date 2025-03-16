@@ -13,13 +13,34 @@ export const useProfileGeneration = (messages: Message[]) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No authenticated user found');
 
+      const profileDataFields = profileData.processed_profile.database_fields || {};
+      
+      // Prepare profile data with the correct column names matching the database schema
+      const profileRecord = {
+        id: user.id,
+        Name: profileDataFields.Name || '',
+        Bio: profileDataFields.Bio || '',
+        "Phone Number": profileDataFields["Phone Number"] || '',
+        Email: profileDataFields.Email || user.email || '',
+        Languages: profileDataFields.Languages || '',
+        Education: profileDataFields.Education || '',
+        Experience: profileDataFields.Experience || '',
+        "Hourly Rate": profileDataFields["Hourly Rate"] || '',
+        "Locations Serviced": profileDataFields["Locations Serviced"] || '',
+        "Type of Background Check": profileDataFields["Type of Background Check"] || '',
+        "HCA Registry ID": profileDataFields["HCA Registry ID"] || '',
+        "HCA Expiration Date": profileDataFields["HCA Expiration Date"] || null,
+        "Vaccinations": profileDataFields.Vaccinations || '',
+        "Available Shifts": profileDataFields["Available Shifts"] || '',
+        "Services Provided": profileDataFields["Services Provided"] || '',
+        "Pet Preferences": profileDataFields["Pet Preferences"] || '',
+        input_method: "text"
+      };
+
+      // Using upsert to either create a new profile or update the existing one
       const { error: profileError } = await supabase
         .from('caregiver_profiles')
-        .upsert({
-          id: user.id,
-          gemini_response: profileData.raw_profile,
-          processed_profile: profileData.processed_profile
-        });
+        .upsert(profileRecord);
 
       if (profileError) throw profileError;
 
