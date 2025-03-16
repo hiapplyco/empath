@@ -15,6 +15,7 @@ import { QuestionnaireChat } from "@/components/onboarding/QuestionnaireChat";
 import { AudioExperienceRecorder } from "@/components/onboarding/AudioExperienceRecorder";
 import { SkipForward } from "lucide-react";
 import { OnboardingNavigation } from "@/components/onboarding/OnboardingNavigation";
+import { ChatInterface } from "@/components/chat/ChatInterface";
 
 const OnboardingPage = () => {
   const [step, setStep] = useState(1);
@@ -53,7 +54,16 @@ const OnboardingPage = () => {
         input_method: method
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error updating profile:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error?.message || "Failed to update profile"
+        });
+        return;
+      }
+      
       setStep(2);
     } catch (error: any) {
       toast({
@@ -119,7 +129,7 @@ const OnboardingPage = () => {
               {inputMethod === "resume" && <FileUpload onComplete={() => setStep(3)} />}
               {inputMethod === "audio" && <AudioExperienceRecorder />}
               {inputMethod === "video" && <EmmaV2 onComplete={() => setStep(3)} />}
-              {inputMethod === "text" && <QuestionnaireChat />}
+              {inputMethod === "text" && <ChatInterface />}
             </CardContent>
           </Card>
         )}
