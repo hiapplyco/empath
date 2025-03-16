@@ -125,7 +125,7 @@ const OnboardingPage = () => {
 
         {step === 2 && (
           <Card className="shadow-lg border-gray-100">
-            <CardContent className="pt-6">
+            <CardContent className={`${inputMethod === "text" ? "p-0 h-[60vh]" : "pt-6"}`}>
               {inputMethod === "resume" && <FileUpload onComplete={() => setStep(3)} />}
               {inputMethod === "audio" && <AudioExperienceRecorder />}
               {inputMethod === "video" && <EmmaV2 onComplete={() => setStep(3)} />}

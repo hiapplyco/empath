@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Bot } from "lucide-react";
@@ -33,7 +34,7 @@ export const ChatInterface = () => {
 
   if (!isChatStarted) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-4">
+      <div className="flex flex-col items-center justify-center h-full gap-4 p-4">
         <Button onClick={initializeChat} size="lg" className="gap-2">
           <Bot className="h-5 w-5" />
           Chat with Emma
@@ -46,7 +47,7 @@ export const ChatInterface = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen max-h-screen w-full max-w-4xl mx-auto border rounded-lg chat-container animate-fade-in">
+    <div className="flex flex-col h-full border rounded-lg chat-container animate-fade-in">
       <div className="flex-grow overflow-auto">
         <ChatMessagesList messages={messages} />
       </div>
