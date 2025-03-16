@@ -424,70 +424,70 @@ export type Database = {
       }
       caregiver_profiles: {
         Row: {
-          availability: Json | null
-          availability_details: Json | null
-          available: boolean | null
-          bio: string | null
-          contact_info: Json | null
+          "Available Shifts": string | null
+          Bio: string | null
           created_at: string
-          emergency_protocols: Json[] | null
-          equipment_skills: string[] | null
-          gemini_response: Json | null
+          Education: string | null
+          Email: string | null
+          Experience: string | null
+          "HCA Expiration Date": string | null
+          "HCA Registry ID": string | null
+          "Hourly Rate": string | null
           id: string
-          input_method: string | null
-          languages: string[] | null
-          name: string | null
-          patient_types: Json[] | null
-          phone: string | null
-          processed_profile: Json | null
-          rate_preferences: Json | null
-          skills: string[] | null
+          Languages: string | null
+          "License Type": string | null
+          "Locations Serviced": string | null
+          Name: string | null
+          "Pet Preferences": string | null
+          "Phone Number": string | null
+          "Services Provided": string | null
+          "Type of Background Check": string | null
           updated_at: string
-          years_experience: number
+          Vaccinations: string | null
         }
         Insert: {
-          availability?: Json | null
-          availability_details?: Json | null
-          available?: boolean | null
-          bio?: string | null
-          contact_info?: Json | null
+          "Available Shifts"?: string | null
+          Bio?: string | null
           created_at?: string
-          emergency_protocols?: Json[] | null
-          equipment_skills?: string[] | null
-          gemini_response?: Json | null
+          Education?: string | null
+          Email?: string | null
+          Experience?: string | null
+          "HCA Expiration Date"?: string | null
+          "HCA Registry ID"?: string | null
+          "Hourly Rate"?: string | null
           id?: string
-          input_method?: string | null
-          languages?: string[] | null
-          name?: string | null
-          patient_types?: Json[] | null
-          phone?: string | null
-          processed_profile?: Json | null
-          rate_preferences?: Json | null
-          skills?: string[] | null
+          Languages?: string | null
+          "License Type"?: string | null
+          "Locations Serviced"?: string | null
+          Name?: string | null
+          "Pet Preferences"?: string | null
+          "Phone Number"?: string | null
+          "Services Provided"?: string | null
+          "Type of Background Check"?: string | null
           updated_at?: string
-          years_experience?: number
+          Vaccinations?: string | null
         }
         Update: {
-          availability?: Json | null
-          availability_details?: Json | null
-          available?: boolean | null
-          bio?: string | null
-          contact_info?: Json | null
+          "Available Shifts"?: string | null
+          Bio?: string | null
           created_at?: string
-          emergency_protocols?: Json[] | null
-          equipment_skills?: string[] | null
-          gemini_response?: Json | null
+          Education?: string | null
+          Email?: string | null
+          Experience?: string | null
+          "HCA Expiration Date"?: string | null
+          "HCA Registry ID"?: string | null
+          "Hourly Rate"?: string | null
           id?: string
-          input_method?: string | null
-          languages?: string[] | null
-          name?: string | null
-          patient_types?: Json[] | null
-          phone?: string | null
-          processed_profile?: Json | null
-          rate_preferences?: Json | null
-          skills?: string[] | null
+          Languages?: string | null
+          "License Type"?: string | null
+          "Locations Serviced"?: string | null
+          Name?: string | null
+          "Pet Preferences"?: string | null
+          "Phone Number"?: string | null
+          "Services Provided"?: string | null
+          "Type of Background Check"?: string | null
           updated_at?: string
-          years_experience?: number
+          Vaccinations?: string | null
         }
         Relationships: []
       }
