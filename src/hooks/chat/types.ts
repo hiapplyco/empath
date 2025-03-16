@@ -27,6 +27,7 @@ export interface CaregiverProfile {
 
 export interface ProcessedProfile {
   sections: ProfileSection[];
+  database_fields?: Record<string, any>;
 }
 
 export interface ProfileSection {
