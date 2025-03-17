@@ -23,9 +23,23 @@ export const SignupForm = ({ isCaregiver, onGoogleLogin, onUserExists }: SignupF
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Clear all user-specific localStorage data
+  const clearUserData = () => {
+    // Clear all chat history items that could contain sensitive data
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('caregiverOnboardingChat_')) {
+        localStorage.removeItem(key);
+      }
+    });
+    localStorage.removeItem('caregiverOnboardingChat'); // Remove legacy key too
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    // Clear any existing user data first to ensure fresh start
+    clearUserData();
 
     const { data, error } = await supabase.auth.signUp({
       email,

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -19,10 +18,19 @@ export const LoginForm = ({ onGoogleLogin }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // Function to clear any legacy chat data
+  const ensurePrivacy = () => {
+    // Only remove the legacy chat storage key that's not tied to user ID
+    localStorage.removeItem('caregiverOnboardingChat');
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    
+    // Ensure privacy by clearing any legacy data
+    ensurePrivacy();
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -75,7 +83,7 @@ export const LoginForm = ({ onGoogleLogin }: LoginFormProps) => {
           required
         />
       </div>
-
+      
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? "Signing in..." : "Sign In"}
       </Button>

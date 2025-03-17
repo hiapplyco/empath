@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { supabase } from "@/lib/supabase";
 import { useConversation } from './chat/useConversation';
@@ -16,28 +17,42 @@ export const useChat = () => {
     addMessage,
     clearConversation,
     language,
-    setLanguage
+    setLanguage,
+    userId
   } = useConversation();
   
   const { generateProfile, isExiting } = useProfileGeneration(messages);
   const { handleBack, proceedToDocuments } = useOnboardingNavigation();
 
+  // Only initialize chat when we have a userId and no messages
   useEffect(() => {
-    if (messages.length === 0) {
-      startChat();
-    }
-  }, [messages]);
+    const initializeIfNeeded = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // Only initialize if we have a user session, userId is set, and no messages exist
+      if (session?.user && userId && messages.length === 0) {
+        startChat();
+      }
+    };
+
+    initializeIfNeeded();
+  }, [messages.length, userId]);
 
   const startChat = async () => {
     setChatState('initializing');
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
+
       const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: { 
           message: 'START_CHAT',
           userContext: {
             name: user?.user_metadata?.full_name,
             email: user?.email,
+            userId: user?.id, // Pass user ID to the function
             onboardingStep: 'profile_creation'
           },
           language
@@ -140,9 +155,16 @@ export const useChat = () => {
     setChatState('generating-profile');
     const { data: { user } } = await supabase.auth.getUser();
     
+    if (!user) {
+      console.error('No authenticated user found');
+      setChatState('idle');
+      return false;
+    }
+    
     const success = await generateProfile({
       name: user?.user_metadata?.full_name,
       email: user?.email,
+      userId: user.id, // Pass user ID to ensure proper data association
       onboardingStep: 'profile_creation'
     });
 
@@ -152,6 +174,7 @@ export const useChat = () => {
     }
     
     setChatState('idle');
+    return success;
   };
 
   const handleFinish = async () => {

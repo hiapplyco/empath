@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -10,11 +11,41 @@ export const useCareRecipientOnboarding = () => {
   const [language, setLanguage] = useState('en');
   const [progress, setProgress] = useState(0);
   const [isEndingInterview, setIsEndingInterview] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Initialize chat when component mounts
+  // Set user ID on component mount and listen for auth changes
   useEffect(() => {
+    const getUserId = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id || null);
+    };
+    
+    getUserId();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        const newUserId = session?.user?.id || null;
+        setUserId(newUserId);
+        
+        // Clear messages when user ID changes to ensure privacy
+        if (newUserId !== userId) {
+          setMessages([]);
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Initialize chat when component mounts and we have a userId
+  useEffect(() => {
+    if (!userId) return;
+    
     const initializeChat = async () => {
       setIsLoading(true);
       try {
@@ -22,6 +53,7 @@ export const useCareRecipientOnboarding = () => {
           body: { 
             action: 'start',
             language,
+            userId,
             history: []
           }
         });
@@ -45,10 +77,10 @@ export const useCareRecipientOnboarding = () => {
     };
 
     initializeChat();
-  }, [language, toast]);
+  }, [language, toast, userId]);
 
   const sendMessage = async (content: string) => {
-    if (!content.trim()) return;
+    if (!content.trim() || !userId) return;
 
     setIsLoading(true);
     const newMessage = { role: 'user' as const, content };
@@ -93,6 +125,8 @@ export const useCareRecipientOnboarding = () => {
   };
 
   const handleEndInterview = async () => {
+    if (!userId) return;
+    
     setIsEndingInterview(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
