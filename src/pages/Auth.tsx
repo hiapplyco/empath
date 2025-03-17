@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
@@ -15,7 +16,7 @@ export default function Auth() {
   const { toast } = useToast();
 
   const isCaregiver = searchParams.get("role") === "caregiver";
-  const [loginView, setLoginView] = useState(true);
+  const [activeTab, setActiveTab] = useState("login");
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -68,11 +69,23 @@ export default function Auth() {
     });
 
     if (error) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: error.message,
-      });
+      // Check for user already exists error
+      if (error.message?.includes("User already registered") || error.message?.includes("user_already_exists")) {
+        toast({
+          variant: "destructive",
+          title: "Account already exists",
+          description: "This email is already registered. Try logging in instead.",
+        });
+        // Switch to login tab and pre-fill email
+        setActiveTab("login");
+        setLoginEmail(signupEmail);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: error.message,
+        });
+      }
     } else {
       toast({
         title: "Account created successfully!",
@@ -132,7 +145,7 @@ export default function Auth() {
           </div>
           
           <div className="bg-white shadow-md rounded-lg p-6">
-            <Tabs defaultValue={loginView ? 'login' : 'signup'}>
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid grid-cols-2 mb-6">
                 <TabsTrigger value="login">Log In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -261,7 +274,7 @@ export default function Auth() {
               <p>
                 {isCaregiver ? "Not a caregiver? " : "Not looking for care? "}
                 <Link 
-                  to={isCaregiver ? "/auth/care-seeker" : "/auth/caregiver"} 
+                  to={isCaregiver ? "/auth" : "/auth?role=caregiver"} 
                   className="text-purple-600 hover:text-purple-800"
                 >
                   {isCaregiver ? "I'm looking for care" : "I'm a caregiver"}
