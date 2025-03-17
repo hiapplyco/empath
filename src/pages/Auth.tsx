@@ -1,160 +1,276 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
+import { GoogleIcon, AppleIcon } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
-import { Heart } from "lucide-react";
 
-const Auth = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
-  const { toast } = useToast();
+export default function Auth() {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const isCaregiver = location.pathname === '/auth/caregiver';
+  const { toast } = useToast();
 
-  const checkProfileAndRedirect = async (userId: string) => {
-    try {
-      const { data: profile, error } = await supabase
-        .from('caregiver_profiles')
-        .select('processed_profile, gemini_response')
-        .eq('id', userId)
-        .single();
+  const isCaregiver = searchParams.get("role") === "caregiver";
+  const [loginView, setLoginView] = useState(true);
 
-      if (error) throw error;
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
 
-      if (profile && (profile.processed_profile || profile.gemini_response)) {
-        navigate('/dashboard');
-        return;
-      }
+  const [signupName, setSignupName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupLoading, setSignupLoading] = useState(false);
 
-      navigate('/onboarding');
-    } catch (error) {
-      console.error('Error checking profile:', error);
-      navigate('/onboarding');
-    }
-  };
-
-  const handleAuth = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoginLoading(true);
 
-    try {
-      if (isSignUp) {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (signUpError) throw signUpError;
-        
-        const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (signInError) throw signInError;
+    const { error } = await supabase.auth.signInWithPassword({
+      email: loginEmail,
+      password: loginPassword,
+    });
 
-        toast({
-          title: "Account created successfully",
-          description: "Welcome to em.path!",
-        });
-        
-        if (user) {
-          navigate(isCaregiver ? '/onboarding' : '/care-seeker/onboarding');
-        }
-      } else {
-        const { data: { user }, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        
-        if (user) {
-          navigate(isCaregiver ? '/onboarding' : '/care-seeker/onboarding');
-        }
-      }
-    } catch (error: any) {
+    if (error) {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Uh oh! Something went wrong.",
         description: error.message,
       });
-      setIsLoading(false);
+    } else {
+      toast({
+        title: "Logged in successfully!",
+        description: "You are being redirected...",
+      });
+      navigate('/dashboard');
     }
+
+    setLoginLoading(false);
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSignupLoading(true);
+
+    const { data, error } = await supabase.auth.signUp({
+      email: signupEmail,
+      password: signupPassword,
+      options: {
+        data: {
+          name: signupName,
+          role: isCaregiver ? "caregiver" : "care-seeker",
+        },
+      },
+    });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
+    } else {
+      toast({
+        title: "Account created successfully!",
+        description: "Please check your email to verify your account.",
+      });
+      navigate('/onboarding');
+    }
+
+    setSignupLoading(false);
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoginLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+      });
+    }
+
+    setLoginLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-50 to-white py-12 px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-2 mb-8">
-        <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
-          <Heart className="text-white w-5 h-5" />
+    <div className="flex h-screen bg-slate-50">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-r from-purple-500 to-purple-800 justify-center items-center p-12">
+        <div className="max-w-xl">
+          <img src="/emma.png" alt="Emma AI assistant" className="rounded-2xl shadow-2xl mb-8" />
+          <h2 className="text-3xl font-bold text-white mb-4">Meet Emma, your AI onboarding assistant</h2>
+          <p className="text-white/80 text-lg">
+            Emma helps match you with the right caregiving opportunities through a simple conversation. No resumes required!
+          </p>
         </div>
-        <span className="text-2xl font-bold text-purple-800">em.path</span>
       </div>
-
-      <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-purple-900">
-            {isSignUp ? "Create an account" : "Welcome back"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleAuth} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-purple-900">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="border-purple-200 focus:border-purple-400"
-              />
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <div className="flex justify-center mb-6">
+              <img src="/empath-simple-logo.svg" alt="empath logo" className="h-12 w-12" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-purple-900">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="border-purple-200 focus:border-purple-400"
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-              disabled={isLoading}
-            >
-              {isLoading
-                ? "Loading..."
-                : isSignUp
-                ? "Sign Up"
-                : "Sign In"}
-            </Button>
-          </form>
-
-          <div className="mt-4 text-center">
-            <Button
-              variant="link"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm text-purple-600 hover:text-purple-700"
-            >
-              {isSignUp
-                ? "Already have an account? Sign In"
-                : "Don't have an account? Sign Up"}
-            </Button>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+              Welcome to em.path
+            </h2>
+            <p className="mt-2 text-gray-600">
+              {isCaregiver 
+                ? "Join our community of caregivers making a difference" 
+                : "Find the perfect caregiver for your needs"}
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <Tabs defaultValue={loginView ? 'login' : 'signup'}>
+              <TabsList className="grid grid-cols-2 mb-6">
+                <TabsTrigger value="login">Log In</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <Label htmlFor="email-login">Email</Label>
+                    <Input
+                      id="email-login"
+                      type="email"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <div className="flex justify-between">
+                      <Label htmlFor="password-login">Password</Label>
+                      <a href="#" className="text-sm text-purple-600 hover:text-purple-800">
+                        Forgot password?
+                      </a>
+                    </div>
+                    <Input
+                      id="password-login"
+                      type="password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                    />
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={loginLoading}>
+                    {loginLoading ? "Signing in..." : "Sign In"}
+                  </Button>
+                  
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t"></span>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button type="button" variant="outline" onClick={handleGoogleLogin} disabled={loginLoading}>
+                      <GoogleIcon className="mr-2 h-4 w-4" />
+                      Google
+                    </Button>
+                    <Button type="button" variant="outline" disabled={loginLoading}>
+                      <AppleIcon className="mr-2 h-4 w-4" />
+                      Apple
+                    </Button>
+                  </div>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="signup">
+                <form onSubmit={handleSignup} className="space-y-4">
+                  <div>
+                    <Label htmlFor="name-signup">Name</Label>
+                    <Input
+                      id="name-signup"
+                      type="text"
+                      value={signupName}
+                      onChange={(e) => setSignupName(e.target.value)}
+                      placeholder="John Doe"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email-signup">Email</Label>
+                    <Input
+                      id="email-signup"
+                      type="email"
+                      value={signupEmail}
+                      onChange={(e) => setSignupEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="password-signup">Password</Label>
+                    <Input
+                      id="password-signup"
+                      type="password"
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                    />
+                  </div>
+                  
+                  <Button type="submit" className="w-full" disabled={signupLoading}>
+                    {signupLoading ? "Creating account..." : "Create Account"}
+                  </Button>
+                  
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t"></span>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button type="button" variant="outline" onClick={handleGoogleLogin} disabled={signupLoading}>
+                      <GoogleIcon className="mr-2 h-4 w-4" />
+                      Google
+                    </Button>
+                    <Button type="button" variant="outline" disabled={signupLoading}>
+                      <AppleIcon className="mr-2 h-4 w-4" />
+                      Apple
+                    </Button>
+                  </div>
+                </form>
+              </TabsContent>
+            </Tabs>
+            
+            <div className="mt-6 text-center text-sm">
+              <p>
+                {isCaregiver ? "Not a caregiver? " : "Not looking for care? "}
+                <Link 
+                  to={isCaregiver ? "/auth/care-seeker" : "/auth/caregiver"} 
+                  className="text-purple-600 hover:text-purple-800"
+                >
+                  {isCaregiver ? "I'm looking for care" : "I'm a caregiver"}
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default Auth;
+}

@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Heart, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -13,7 +13,7 @@ export const Navbar = () => {
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2">
-              <Heart className="h-6 w-6 text-primary" />
+              <img src="/empath-simple-logo.svg" alt="empath logo" className="h-6 w-6" />
               <span className="text-xl font-semibold">em.path</span>
             </Link>
           </div>
