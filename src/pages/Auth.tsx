@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { GoogleIcon, AppleIcon } from 'lucide-react';
+import { Globe, Apple } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
 
 export default function Auth() {
@@ -183,11 +183,11 @@ export default function Auth() {
                   
                   <div className="grid grid-cols-2 gap-4">
                     <Button type="button" variant="outline" onClick={handleGoogleLogin} disabled={loginLoading}>
-                      <GoogleIcon className="mr-2 h-4 w-4" />
+                      <Globe className="mr-2 h-4 w-4" />
                       Google
                     </Button>
                     <Button type="button" variant="outline" disabled={loginLoading}>
-                      <AppleIcon className="mr-2 h-4 w-4" />
+                      <Apple className="mr-2 h-4 w-4" />
                       Apple
                     </Button>
                   </div>
@@ -245,11 +245,11 @@ export default function Auth() {
                   
                   <div className="grid grid-cols-2 gap-4">
                     <Button type="button" variant="outline" onClick={handleGoogleLogin} disabled={signupLoading}>
-                      <GoogleIcon className="mr-2 h-4 w-4" />
+                      <Globe className="mr-2 h-4 w-4" />
                       Google
                     </Button>
                     <Button type="button" variant="outline" disabled={signupLoading}>
-                      <AppleIcon className="mr-2 h-4 w-4" />
+                      <Apple className="mr-2 h-4 w-4" />
                       Apple
                     </Button>
                   </div>
