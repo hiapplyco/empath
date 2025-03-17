@@ -10,6 +10,7 @@ export interface Message {
 export interface UserContext {
   name?: string;
   email?: string;
+  userId?: string;
   onboardingStep: 'profile_creation';
 }
 
