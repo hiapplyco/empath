@@ -1,4 +1,5 @@
 
+import { useEffect } from "react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { Routes, Route } from "react-router-dom";
 import DashboardOverview from "@/pages/dashboard/DashboardOverview";
@@ -13,8 +14,12 @@ import DashboardSettings from "@/pages/dashboard/DashboardSettings";
 import DashboardProfile from "@/pages/dashboard/DashboardProfile";
 import PIAProfile from "@/pages/admin/PIAProfile";
 import { PIATable } from "@/components/admin/pia/PIATable";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 const Dashboard = () => {
+  // Use the hook to check authentication status
+  useAuthRedirect({ role: 'caregiver' });
+
   return (
     <DashboardShell>
       <Routes>

@@ -1,15 +1,66 @@
-import { useLocation } from "react-router-dom";
+
 import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
+    const checkAuthRequirement = async () => {
+      // List of paths that require authentication
+      const authRequiredPaths = [
+        '/dashboard',
+        '/onboarding',
+        '/care-seeker/dashboard',
+        '/care-seeker/profile',
+        '/care-seeker/onboarding',
+        '/onboarding/documents',
+        '/onboarding/profile'
+      ];
+
+      // Check if current path starts with any auth-required path
+      const requiresAuth = authRequiredPaths.some(path => 
+        location.pathname.startsWith(path)
+      );
+
+      if (requiresAuth) {
+        // Check if user is authenticated
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.log("Auth required for this route. Redirecting to auth page.");
+          
+          // Determine if this is a caregiver or care-seeker path
+          const isCaregiverPath = location.pathname.includes('/dashboard') || 
+            location.pathname.includes('/onboarding');
+          
+          const isCareSeekerPath = location.pathname.includes('/care-seeker');
+          
+          // Redirect to appropriate auth page
+          if (isCareSeekerPath) {
+            navigate('/auth/care-seeker');
+          } else if (isCaregiverPath) {
+            navigate('/auth/caregiver');
+          } else {
+            // Default to caregiver auth if unclear
+            navigate('/auth/caregiver');
+          }
+          
+          return;
+        }
+      }
+      
+      // If we get here, it's a genuine 404
+      console.error(
+        "404 Error: User attempted to access non-existent route:",
+        location.pathname
+      );
+    };
+    
+    checkAuthRequirement();
+  }, [location.pathname, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
