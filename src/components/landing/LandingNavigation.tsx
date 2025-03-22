@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -77,7 +76,7 @@ export default function LandingNavigation() {
         </Button>
         <Button 
           variant="ghost" 
-          onClick={() => navigate('/#testimonials')} 
+          onClick={() => navigate('/stories')} 
           className="hover:text-purple-600 transition-colors"
         >
           Stories
