@@ -23,6 +23,9 @@ export const Navbar = () => {
             <Link to="/about" className="text-gray-600 hover:text-gray-900 transition-colors">
               About
             </Link>
+            <Link to="/stories" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Stories
+            </Link>
             <Link to="/caregivers" className="text-gray-600 hover:text-gray-900 transition-colors">
               Find Caregivers
             </Link>
@@ -49,6 +52,9 @@ export const Navbar = () => {
             <div className="flex flex-col gap-4">
               <Link to="/about" className="text-gray-600 hover:text-gray-900 transition-colors px-4 py-2">
                 About
+              </Link>
+              <Link to="/stories" className="text-gray-600 hover:text-gray-900 transition-colors px-4 py-2">
+                Stories
               </Link>
               <Link to="/caregivers" className="text-gray-600 hover:text-gray-900 transition-colors px-4 py-2">
                 Find Caregivers
