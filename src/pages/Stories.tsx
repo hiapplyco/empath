@@ -33,7 +33,7 @@ export default function Stories() {
           
           <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
             <img 
-              src="/lovable-uploads/67be2b5c-df2a-49b7-8aee-8ae0f1050e14.png"
+              src="/lovable-uploads/0ae1d5c4-e7ee-4402-8678-c6393222e584.png"
               alt="Maria, a professional caregiver with her care recipient"
               className="w-full h-auto object-cover"
             />
@@ -83,7 +83,7 @@ export default function Stories() {
           
           <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
             <img 
-              src="/lovable-uploads/88e5b10a-973c-4dc4-a68a-0125eccdd283.png"
+              src="/lovable-uploads/67be2b5c-df2a-49b7-8aee-8ae0f1050e14.png"
               alt="Robert Henderson and his daughter Sarah discussing care options for his wife"
               className="w-full h-auto object-cover"
             />
@@ -133,7 +133,7 @@ export default function Stories() {
           
           <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
             <img 
-              src="/lovable-uploads/0ae1d5c4-e7ee-4402-8678-c6393222e584.png"
+              src="/lovable-uploads/88e5b10a-973c-4dc4-a68a-0125eccdd283.png"
               alt="The Sunrise Senior Services team using em.path's agency dashboard"
               className="w-full h-auto object-cover"
             />
